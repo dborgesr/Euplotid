@@ -1,4 +1,4 @@
-# Image to suck in RNA-Seq, Cooler (Hi-C), Cooler (SMC ints), Chromatin accessibility
+#Old image to take in FPKM, DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and calls and annotates INs
 FROM debian:jessie
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 
@@ -30,25 +30,15 @@ ENV PATH=/root/anaconda2/bin:$PATH
 RUN pip install --upgrade pip
 RUN pip install notebook ipywidgets seaborn pysam myvariant mygene weblogo h5py wand mechanize rst2pdf argparse python-louvain uuid plotly joblib biopython pyliftover nbbrowserpdf bx-python MACS2 cython ipymol
 
-#install Bash kernel
-pip install bash_kernel
-python -m bash_kernel.install
-
 # Run Torch7 installation scripts
 RUN git clone https://github.com/torch/distro.git /root/torch --recursive && cd /root/torch && \
   bash install-deps && \
   ./install.sh
-
-# Clone UCSC fetch
-#RUN cd /root && hg clone https://bitbucket.org/dalloliogm/ucsc-fetch /root/ucsc-fetch
-#ENV PATH=/root/ucsc-fetch:$PATH
-
+  
 # Export environment variables manually
 ARG LUA_PATH='/root/.luarocks/share/lua/5.1/?.lua;/root/.luarocks/share/lua/5.1/?/init.lua;/root/torch/install/share/lua/5.1/?.lua;/root/torch/install/share/lua/5.1/?/init.lua;./?.lua;/root/torch/install/share/luajit-2.1.0-beta1/?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua'
 ENV LUA_PATH $LUA_PATH
 ENV LUA_CPATH "/root/.luarocks/lib/lua/5.1/?.so;/root/torch/install/lib/lua/5.1/?.so;./?.so;/usr/local/lib/lua/5.1/?.so;/usr/local/lib/lua/5.1/loadall.so"
-#ENV LUA_PATH $LUA_PATH
-#ENV LUA_CPATH $LUA_CPATH
 ENV PATH /root/torch/install/bin:$PATH
 ENV LD_LIBRARY_PATH /root/torch/install/lib:$LD_LIBRARY_PATH
 ENV DYLD_LIBRARY_PATH /root/torch/install/lib:$DYLD_LIBRARY_PATH
@@ -67,12 +57,6 @@ RUN luarocks install nn
 
 # clone Basset
 RUN cd /root && git clone https://github.com/davek44/Basset.git /root/Basset --recursive
-#Add Basset needed paths
-ARG BASSETDIR="/root/Basset"
-ENV BASSETDIR $BASSETDIR
-ENV PATH $BASSETDIR/src:$PATH
-ENV PYTHONPATH=$BASSETDIR/src:$PYTHONPATH
-ENV LUA_PATH='$BASSETDIR/src/?.lua;$LUA_PATH'
 # Run torch-hdf5 installation scripts
 RUN cd /root/Basset/src && git clone https://github.com/davek44/torch-hdf5.git && cd torch-hdf5 && \
   luarocks make 
