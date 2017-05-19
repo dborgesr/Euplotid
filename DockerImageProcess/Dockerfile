@@ -17,18 +17,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
-  
+
+ENV CONDA_VERSION="4.2.0"  
 #Download, install, and update Anaconda3
-RUN cd /root && wget https://repo.continuum.io/archive/Anaconda3-4.3.1-Linux-x86_64.sh && bash Anaconda3-4.3.1-Linux-x86_64.sh -b && rm Anaconda3-4.3.1-Linux-x86_64.sh
+RUN cd /root && wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh
 ENV PATH=/root/anaconda3/bin:$PATH
 RUN conda update conda anaconda jupyter notebook
 #RUN conda config --set channel_priority false
 RUN conda config --add channels conda-forge 
 RUN conda config --add channels bioconda
-RUN conda install -c conda-forge nb_conda fortran-magic && conda clean -y -t -i -l
-
-#Install general packages and build tools
+RUN conda config --add channels r
 RUN conda install -y \
+	nb_conda \
+	fortran-magic \
 	make \
 	gcc \
 	conda-build \
@@ -36,25 +37,11 @@ RUN conda install -y \
 	ipyparallel \
 	plotly \
 	ipywidgets \
-	&& conda clean -y -t -i -l
-
-#Install R and kernel and environment
-RUN conda install -c r r-essentials r-irkernel r-ggplot2 r-rcolorbrewer \
-	&& conda update -c r r-essentials r-irkernel \
-	&& conda clean -y -t -i -l
-
-#Install python 2.7 kernel and environment
-RUN conda create -c bioconda -n py27 python=2.7 ipykernel \
-	cooler \
-	bx-python \
-	pysam \
-	nucleoatac \
-	macs2 \
-	&& conda clean -y -t -i -l
-
-
-#install bioconda packages
-RUN conda install -c bioconda -y \
+	ipywidgets \
+	r-essentials \
+	r-irkernel \
+	r-ggplot2 \
+	r-rcolorbrewer \
 	autoconf \
 	bamtools \
 	bowtie \
@@ -78,6 +65,15 @@ RUN conda install -c bioconda -y \
 	wkhtmltopdf \
 	&& conda clean -y -t -i -l
 
+#Install python 2.7 kernel and environment
+RUN conda create -y -n py27 python=2.7 \
+	ipykernel \
+	cooler \
+	bx-python \
+	pysam \
+	nucleoatac \
+	macs2 \
+	&& conda clean -y -t -i -l
 
 # Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
