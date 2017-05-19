@@ -87,7 +87,7 @@ RUN cd /root && git clone https://github.com/bedops/bedops.git && cd ./bedops &&
 RUN cd /root && git clone https://github.com/kundajelab/deepbind.git 
 
 # Set Euplotid as working directory
-WORKDIR /root/Euplotid
+WORKDIR /root/Euplotid/pipelines
 
 RUN apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
