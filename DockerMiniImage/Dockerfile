@@ -16,12 +16,26 @@ RUN CONDA_VERSION="4.0.5" && \
     echo "export PATH=$CONDA_DIR/bin:\$PATH" > /etc/profile.d/conda.sh && \
     rm miniconda.sh && \
     \
-    conda install -c soumith \
+    conda install -y -c soumith \
     	pytorch \
     	torchvision \
     	jupyter \
     	notebook \
-    	nbpresent && \
+    	nbpresent \
+    	git && \
+    conda install -y -c edurand \
+    	myvariant \
+    	mygene && \
+    conda install -y -c bioconda \
+    	pysam \
+    	networkx \
+    	pandas \
+    	joblib \
+    	biopython \
+    	pyliftover \
+    	scipy \
+    	bedops \
+    	plotly && \
     conda update --all --yes && \
     conda config --set auto_update_conda False && \
     conda clean --all --yes && \
@@ -32,6 +46,11 @@ RUN CONDA_VERSION="4.0.5" && \
     \
     mkdir -p "$CONDA_DIR/locks" && \
     chmod 777 "$CONDA_DIR/locks"
+
+RUN cd /root && git clone https://github.com/taynaud/python-louvain.git && cd python-louvain && python setup.py install
+RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
+# Set pipelines as workdir
+WORKDIR /root/Euplotid/pipelines
 
 # Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
