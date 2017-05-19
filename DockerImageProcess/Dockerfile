@@ -109,7 +109,7 @@ RUN conda update -y --all \
 	&& conda clean -y -t -i -l
 
 # Set root as workdir
-WORKDIR /root
+WORKDIR /root/Euplotid/pipelines
 
 # Add Tini. Tini operates as a process subreaper for jupyter. This prevents
 # kernel crashes.
