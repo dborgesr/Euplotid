@@ -1,0 +1,89 @@
+pipelines
+Get reads
+SRA-->Fq.gz
+Tony-->Fq.gz
+
+trim&filter reads
+fq_1.gz |& fq_2.gz --> fq_1.gz |& fq_2.gz
+
+quantifyRNAseq
+fq.gz-->count & fpkm matrix for transcripts / genes
+
+DifferentialExpression
+count&fpkm matrix for transcripts/genes --> Full DE analysis with qqplots, volcano plots, multiple R packages
+
+quantifyChiAPET
+fq_1.gz & fq_2.gz --> bedpe & washu & cooler
+
+quantifyHiC
+fq_1.gz & fq_2.gz --> cooler 
+
+quantifyHiChiP 
+fq_1.gz & fq_2.gz --> cooler & 5kb bedpe & 5kb washu
+
+quantify4C
+fq_1.gz & fq_2.gz --> cooler
+
+quantifyDNase Hi-C
+fq_1.gz & fq_2.gz --> cooler
+
+quantifyChromatinAccessibility_Chip-Seq
+fq_1.gz |& fq_2.gz --> bed.gz
+
+
+
+1M reads for each H1 and mescs
+Chip-seq/Chromatin Accessibility
+CTCF mesc
+./SRA2fq SRR524848 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+Input mesc
+./SRA2fq SRR524849 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+H3k27Ac mesc
+./SRA2fq SRR066766 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+ATAC mesc
+./SRA2fq SRR2927023 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+
+CTCF hesc
+./SRA2fq SRR2056018 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+Input hesc
+./SRA2fq SRR2056020 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+H3K27Ac hesc
+./SRA2fq SRR2056016 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+ATAC h7
+./SRA2fq SRR3689759 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+
+chia-PET
+mesc
+./SRA2fq SRR1296617 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+hesc
+./SRA2fq SRR2054933 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+
+Hi-c
+mesc
+./SRA2fq SRR443883 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+hesc
+./SRA2fq SRR400260 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+
+Hi-ChIp
+mesc
+./SRA2fq SRR3467183 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+GM12878
+./SRA2fq SRR3467176 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+
+Dnase Hi-c
+mesc patski cells
+./SRA2fq SRR2033066 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+hesc
+./SRA2fq SRR1248175 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+
+RNA-seq
+mesc
+wt_mesc.fq
+hesc
+./SRA2fq SRR521502 /coop_SE/ CTCF_mesc 1000000 /coop_SE
+
+
+DE analysis = R plots in python notebook
+FPKM = expression gene and 
+Chip-Seq = bed file w/ height
+DNA-Interactions = cooler w/ p-value?
