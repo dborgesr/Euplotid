@@ -1,4 +1,7 @@
+# Minitid image to take in FPKM, normalized DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and build, annotate, and visualize INs
 FROM frolvlad/alpine-glibc
+MAINTAINER Diego Borges <dborgesr@mit.edu>
+USER root
 
 ENV CONDA_DIR="/opt/conda"
 ENV PATH="$CONDA_DIR/bin:$PATH"
