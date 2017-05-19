@@ -1,4 +1,4 @@
-#Old image to take in FPKM, DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and calls and annotates INs
+#Old Euplotid Anaconda2 image to take in FPKM, DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and calls and annotate/visualize INs
 FROM debian:jessie
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 
