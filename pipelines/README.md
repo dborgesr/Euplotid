@@ -1,25 +1,27 @@
 
 # Pipeline Directory
 ## Pipelines to
-1. Hello world intro to programming, ipython, and Euplotid [helloWorld](helloWorld.ipynb)
-2. Databases and good tools to crawl the internet for interesting datasets and hypothesis [databasesTools.ipynb](databasesTools.ipynb)
-3. Fetch any type of sequencing data from SRA [getFastqReads](getFastqReads.ipynb)*
-4. QC, trim, and filter sequencing reads [fq2preppedReads](fq2preppedReads.ipynb)*
-5. Call peaks from Chip-Seq and Chromatin Accessibility reads [fq2peaks](fq2peaks.ipynb)*
-6. Call normalized interactions from ChiA-PET reads [fq2ChIAInts](fq2ChIAInts.ipynb)*
-7. Call normalized Interactions from HiC reads [fq2HiCInts](fq2HiCInts.ipynb)*
-8. Call normalized interactions from Hi-ChIP reads [fq2HiChIPInts](fq2HiChIPInts.ipynb)*
-9. Call normalized interactions from DNAse-HiC reads [fq2DNAseHiCInts](fq2DNAseHiCInts.ipynb)*
-10. Call normalized expression and counts from RNA-Seq reads [fq2countsFPKM](fq2countsFPKM.ipynb)*
-11. Call differentially expressed genes from RNA-seq counts [countsFPKM2DiffExp](countsFPKM2DiffExp.ipynb)*
-12. Call normalized counts, miRNA promoters, and nascent transcripts from Gro-Seq reads [fq2GroRPKM](fq2GroRPKM.ipynb)*
-13. Call normalized interactions from 4C [fq24CInts](fq24CInts.ipynb)*
-14. Build, annotate and add INs to global graph for a given cell state using DNA-DNA interactions, Chromatin Accesibility, and FPKM [addINs](addINs.ipynb)
-15. View current built and annotated INs for all cell types [viewINs](viewINs.ipynb)
-16. Search for and/or manipulate annotation and other data available to euplotid [annotationManagement](annotationManagement.ipynb)
-17. Description of default software packages installed, how to get new ones, and which ones are currently installed. [packageManagement](packageManagement.ipynb)
+1. Hello world intro to programming and Jupyter's capabilities [helloWorld](helloWorld.ipynb) O*.
+2. Databases and good tools to crawl the internet for interesting datasets and hypothesis [databasesTools](databasesTools.ipynb) O*.
+3. Fetch any type of sequencing data from SRA [getFastqReads](getFastqReads.ipynb) O
+4. QC, trim, and filter sequencing reads [fq2preppedReads](fq2preppedReads.ipynb) O
+5. Call peaks from Chip-Seq and Chromatin Accessibility reads [fq2peaks](fq2peaks.ipynb) O
+6. Call normalized interactions from ChiA-PET reads [fq2ChIAInts](fq2ChIAInts.ipynb) O
+7. Call normalized Interactions from HiC reads [fq2HiCInts](fq2HiCInts.ipynb) O
+8. Call normalized interactions from Hi-ChIP reads [fq2HiChIPInts](fq2HiChIPInts.ipynb) O
+9. Call normalized interactions from DNAse-HiC reads [fq2DNAseHiCInts](fq2DNAseHiCInts.ipynb) O
+10. Call normalized expression and counts from RNA-Seq reads [fq2countsFPKM](fq2countsFPKM.ipynb) O
+11. Call differentially expressed genes from RNA-seq counts [countsFPKM2DiffExp](countsFPKM2DiffExp.ipynb) O
+12. Call normalized counts, miRNA promoters, and nascent transcripts from Gro-Seq reads [fq2GroRPKM](fq2GroRPKM.ipynb) O
+13. Call normalized interactions from 4C [fq24CInts](fq24CInts.ipynb) O
+14. Build, annotate and add INs to global graph for a given cell state using DNA-DNA interactions, Chromatin Accesibility, and FPKM [addINs](addINs.ipynb) *
+15. View current built and annotated INs for all cell types [viewINs](viewINs.ipynb) O*.
+16. Search for and/or manipulate annotation and other data available to euplotid [annotationManagement](annotationManagement.ipynb) O*.
+17. Description of default software packages and images installed, how to get new ones, and which ones are currently installed. [packageManagement](packageManagement.ipynb) O*.
 
- [*] = backend Euplotid image required to run
+ [O] = Megatid compatible
+ [*] = Euplotid compatible
+ [.] = Minitid compatible
 
 # 1. [helloWorld](helloWorld.ipynb)
 Hello world intro to programming, ipython, and Euplotid
@@ -70,4 +72,4 @@ View current built and annotated INs for all cell types
 Search for and/or manipulate annotation and other data available to euplotid
 
 # 17. [packageManagement](packageManagement.ipynb)
-Description of default software packages installed, how to get new ones, and which ones are currently installed.
+Description of default image and the software packages that are installed, also how to get new packages, and how to export environment in yaml file for others to replicate analysis.
