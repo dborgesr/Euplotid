@@ -6,15 +6,15 @@ Euplotid is composed of a set of constantly updating bioinformatic pipelines run
 <img src="src/fig1_overview.png" style="width: 5=800px;">
 
 The pipelines available and their capabilities are described in [pipeline README](pipelines/README.ipynb) which helps you pick the right of 3 Docker images:
-* [Megatid](http://airstream:8891) process sequencing data into quantified values (FPKM,peaks,etc)
+* Megatid process sequencing data into quantified values (FPKM,peaks,etc)
 ~~~ 
 docker pull dborgesr/euplotid:megatid #port 8891 
 ~~~
-* [Euplotid](http://airstream:8890) build and visualize Insulated Neighborhoods and learn/predict TFs bound at Cis-regulatory Elements
+* Euplotid build and visualize Insulated Neighborhoods and learn/predict TFs bound at Cis-regulatory Elements
 ~~~
 docker pull dborgesr/euplotid:euplotid #port 8890
 ~~~
-* [Minitid](http://airstream:8892) visualize and interact with built and annotated Insulated Neighborhoods
+* Minitid visualize and interact with built and annotated Insulated Neighborhoods
 ~~~
 docker pull dborgesr/euplotid:minitid #port 8892
 ~~~
@@ -29,5 +29,10 @@ docker run --name megatid -p [8891|8890|8892]:[8891|8890|8892] -tid \
 	dborgesr/euplotid:[megatid|euplotid|minitid]
 ~~~
 NOTE to publish the right port for the matching image (-p) when using docker run!
+If you ran the docker pull and docker run commands then your Docker image is running on your computer, now you can access and use it!
+## Go to your image!
+* Megatid <br> local:[http://localhost:8891](http://localhost:8891) Whitehead internal:[http://airstream:8891](http://airstream:8891)
+* Euplotid <br> local:[http://localhost:8890](http://localhost:8890) Whitehead internal:[http://airstream:8890](http://airstream:8890)
+* Minitid <br> local:[http://localhost:8892](http://localhost:8892) Whitehead internal:[http://airstream:8892](http://airstream:8892)
 
 Each Docker image has different capabilities (packages installed in each Docker image are described in [packageManagement](pipelines/packageManagement.ipynb) 
