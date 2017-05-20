@@ -13,8 +13,3 @@ Composed of 3 Docker images:
 The pipelines available and their capabilities are described in [pipeline README](pipelines/README.md) which helps you pick the right image for your needs. 
 
 Each Docker image has different capabilities (packages installed in each Docker image are described in [packageManagement](pipelines/packageManagement.ipynb) 
-
-
-```python
-
-```
