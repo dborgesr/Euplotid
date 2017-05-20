@@ -1,4 +1,4 @@
-# Image to suck in fastq and produce DNA-DNA interactions, chromatin accessibility, and RNA expression
+# Megatid image to suck in fastq and produce DNA-DNA interactions, chromatin accessibility, and RNA expression
 FROM debian:jessie
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
@@ -63,7 +63,7 @@ RUN conda install -y \
 	perl-app-cpanminus \
 	libmagic \
 	wkhtmltopdf \
-	&& conda clean -y -t -i -l
+	&& conda clean -y -t -i -l -a
 
 #Install python 2.7 kernel and environment
 RUN conda create -y -n py27 python=2.7 \
@@ -73,7 +73,7 @@ RUN conda create -y -n py27 python=2.7 \
 	pysam \
 	nucleoatac \
 	macs2 \
-	&& conda clean -y -t -i -l
+	&& conda clean -y -t -i -l -a
 
 # Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -100,9 +100,12 @@ ENV PATH=~/ChIA-PET2/bin/:$PATH
 #Get Origami compilation broken
 #RUN cd /root && git clone https://github.com/danielsday/origami.git && cd origami && autoconf && ./configure --prefix=/root/origami CPPFLAGS=-I=/root/bamtools/include
 
+#Get Euplotid
+RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
+
 #run a closing update
 RUN conda update -y --all \
-	&& conda clean -y -t -i -l
+	&& conda clean -y -t -i -l -a
 
 # Set root as workdir
 WORKDIR /root/Euplotid/pipelines

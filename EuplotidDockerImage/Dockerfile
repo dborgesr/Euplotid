@@ -1,6 +1,7 @@
-#Old Euplotid Anaconda2 image to take in FPKM, DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and calls and annotate/visualize INs
+# Euplotid Anaconda2 image to take in FPKM, DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and calls and annotate/visualize INs
 FROM debian:jessie
 MAINTAINER Diego Borges <dborgesr@mit.edu>
+USER root
 
 # Install git, apt-add-repository and dependencies for iTorch
 RUN apt-get update && apt-get install -y \
@@ -12,7 +13,7 @@ RUN apt-get update && apt-get install -y \
   python-pip \
   bedtools \
   samtools \
-  libhdf5-7 \
+#  libhdf5-7 \
   hdf5-tools \
   libhdf5-dev \
   wget \
@@ -20,7 +21,9 @@ RUN apt-get update && apt-get install -y \
   mercurial \
   wkhtmltopdf \
   libtbb-dev \
-  libboost-dev 
+  libboost-dev \
+  cmake \
+  && apt-get clean
 
 #Get Anaconda
 RUN cd /root && wget https://repo.continuum.io/archive/Anaconda2-4.2.0-Linux-x86_64.sh && bash Anaconda2-4.2.0-Linux-x86_64.sh -b 
@@ -28,11 +31,12 @@ ENV PATH=/root/anaconda2/bin:$PATH
 
 # Install Jupyter Notebook for iTorch and stray libraries
 RUN pip install --upgrade pip
-RUN pip install notebook ipywidgets seaborn pysam myvariant mygene weblogo h5py wand mechanize rst2pdf argparse python-louvain uuid plotly joblib biopython pyliftover nbbrowserpdf bx-python MACS2 cython ipymol
+RUN pip install notebook ipywidgets seaborn pysam myvariant mygene weblogo h5py wand mechanize rst2pdf argparse python-louvain uuid plotly joblib biopython pyliftover nbbrowserpdf bx-python MACS2 cython
 
 # Run Torch7 installation scripts
-RUN git clone https://github.com/torch/distro.git /root/torch --recursive && cd /root/torch && \
-  bash install-deps && \
+RUN apt-get install sudo
+RUN cd /root && git clone https://github.com/torch/distro.git /root/torch --recursive && cd /root/torch && \
+  bash ./install-deps && \
   ./install.sh
   
 # Export environment variables manually
@@ -60,15 +64,15 @@ RUN cd /root && git clone https://github.com/davek44/Basset.git /root/Basset --r
 # Run torch-hdf5 installation scripts
 RUN cd /root/Basset/src && git clone https://github.com/davek44/torch-hdf5.git && cd torch-hdf5 && \
   luarocks make 
-
-#Get Euplotid
-RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git 
   
 #Get bedops
 RUN cd /root && git clone https://github.com/bedops/bedops.git && cd ./bedops && make && make install
 
 #Get Deepbind
 RUN cd /root && git clone https://github.com/kundajelab/deepbind.git 
+
+#Get Euplotid
+RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git 
 
 # Set Euplotid as working directory
 WORKDIR /root/Euplotid/pipelines
