@@ -33,6 +33,10 @@ ENV PATH=/root/anaconda2/bin:$PATH
 RUN pip install --upgrade pip
 RUN pip install notebook ipywidgets seaborn pysam myvariant mygene weblogo h5py wand mechanize rst2pdf argparse python-louvain uuid plotly joblib biopython pyliftover nbbrowserpdf bx-python MACS2 cython
 
+#Install bash kernel
+RUN pip install bash_kernel
+RUN python -m bash_kernel.install
+
 # Run Torch7 installation scripts
 RUN apt-get install sudo
 RUN cd /root && git clone https://github.com/torch/distro.git /root/torch --recursive && cd /root/torch && \
@@ -67,6 +71,7 @@ RUN cd /root/Basset/src && git clone https://github.com/davek44/torch-hdf5.git &
   
 #Get bedops
 RUN cd /root && git clone https://github.com/bedops/bedops.git && cd ./bedops && make && make install
+ENV PATH="/root/bedops/bin:$PATH"
 
 #Get Deepbind
 RUN cd /root && git clone https://github.com/kundajelab/deepbind.git 
@@ -75,7 +80,7 @@ RUN cd /root && git clone https://github.com/kundajelab/deepbind.git
 RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git 
 
 # Set Euplotid as working directory
-WORKDIR /root/Euplotid/pipelines
+WORKDIR /root/Euplotid
 
 RUN apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
