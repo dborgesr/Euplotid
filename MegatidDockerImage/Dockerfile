@@ -28,7 +28,8 @@ RUN conda config --add channels bioconda
 RUN conda config --add channels r
 RUN conda install -y -c conda-forge \
 	fortran-magic \
-	make 
+	make \
+	&& conda clean -y -t -i -l -a
 RUN conda install -c biobuilds perl=5.22.0 
 RUN conda install -y \
 	nb_conda \
@@ -39,10 +40,6 @@ RUN conda install -y \
 	plotly \
 	ipywidgets \
 	ipywidgets \
-	r-essentials \
-	r-irkernel \
-	r-ggplot2 \
-	r-rcolorbrewer \
 	autoconf \
 	bamtools \
 	bowtie \
@@ -64,6 +61,14 @@ RUN conda install -y \
 	perl-app-cpanminus \
 	libmagic \
 	wkhtmltopdf \
+	&& conda clean -y -t -i -l -a
+
+RUN conda install -y -c r \
+	r-essentials \
+	r-irkernel \
+	r-ggplot2 \
+	r-rcolorbrewer \
+	r-xml \
 	&& conda clean -y -t -i -l -a
 
 #Install python 2.7 kernel and environment
@@ -100,8 +105,7 @@ ENV PATH=~/ChIA-PET2/bin/:$PATH
 #Get Origami compilation broken
 #RUN cd /root && git clone https://github.com/danielsday/origami.git && cd origami && autoconf && ./configure --prefix=/root/origami CPPFLAGS=-I=/root/bamtools/include
 
-#install HiC-Pro and NucleoATAC in py27 enviro
-#RUN /bin/bash -c "source activate py27 && cd /root && git clone https://github.com/nservant/HiC-Pro.git"
+#install NucleoATAC in py27 enviro
 RUN /bin/bash -c "source activate py27 && cd /root && git clone https://github.com/GreenleafLab/NucleoATAC.git && cd NucleoATAC && pip install . && source deactivate py27"
 
 #Get Euplotid
