@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libcairo2-dev \
 #  libzmq3-dev #iperl\
 #  libcairo2-dev #iperl\
+	unzip \
   && apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
@@ -23,14 +24,14 @@ ENV CONDA_VERSION="4.2.0"
 RUN cd /root && wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh
 ENV PATH=/root/anaconda3/bin:$PATH
 RUN conda update conda anaconda jupyter notebook
-#RUN conda config --set channel_priority false
-RUN conda config --add channels conda-forge 
 RUN conda config --add channels bioconda
 RUN conda config --add channels r
+RUN conda install -y -c conda-forge \
+	fortran-magic \
+	make 
+RUN conda install -c biobuilds perl=5.22.0 
 RUN conda install -y \
 	nb_conda \
-	fortran-magic \
-	make \
 	gcc \
 	conda-build \
 	git \
@@ -71,7 +72,6 @@ RUN conda create -y -n py27 python=2.7 \
 	cooler \
 	bx-python \
 	pysam \
-	nucleoatac \
 	macs2 \
 	&& conda clean -y -t -i -l -a
 
@@ -99,6 +99,10 @@ ENV PATH=~/ChIA-PET2/bin/:$PATH
 
 #Get Origami compilation broken
 #RUN cd /root && git clone https://github.com/danielsday/origami.git && cd origami && autoconf && ./configure --prefix=/root/origami CPPFLAGS=-I=/root/bamtools/include
+
+#install HiC-Pro and NucleoATAC in py27 enviro
+#RUN /bin/bash -c "source activate py27 && cd /root && git clone https://github.com/nservant/HiC-Pro.git"
+RUN /bin/bash -c "source activate py27 && cd /root && git clone https://github.com/GreenleafLab/NucleoATAC.git && cd NucleoATAC && pip install . && source deactivate py27"
 
 #Get Euplotid
 RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
