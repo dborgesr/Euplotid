@@ -53,7 +53,7 @@ RUN CONDA_VERSION="4.0.5" && \
 RUN cd /root && git clone https://github.com/taynaud/python-louvain.git && cd python-louvain && python setup.py install
 RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
 # Set pipelines as workdir
-WORKDIR /root/Euplotid/pipelines
+WORKDIR /root/Euplotid
 
 # Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -65,4 +65,3 @@ ENTRYPOINT ["/tini", "--"]
 
 EXPOSE 8892
 CMD ["jupyter", "notebook", "--allow-root", "--port=8892", "--no-browser", "--ip=0.0.0.0"]
-
