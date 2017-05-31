@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
   libtbb-dev \
   libboost-dev \
   cmake \
+  libmagickwand-dev \
   && apt-get clean
 
 #Get Anaconda
@@ -60,7 +61,6 @@ RUN luarocks install dpnn
 RUN luarocks install dp
 RUN luarocks install torch
 RUN luarocks install nn
-
 #RUN luarocks install inn
 
 # clone Basset
