@@ -1,7 +1,7 @@
 # Table of Contents
 
 * [Euplotid](../README.md)
-* Pipelines
+* [Pipelines](pipelines.md)
 	* [helloWorld](helloWorld.md)
 	* [databasesTools](databasesTools.md)
 	* [getFastqReads](getFastqReads.md)
