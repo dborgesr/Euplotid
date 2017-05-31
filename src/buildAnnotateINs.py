@@ -296,9 +296,9 @@ def add_variants_predict(G, homo_gen, chain_file, TF_RBP_ids, tissue_type, targe
     open_vcf.close()
     #predict effect of all variation added to graph using DeepBind and Basset
     if add_any_SNPs:
-        print "Deepbind SNP prediction of: " + target_node_name
+        print("Deepbind SNP prediction of: " + target_node_name)
         G = deepbind_predict_SNPs(G, homo_gen, TF_RBP_ids,target_node_name)
-        print "Basset SNP prediction of: " + target_node_name
+        print("Basset SNP prediction of: " + target_node_name)
         G = add_basset_sad_sat(G, homo_gen, target_node_name,out_dir)
     try:
         os.remove(basset_name_out + "open_variants.vcf")
@@ -387,9 +387,9 @@ def add_basset_sad_sat(G, homo_gen, target_node_name,out_dir):
     basset_out_name = out_dir + "/" + target_node_name.replace(":","_").replace("-","_") + "_basset"
     target_in_name = dna_int_graph.node[target_node_name]["in_name"]
     #trained DNAse peak model
-    model_file = "/input_data/pretrained_model.th"
+    model_file = "/input_dir/pretrained_model.th"
     #Sequences stored in HDF5 format of encode DNAse peaks
-    seqs_file = "/input_data/encode_roadmap.h5"
+    seqs_file = "/input_dir/encode_roadmap.h5"
     #table of DNAse target BED files used to train model
     targets_file = "/root/Basset/tutorials/sad_eg/sample_beds.txt"
     targetID_celltype = dict()
@@ -399,8 +399,8 @@ def add_basset_sad_sat(G, homo_gen, target_node_name,out_dir):
             arr = c_type.strip().split()
             targetID_celltype[arr[0]] = count
             count += 1
-    cmd = ("/root/Basset/src/basset_sad.py -f " + homo_gen.filename + " -l 600 -o " + basset_out_name + " -t " + targets_file +
-           " " +  model_file + " " + basset_out_name + "/open_variants.vcf")
+    cmd = ("/root/Basset/src/basset_sad.py -f " + (homo_gen.filename).decode("utf-8") + " -l 600 -o " + basset_out_name + " -t " + targets_file + " " +  model_file + " " + basset_out_name + "/open_variants.vcf")
+    print(cmd)
     os.system(cmd)
     #Pick SNP maximizing for sum of Delta SAD across all cell types in trained model
     sad_table = pd.read_table(basset_out_name + "/sad_table.txt", delim_whitespace=True, header = 0)
@@ -430,7 +430,7 @@ def add_basset_sad_sat(G, homo_gen, target_node_name,out_dir):
     #flag top SNP in open peak
     G.node[top_snp_names[0]]["top_open_snp"] = True
     #Perform in-silico mutagenesis on top SNP to generate output PDFs
-    cmd = ("/root/Basset/src/basset_sat_vcf.py -f " + homo_gen.filename + " -t " + str(top_snp_ctype_target) + " -o " + basset_out_name + 
+    cmd = ("/root/Basset/src/basset_sat_vcf.py -f " + (homo_gen.filename).decode("utf-8") + " -t " + str(top_snp_ctype_target) + " -o " + basset_out_name + 
            " " + model_file + " " + basset_out_name + "/top_variant.vcf")
     os.system(cmd)
     #Save output png & cleanup
@@ -591,13 +591,13 @@ def deepbind_predict_tf_range(chrom, start, end, homo_gen, TF_RBP_ids, target_no
 
 def basset_predict_tf_range(open_region, homo_gen, target_node_name, openpeak2bassetpeak):
     #trained DNAse peak model
-    model_file = "/input_data/pretrained_model.th"
+    model_file = "/input_dir/pretrained_model.th"
     #Sequences stored in HDF5 format of encode DNAse peaks
-    seqs_file = "/input_data/encode_roadmap.h5"
+    seqs_file = "/input_dir/encode_roadmap.h5"
     #table of DNAse target BED files used to train model
     targets_file = "/root/Basset/tutorials/sad_eg/sample_beds.txt"
     #expand region to at least 600 bp, default size model was trained on
-    homo_gen = pysam.FastaFile("/input_data/hg19.fa")
+    homo_gen = pysam.FastaFile("/input_dir/hg19.fa")
     arr = re.split(r"[-:]",open_region)
     chrom = arr[0]
     start = arr[1]
@@ -612,7 +612,7 @@ def basset_predict_tf_range(open_region, homo_gen, target_node_name, openpeak2ba
     with open("basset_open_anchor.fa", "w+") as open_seqs_fa:
         SeqIO.write(open_seqs, open_seqs_fa, "fasta")
     cmd = ("/root/Basset/src/seq_hdf5.py -r -c -v " + str(len(open_seqs)) + " -t " + str(len(open_seqs)) 
-           + " basset_open_anchor.fa /input_data/encode_roadmap_act.txt open_region.h5")
+           + " basset_open_anchor.fa /input_dir/encode_roadmap_act.txt open_region.h5")
     subprocess.call(cmd, shell=True)
     cmd = ("/root/Basset/src/basset_motifs.py -s " + str(len(open_seqs)) + " -t -o motifs_out + " 
            + model_file + " open_region.h5")
@@ -665,11 +665,11 @@ def annotate_IN(target_node_name, dendogram_com, level, dna_int_graph, add_open,
     
     orig_edges = source_community_graph.edges()
     if add_open:
-        print "Annotating Open Regions"
+        print("Annotating Open Regions")
         source_community_graph = add_openRegions_predict(source_community_graph, homo_gen, chain_file, chain_file2, TF_RBP_ids, open_peaks_file, target_node_name, level, dict())
         sys.stdout.flush()
         if add_snp:
-            print "Annotating SNPs/CNVs"
+            print("Annotating SNPs/CNVs")
             source_community_graph = add_variants_predict(source_community_graph, homo_gen, chain_file, TF_RBP_ids, picked_tissue, target_node_name,out_dir)
             sys.stdout.flush()
     
@@ -764,7 +764,7 @@ def build_IN_levels(target_node_name, dendogram_com, dna_int_graph, genome_fa, c
     chr_in = re.split(r"[-:]",target_node_name)[0]
     ucsc_session_in = ucsc_session + "&position=" + chr_in + ":" + str(dna_int_graph.node[target_node_name]["in_max"]) + "-" + str(dna_int_graph.node[target_node_name]["in_min"])
     
-    print "Annotating Insulated Neighborhood: " + target_name
+    print("Annotating Insulated Neighborhood: " + target_name)
     #load genome from genome fasta
     homo_gen = pysam.FastaFile(genome_fa)
     #fetch dendogram at CTCF-CTCF loop restricted resolution
@@ -863,9 +863,9 @@ if __name__ == "__main__":
     os.environ["BASSETDIR"] = basset_dir
     os.environ["PATH"] = os.environ["BASSETDIR"] + "/src:" + os.environ["PATH"]
     os.environ["PYTHONPATH"] = os.environ["BASSETDIR"] + "/src:" + ':'.join(sys.path)
-    os.environ["LUA_PATH"] = os.environ["BASSETDIR"] + "/src/?.lua;" + os.environ["LUA_PATH"]
+    os.environ["LUA_PATH"] = os.environ["BASSETDIR"] + "/src/?.lua;/opt/conda/bin/lua"
 
-    input_data = dict()
+    input_dir = dict()
     chain_file2 = home_dir + "hg38ToHg19.over.chain.gz"
     if cell_type == "primed":
         genome_version = "GRCh37.p13"
@@ -880,7 +880,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "GSM2257291_ATAC1+2_IDR_hg19.bed" #GSM816632_H1_dnase_sorted.bed,H1_atac_sorted.bed,GSM2257291_ATAC1+2_IDR_hg19.bed
         rna_seq = home_dir + "ENCFF000DJY_hg19_tss_ucsc_rnaseq_h1.bed" #ENCFF000DJY_hg19_tss_ucsc_rnaseq_h1.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "naive":
@@ -896,7 +896,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "GSM2257291_ATAC1+2_IDR_hg19.bed" #GSM816632_H1_dnase_sorted.bed,H1_atac_sorted.bed,GSM2257291_ATAC1+2_IDR_hg19.bed
         rna_seq = home_dir + "naive_rnaseq_RSEM_nonpolya_ucsc.bed" #naive_rnaseq_RSEM_nonpolya_ucsc.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "neuron":
@@ -912,7 +912,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "GSM2065328_neuronATAC_allreps.bed" #ENCFF001UUI_hg19_cerebllumn_dnase.bed,GSM2065328_neuronATAC_allreps.bed
         rna_seq = home_dir + "neuron_barres_lab_hg19.bed" #neuron_barres_lab_hg19.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "npc":
@@ -928,7 +928,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "GSM2065328_neuronATAC_allreps.bed" #ENCFF001UUI_hg19_cerebllumn_dnase.bed,GSM2065328_neuronATAC_allreps.bed
         rna_seq = home_dir + "neuron_barres_lab_hg19.bed" #ENCFF947FTB_h9_neuronal_RAMPAGE_fpkm.bed,neuron_barres_lab_hg19.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "gm12878":
@@ -947,7 +947,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "GSE47753_GM12878_ATACseq_50k_AllReps_readcnts.bed" #GSE66386_GM12878_nucpos.bed,GSE47753_GM12878_ATACseq_50k_AllReps_readcnts.bed
         rna_seq = home_dir + "ENCFF000DAR_GM12878_rnaseq_hg19.bed" #ENCFF000DAR_GM12878_rnaseq_hg19.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "jurkatt":
@@ -963,7 +963,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "GSE47753_CD4+_ATACseq_hg19_peaks_readcnts.bed" #GSE47753_CD4+_ATACseq_hg19_peaks_readcnts.bed
         rna_seq = home_dir + "ENCFF000MSR_jurkat_rna-seq.bed" #ENCFF000MSR_jurkat_rna-seq.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "k562":
@@ -979,7 +979,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "ENCFF567LWS_ENCFF422QRZ_k562_DNAsePeak_hg19.bed" #ENCFF567LWS_ENCFF422QRZ_k562_DNAsePeak_hg19.bed,ENCFF001WBE_k562_DNase_narrowpeak_hg19.bed
         rna_seq = home_dir + "ENCFF000DAR_K562_rnaseq_hg19.bed" #ENCFF000DAR_K562_rnaseq_hg19.bed,ENCFF666RBZ_k562_cage_ucsc_hg19.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "hela":
@@ -995,7 +995,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "ENCFF567LWS_ENCFF422QRZ_k562_DNAsePeak_hg19.bed" #ENCFF567LWS_ENCFF422QRZ_k562_DNAsePeak_hg19.bed
         rna_seq = home_dir + "ENCFF000DAR_K562_rnaseq_hg19.bed" #ENCFF000DAR_K562_rnaseq_hg19.bed,ENCFF666RBZ_k562_cage_ucsc_hg19.bed
         encode_bed = home_dir + "hg19_encode_TFBSv2.bed"
-        genome_fa = "/input_data/hg19.fa"
+        genome_fa =  home_dir + "hg19.fa"
         TF_RBP_ids = home_dir + "TF_RBP_human.ids"
         add_snp = True
     elif cell_type == "mesc":
@@ -1011,7 +1011,7 @@ if __name__ == "__main__":
         open_peaks = home_dir + "GSE66581_2cell_peaks_atac.bed" #GSE66581_2cell_peaks_atac.bed
         rna_seq = home_dir + "GSE66582_2cell_rnaseq_mm9.bed" #GSE66582_2cell_rnaseq_mm9.bed
         encode_bed = home_dir + "full_enc_mm9_tfbs.bed"
-        genome_fa = "/input_data/mm9.fa"
+        genome_fa =  home_dir + "mm9.fa"
         TF_RBP_ids = home_dir + "TF_RBPs_mouse.ids"
         add_snp = False
     else:
@@ -1054,8 +1054,8 @@ if __name__ == "__main__":
     for node in target_nodes:
         target_communities |=  set((dna_int_graph.node[node]["name"]).split(","))
     #Remove target communities that already have JSONs in output file
-    print "Number of Target Genes: " + str(len(target_communities))
-    print "Target Genes to build Insulated Neighborhoods: " + str(",".join(target_communities))
+    print("Number of Target Genes: " + str(len(target_communities)))
+    print("Target Genes to build Insulated Neighborhoods: " + str(",".join(target_communities)))
     #Sort nodes by FPKM for louvian
     node_fpkm = dict()
     start_comm = dict()
@@ -1110,10 +1110,10 @@ if __name__ == "__main__":
         #assess quality of communities generated
         #iterate over dna_int_comm keys and add each start/end to set stored in dict of comm --> min and comm-->max
         inv_map = {}
-        for k, v in dna_int_comm.iteritems():
+        for k, v in dna_int_comm.items():
             inv_map[v] = inv_map.get(v, [])
             inv_map[v].append(k)
-        for comm, nodes in inv_map.iteritems():
+        for comm, nodes in inv_map.items():
             #only print communities w/ genes in them
             gene_nodes = [node for node in nodes if "gene" in dna_int_graph.node[node]]
             target_overlap = [node for node in target_nodes if node in nodes]
@@ -1183,8 +1183,8 @@ if __name__ == "__main__":
         else:
             final_in_names.add(in_name)
             final_in_nodes.add(target_node)
-    print "Annotating " + str(len(final_in_names)) + " Neighborhoods"
-    print "Annotating the following Insulated Neighborhoods: " + "|".join(final_in_names)
+    print("Annotating " + str(len(final_in_names)) + " Neighborhoods")
+    print("Annotating the following Insulated Neighborhoods: " + "|".join(final_in_names))
     #Assign each open chromatin accessibility peak to the closest cohesin peak
     open_peaks_file="open_peaks_nodes.bed"
     os.system("closest-features --closest --dist " + open_peaks + " all_nodes_sorted.bed > " + open_peaks_file)
