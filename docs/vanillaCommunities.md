@@ -1,6 +1,6 @@
 
 ## Pipeline to find interconnected regions
-This pipeline takes in an <a href="https://github.com/danielsday/origami/"> Origami </a> processed DNA-DNA interactions generated using [fq2ChIAInts](fq2ChIAInts.ipynb) and finds interconnected networks of nodes (communities) using default or picked resolution. Plotting functions are also included to visualize output  
+This pipeline takes in an <a href="https://github.com/danielsday/origami/"> Origami </a> processed DNA-DNA interactions generated using [fq2ChIAInts](fq2ChIAInts.md) and finds interconnected networks of nodes (communities) using default or picked resolution. Plotting functions are also included to visualize output  
 Range for resolution is from [0,1] with 1e-4 being something close to Insulated Neighborhoods, higher resolution makes bigger communities. You can also pick the "level", we start at level 0 then merging level 0 communities we get level 1 communities, so on and so forth.
 
 

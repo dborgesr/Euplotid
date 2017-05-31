@@ -19,3 +19,4 @@
 	* [packageManagement](packageManagement.md)
 	* [addINs](addINs.md)
 	* [fq2peaks](fq2peaks.md)
+	* [vanillaCommunities](vanillaCommunities.md)
