@@ -52,7 +52,6 @@ RUN conda install -y \
 	star \
 	sra-tools \
 	sickle \
-	homer \
 	trimmomatic \
 	fastqc \
 	bedtools \
@@ -95,6 +94,10 @@ RUN python -m bash_kernel.install
 #Install C kernel
 RUN cd /root && wget -O - https://raw.githubusercontent.com/brendan-rius/jupyter-c-kernel/master/install.sh | sh
 	
+#Get Homer
+RUN cd /root && mkdir Homer && wget http://homer.ucsd.edu/homer/configureHomer.pl && perl configureHomer.pl -install homer
+ENV PATH=~/Homer/bin/:$PATH
+
 #Get Chrom3D
 RUN cd /root && git clone https://github.com/CollasLab/Chrom3D.git && cd ./Chrom3D && make
 
