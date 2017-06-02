@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #  libzmq3-dev #iperl\
 #  libcairo2-dev #iperl\
 	unzip \
-#	texlive-xetex #for printing pdf SUPER heavy \
+#	texlive-xetex #for printing pdf SUPER heavy (over 1Gb) \
   && apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
@@ -117,6 +117,10 @@ RUN /bin/bash -c "source activate py27 && pip install cooler && source deactivat
 
 #install NucleoATAC in py27 enviro
 RUN /bin/bash -c "source activate py27 && cd /root && git clone https://github.com/GreenleafLab/NucleoATAC.git && cd NucleoATAC && pip install . && source deactivate py27"
+
+#Get mirSTP
+RUN cd /root && wget http://bioinfo.vanderbilt.edu/mirSTP/download/mirSTP.zip && unzip mirSTP.zip && rm mirSTP.zip && chmod 755 mirSTP/bin/mirSTP
+ENV PATH=~/mirSTP/bin:$PATH
 
 #Get Euplotid
 RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
