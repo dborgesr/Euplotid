@@ -25,10 +25,11 @@ WORKDIR /root/Euplotid
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
 	sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py    
-ENV TINI_VERSION v0.14.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
+
+RUN apk add --update tini
+# Tini is now available at /sbin/tini
+ENTRYPOINT ["/sbin/tini", "--"]
+
 
 EXPOSE 8893
 CMD ["jupyter", "notebook", "--allow-root", "--port=8893", "--no-browser", "--ip=0.0.0.0"]
