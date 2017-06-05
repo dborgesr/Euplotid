@@ -1,6 +1,6 @@
 # This file creates a container that runs a jupyter notebook server on Raspberry Pi
 
-FROM easypi/alpine-arm
+FROM resin/raspberry-pi-alpine
 
 ENV ALPINE_VERSION=3.6
 
