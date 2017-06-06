@@ -68,14 +68,14 @@ RUN pip install  \
 	sense-hat \
 	myvariant \
 	mygene \
-	pysam \
+#	pysam \
 	networkx \
-    pandas \
-    joblib \
-    biopython \
-    pyliftover \
-    scipy \
-    louvain
+	pandas \
+	joblib \
+	biopython \
+	pyliftover \
+	scipy \
+	louvain
 
 #Get RTIMULIB, not working yet :(
 RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git
