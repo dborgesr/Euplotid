@@ -3,40 +3,52 @@ FROM resin/rpi-raspbian:jessie
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
-ENV CONDA_DIR="/opt/conda"
-ENV PATH="$CONDA_DIR/bin:$PATH"
+RUN apt-get update && apt-get install -y  \
+  dumb-init \
+  musl \
+  linux-headers \
+  build-base \
+  bash \
+  git \
+  ca-certificates \
+  python3.4 \
+  python3.4-dev \
+  wget \
+  libxml2-dev \
+  libxslt-dev \
+  libffi-dev \
+  gcc \
+  musl-dev \
+  libgcc \
+  openssl-dev \
+  curl \
+  jpeg-dev \
+  zlib-dev \
+  freetype-dev \
+  lcms2-dev \
+  openjpeg-dev \
+  tiff-dev \
+  tk-dev \
+  tcl-dev 
 
-#Install conda
-RUN CONDA_VERSION="3.16.0" && \
-    apt-get update && apt-get install -y wget ca-certificates bash bzip2 && \
-    \
-    mkdir -p "$CONDA_DIR" && \
-    wget "https://github.com/jjhelmus/berryconda/releases/download/v1.0.0/Berryconda3-1.0.0-Linux-armv7l.sh" -O miniconda.sh && \
-    bash miniconda.sh -f -b -p "$CONDA_DIR" && \
-    rm miniconda.sh && \
-    \
-    conda install -y -c soumith \
-    	pytorch \
-    	torchvision \
-    	jupyter \
-    	notebook \
-    	nbpresent \
-    	git && \
-        conda install -y -c edurand \
-    	myvariant \
-    	mygene && \
-    conda install -y -c bioconda \
-    	pysam \
-    	networkx \
-    	pandas \
-    	joblib \
-    	biopython \
-    	pyliftover \
-    	scipy \
-    	bedops \
-    	plotly 
-#Get Louvain
-RUN cd /root && git clone https://github.com/taynaud/python-louvain.git && cd python-louvain && python setup.py install
+#Links for libraries to install correctly
+RUN pip install  \
+	jupyter \
+	plotly \
+	sense-hat \
+	myvariant \
+	mygene \
+	pysam \
+	networkx \
+    pandas \
+    joblib \
+    biopython \
+    pyliftover \
+    scipy \
+    louvain
+
+#Get RTIMULIB, not working yet :(
+RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git
 
 #Get Euplotid  
 RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
@@ -45,11 +57,11 @@ WORKDIR /root/Euplotid
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
-	sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py    
-ENV TINI_VERSION v0.14.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
 
-EXPOSE 8892
-CMD ["jupyter", "notebook", "--allow-root", "--port=8892", "--no-browser", "--ip=0.0.0.0"]
+EXPOSE 8893
+CMD ["jupyter", "notebook", "--allow-root", "--port=8893", "--no-browser", "--ip=0.0.0.0"]
