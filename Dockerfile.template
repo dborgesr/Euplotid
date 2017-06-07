@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y  \
   libzmq3-dbg \
   libzmq3-dev \
   libzmq3 \
+  imagemagick
   && pip install --upgrade pip 
 
 #Links for libraries to install correctly
