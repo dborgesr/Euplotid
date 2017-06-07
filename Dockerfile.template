@@ -29,7 +29,9 @@ RUN apt-get update && apt-get install -y  \
 #  openjpeg-dev \
 #  tiff-dev \
   tk-dev \
-  tcl-dev 
+  tcl-dev \
+  && easy_install pip \
+  && pip install --upgrade pip 
 
 #Links for libraries to install correctly
 RUN pip install  \
