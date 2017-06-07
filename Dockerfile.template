@@ -34,13 +34,7 @@ RUN CONDA_VERSION="3.16.0" && \
     	pyliftover \
     	scipy \
     	bedops \
-    	plotly && \
-    conda update --all --yes && \
-    conda config --set auto_update_conda False && \
-    conda clean --all --yes && \
-    mkdir -p "$CONDA_DIR/locks" && \
-    chmod 777 "$CONDA_DIR/locks"
-
+    	plotly 
 #Get Louvain
 RUN cd /root && git clone https://github.com/taynaud/python-louvain.git && cd python-louvain && python setup.py install
 
