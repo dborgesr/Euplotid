@@ -6,7 +6,7 @@ USER root
 RUN apt-get update && apt-get install -y  \
 #  dumb-init \
   musl \
-  linux-headers \
+#  linux-headers \
 #  build-base \
   bash \
   git \
