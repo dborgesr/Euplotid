@@ -47,7 +47,10 @@ RUN pip install  \
     biopython \
     pyliftover \
     scipy \
-    louvain
+    louvain \
+    nbpresent \
+#    pytorch \
+#    torchvision
 
 #Get RTIMULIB, not working yet :(
 RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git
