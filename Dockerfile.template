@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y  \
 #  tiff-dev \
   tk-dev \
   tcl-dev \
-  pip \
+  python-pip \
   && pip install --upgrade pip 
 
 #Links for libraries to install correctly
