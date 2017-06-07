@@ -4,10 +4,10 @@ MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
 RUN apt-get update && apt-get install -y  \
-  dumb-init \
+#  dumb-init \
   musl \
   linux-headers \
-  build-base \
+#  build-base \
   bash \
   git \
   ca-certificates \
@@ -19,15 +19,15 @@ RUN apt-get update && apt-get install -y  \
   libffi-dev \
   gcc \
   musl-dev \
-  libgcc \
-  openssl-dev \
+#  libgcc \
+#  openssl-dev \
   curl \
-  jpeg-dev \
-  zlib-dev \
-  freetype-dev \
-  lcms2-dev \
-  openjpeg-dev \
-  tiff-dev \
+#  jpeg-dev \
+#  zlib-dev \
+#  freetype-dev \
+#  lcms2-dev \
+#  openjpeg-dev \
+#  tiff-dev \
   tk-dev \
   tcl-dev 
 
