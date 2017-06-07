@@ -11,8 +11,8 @@ RUN apt-get update && apt-get install -y  \
   bash \
   git \
   ca-certificates \
-  python3.4 \
-  python3.4-dev \
+  python \
+  python-dev \
   wget \
   libxml2-dev \
   libxslt-dev \
@@ -51,6 +51,9 @@ RUN pip install  \
     nbpresent 
 #    pytorch \
 #    torchvision
+
+#Upgrade pip packages
+RUN pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get RTIMULIB, not working yet :(
 RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git
