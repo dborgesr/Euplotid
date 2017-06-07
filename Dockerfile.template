@@ -40,7 +40,7 @@ RUN echo \
 
   # Add the packages, with a CDN-breakage fallback if needed
   && apk add --no-cache $PACKAGES || \
-    (sed -i -e 's/dl-cdn/dl-4/g' /etc/apk/repositories && apk add --no-cache $PACKAGES) \
+    (sed -i -e 's/dl-cdn/dl-4/g' /etc/apk/repositories && apk add --no-cache $PACKAGES) 
 
 #Links for libraries to install correctly
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
