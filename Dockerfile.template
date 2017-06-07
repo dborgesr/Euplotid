@@ -11,7 +11,7 @@ RUN CONDA_VERSION="3.16.0" && \
     apt-get update && apt-get install -y wget ca-certificates bash && \
     \
     mkdir -p "$CONDA_DIR" && \
-    wget "http://repo.continuum.io/miniconda/Miniconda-${CONDA_VERSION}-Linux-armv7l.sh" -O miniconda.sh && \
+    wget "https://github.com/jjhelmus/berryconda/releases/download/v1.0.0/Berryconda3-1.0.0-Linux-armv7l.sh" -O miniconda.sh && \
     bash miniconda.sh -f -b -p "$CONDA_DIR" && \
     echo "export PATH=$CONDA_DIR/bin:\$PATH" > /etc/profile.d/conda.sh && \
     rm miniconda.sh && \
