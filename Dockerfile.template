@@ -8,7 +8,7 @@ ENV PATH="$CONDA_DIR/bin:$PATH"
 
 #Install conda
 RUN CONDA_VERSION="3.16.0" && \
-    apt-get update && apt-get install -y wget ca-certificates bash bzip && \
+    apt-get update && apt-get install -y wget ca-certificates bash bzip2 && \
     \
     mkdir -p "$CONDA_DIR" && \
     wget "https://github.com/jjhelmus/berryconda/releases/download/v1.0.0/Berryconda3-1.0.0-Linux-armv7l.sh" -O miniconda.sh && \
