@@ -31,6 +31,9 @@ RUN apt-get update && apt-get install -y  \
   tk-dev \
   tcl-dev \
   python-pip \
+  libzmq3-dbg \
+  libzmq3-dev \
+  libzmq3 \
   && pip install --upgrade pip 
 
 #Links for libraries to install correctly
