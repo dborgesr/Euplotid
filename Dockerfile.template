@@ -3,9 +3,6 @@ FROM resin/rpi-raspbian:jessie
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
-FROM resin/rpi-raspbian:jessie
-MAINTAINER Max Jiang <maxjiang@hotmail.com>
-
 # Set the variables
 ENV DEBIAN_FRONTEND noninteractive
 ENV PYTHON_VERSION 3.6.0
@@ -47,7 +44,7 @@ RUN pip3 install \
 	sense-hat \
 	myvariant \
 	mygene \
-	pysam \
+#	pysam \
 	networkx \
     pandas \
     joblib \
@@ -56,11 +53,11 @@ RUN pip3 install \
     scipy \
     louvain \
     nbpresent 
-    pytorch \
-    torchvision
+#    pytorch \
+#    torchvision
 
 #Upgrade pip packages
-RUN pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+RUN pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
 
 #Get RTIMULIB, not working yet :(
 RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git
