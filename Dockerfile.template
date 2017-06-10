@@ -1,38 +1,71 @@
 #Minitid image to take in FPKM, normalized DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and build, annotate, and visualize INs
-FROM resin/rpi-raspbian:jessie
+#FROM resin/rpi-raspbian:jessie
+FROM resin/raspberry-pi-alpine
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
-# Set the variables
-ENV DEBIAN_FRONTEND noninteractive
-ENV PYTHON_VERSION 3.6.0
-
 WORKDIR /root
 
-# Install packages necessary for compiling python
-RUN apt-get update && apt-get upgrade && apt-get install -y \
-        build-essential \
-        libncursesw5-dev \
-        libgdbm-dev \
-        libc6-dev \
-        zlib1g-dev \
-        libsqlite3-dev \
-        tk-dev \
-        libssl-dev \
-        openssl \
-        libbz2-dev \
-        libjpeg-dev \
-        libpng-dev \
-        libhdf5-dev \
-        liblapack-dev \
-        gfortran \
-        wget \
-        git \
-        vim \
-        libxml2-dev
+ENV APK_PACKAGES="
+	tk-dev \
+	libpng-dev \
+	gfortran \
+	wget \
+	git \
+	vim \
+	libxml2-dev \
+	ca-certificates \
+	build-base #start alpine packages \
+	bz2-dev \
+	libc6-compat \
+	gdbm-dev \
+	hdf5-dev \
+	jpeg-dev \
+	lapack-dev \
+	ncurses5 \
+	sqlite-dev \
+	openssl-dev \
+	zlib "
+
+ENV APT_PACKAGES="
+	tk-dev \
+    libpng-dev \
+	gfortran \
+	wget \
+	git \
+	vim \
+	libxml2-dev \
+	ca-certificates \
+	build-base
+	build-essential \
+	libbz2-dev \
+	libc6-dev \
+	libgdbm-dev \
+	libhdf5-dev \
+	libjpeg-dev \
+	liblapack-dev \
+	libncurses5-dev \
+	libncursesw5-dev \
+	libsqlite3-dev \
+	libssl-dev \
+	zlib1g-dev"
+
+# Install packages necessary for compiling python using either Debian or Alpine package manager
+#RUN apt-get update && apt-get upgrade && apt-get install -y $APT_PACKAGES
+RUN apk update  \ 
+  # replacing default repositories with edge ones
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+  && apk add --no-cache $APK_PACKAGES
+
+        
+        
+
 
 # Download and compile python
-RUN apt-get install -y ca-certificates
+# Set the python version
+ENV PYTHON_VERSION 3.6.0
 ADD "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz" /root/Python-${PYTHON_VERSION}.tgz
 RUN tar zxvf "Python-${PYTHON_VERSION}.tgz" \
         && cd Python-${PYTHON_VERSION} \
@@ -43,8 +76,9 @@ RUN tar zxvf "Python-${PYTHON_VERSION}.tgz" \
         && rm -rf "./Python-${PYTHON_VERSION}" \
         && rm "./Python-${PYTHON_VERSION}.tgz"
 
+#Links for libraries to install correctly
+RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 # Update pip and install jupyter
-RUN apt-get install -y libncurses5-dev
 RUN pip3 install --upgrade pip
 RUN pip3 install \
 	readline \
@@ -53,7 +87,7 @@ RUN pip3 install \
 	sense-hat \
 	myvariant \
 	mygene \
-#	pysam \
+	pysam \
 	networkx \
     pandas \
     joblib \
@@ -75,11 +109,6 @@ RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git
 RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
 # Set pipelines as workdir
 WORKDIR /root/Euplotid
-
-RUN pip3 install \
-	pysam \
-	pytorch \
-	torchvision
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
