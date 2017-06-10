@@ -16,7 +16,7 @@ ENV APK_PACKAGES=" \
 	libxml2-dev \
 	ca-certificates \
 	build-base \
-	libbz2-dev \
+	libbz2 \
 	libc6-compat \
 	gdbm-dev \
 	hdf5-dev \
