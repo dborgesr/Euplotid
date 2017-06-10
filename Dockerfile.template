@@ -6,7 +6,7 @@ USER root
 
 WORKDIR /root
 
-ENV APK_PACKAGES="
+ENV APK_PACKAGES=" \
 	tk-dev \
 	libpng-dev \
 	gfortran \
@@ -27,7 +27,7 @@ ENV APK_PACKAGES="
 	openssl-dev \
 	zlib "
 
-ENV APT_PACKAGES="
+ENV APT_PACKAGES=" \
 	tk-dev \
     libpng-dev \
 	gfortran \
