@@ -20,7 +20,16 @@ RUN apt-get update && apt-get upgrade && apt-get install -y \
         tk-dev \
         libssl-dev \
         openssl \
-        libbz2-dev
+        libbz2-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libhdf5-dev \
+        liblapack-dev \
+        gfortran \
+        wget \
+        git \
+        vim \
+        libxml2-dev
 
 # Download and compile python
 RUN apt-get install -y ca-certificates
@@ -66,6 +75,11 @@ RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git
 RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
 # Set pipelines as workdir
 WORKDIR /root/Euplotid
+
+RUN pip3 install \
+	pysam \
+	pytorch \
+	torchvision
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
