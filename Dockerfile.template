@@ -15,7 +15,7 @@ ENV APK_PACKAGES=" \
 	vim \
 	libxml2-dev \
 	ca-certificates \
-	build-base #start alpine packages \
+	build-base \
 	bz2-dev \
 	libc6-compat \
 	gdbm-dev \
@@ -36,7 +36,7 @@ ENV APT_PACKAGES=" \
 	vim \
 	libxml2-dev \
 	ca-certificates \
-	build-base
+	build-base \
 	build-essential \
 	libbz2-dev \
 	libc6-dev \
