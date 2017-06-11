@@ -7,7 +7,7 @@ setup(
   author = 'Diego Borges',
   author_email = 'dborgesr@mit.edu',
   url = 'https://github.com/dborgesr/Euplotid', 
-  download_url = 'https://github.com/peterldowns/mypackage/archive/0.1.tar.gz', # I'll explain this in a second
+  download_url = 'https://github.com/dborgesr/Euplotid/archive/0.1.tar.gz', # I'll explain this in a second
   keywords = ['CRISPR','neural_network', 'docker', 'linux'], 
   install_requires=[
     'readline','jupyter','plotly','sense-hat','mygene','myvariant','pysam','networkx','pandas','joblib','biopython','pyliftover',scipy,'louvain','nbpresent',
