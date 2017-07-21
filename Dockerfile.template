@@ -57,7 +57,8 @@ ENV APT_PACKAGES=" \
 		libexpat-dev \
 		rfkill \
 		nodejs \
-		npm"
+		npm \
+		cron"
 		
 
 RUN apt-get -q update && \ 
