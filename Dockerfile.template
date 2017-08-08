@@ -4,8 +4,8 @@
 #FROM alpine:3.6
 
 #ARM
-#FROM resin/rpi-raspbian:jessie
-FROM resin/aarch64-debian:stretch
+FROM resin/rpi-raspbian:jessie
+#FROM resin/aarch64-debian:stretch
 #FROM resin/raspberry-pi-alpine
 #FROM resin/aarch64-alpine
 
@@ -56,10 +56,10 @@ ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
 #		nginx \
-#		php5-fpm \
-#		php5-cli \
-#		php5-common \
-#		php-apc \
+		php5-fpm \
+		php5-cli \
+		php5-common \
+		php-apc \
 		apache2-utils \
 		gpac \
 		motion \
@@ -67,10 +67,10 @@ ENV APT_PACKAGES=" \
 		libav-tools \
 		gstreamer1.0-tools \
 		git \
-#		libraspberrypi-bin \
-#		libraspberrypi-dev \
-#		libraspberrypi-doc \
-#		libraspberrypi0 \
+		libraspberrypi-bin \
+		libraspberrypi-dev \
+		libraspberrypi-doc \
+		libraspberrypi0 \
 		vim \
 		tk-dev \
     	libpng-dev \
@@ -101,7 +101,7 @@ ENV APT_PACKAGES=" \
 		libexpat-dev \
 		rfkill \
 		nodejs \
-#		npm \
+		npm \
 		cron \
 		openscad "
 
@@ -111,15 +111,15 @@ RUN apt-get -q update && \
   	rm -rf "/var/lib/apt/lists/*"
 
 #Compile python from source and update pip
-ENV version="3.6.2"
-RUN wget "https://www.python.org/ftp/python/$version/Python-$version.tgz" && \
-	tar zxvf "Python-$version.tgz" && \
-	cd "Python-$version" && \
-	./configure && \
-	make && \
-	make install && \
-	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
-  	pip3 install --upgrade pip setuptools
+#ENV version="3.6.2"
+#RUN wget "https://www.python.org/ftp/python/$version/Python-$version.tgz" && \
+#	tar zxvf "Python-$version.tgz" && \
+#	cd "Python-$version" && \
+#	./configure && \
+#	make && \
+#	make install && \
+#	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
+#  	pip3 install --upgrade pip setuptools
   	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 #RUN apk update  \ 
@@ -134,6 +134,24 @@ RUN wget "https://www.python.org/ftp/python/$version/Python-$version.tgz" && \
 #  && pip install --upgrade pip setuptools \
 #  && rm -r /root/.cache \
 #  && ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+  
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
+    bash miniconda.sh -b -p /opt/conda && \
+    rm miniconda.sh && \
+    export PATH=/opt/conda/bin:$PATH  && \
+    conda config --set show_channel_urls True && \
+    conda config --add channels rpi && \
+    conda config --add channels conda-forge && \
+    conda update conda && \
+    conda update --all --yes && \
+#    conda install conda-build && \
+#    conda install anaconda-client && \
+    conda install -y pip \
+	    setuptools && \
+	conda clean -tipy && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+	
 
 RUN pip3 install \
 	setuptools \
@@ -156,13 +174,21 @@ RUN pip3 install \
 	pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
 
 #Get pytorch machine learning
-ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
-	cd pytorch && \
-	pip install -r requirements.txt && \
-	python3 setup.py install
+#ENV CMAKE_PREFIX_PATH=$CONDA_DIR
+#RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
+#	cd pytorch && \
+#	pip install -r requirements.txt && \
+#	python3 setup.py install
 	
-RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
+#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
+
+#Configure jupyter
+RUN jupyter notebook --generate-config --allow-root && \
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
 
 #Get stuff for interacting in real life
 RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
@@ -197,16 +223,6 @@ RUN mkdir -p /usr/src/app && \
 	sed -i "s/nginx/apache/g" config.txt && \
 	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
 	./install.sh q  
-
-	
-#Configure jupyter
-RUN jupyter notebook --generate-config --allow-root && \
-	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
-
 
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
