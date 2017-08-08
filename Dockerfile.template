@@ -86,7 +86,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
     conda update conda && \
     conda update --all --yes && \
 #    conda install conda-build && \
-    conda install anaconda-client && \
+#    conda install anaconda-client && \
     conda install -y pip \
 	    setuptools && \
 	conda clean -tipy && \
