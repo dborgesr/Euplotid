@@ -87,7 +87,8 @@ RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfo
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install packages for microscope camera
-RUN git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
+RUN cd /usr/src/app && \
+	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
 	cd RPi_Cam_Web_Interface && \
     chmod u+x *.sh && \
     mkdir -p /run/shm/mjpeg && \
