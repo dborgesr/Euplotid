@@ -1,10 +1,9 @@
 #FROM resin/rpi-raspbian:jessie
-FROM resin/raspberry-pi-python:3.6.2-slim
+FROM resin/raspberry-pi-python:3.6.2
 
 ENV INITSYSTEM on
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /root
 
 ENV APT_PACKAGES=" \
 		psmisc \
@@ -87,10 +86,11 @@ RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfo
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install packages for microscope camera
-RUN cd /usr/src/app && \
+RUN mkdir -p /usr/src/app && \
+	cd /usr/src/app && \
 	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
 	cd RPi_Cam_Web_Interface && \
-    #chmod u+x *.sh && \
+    chmod u+x *.sh && \
     mkdir -p /run/shm/mjpeg && \
     sed -i 's/sudo //g' install.sh && \
     sed -i 's/sudo //g' start.sh && \
@@ -112,6 +112,7 @@ RUN cd /usr/src/app && \
 	sed -i "s/80/8080/g" config.txt && \
 	sed -i "s/nginx/apache/g" config.txt && \
 	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
+	LD_LIBRARY_PATH=/usr/local/lib /usr/local/bin/python
 	./install.sh q  
 
 	
