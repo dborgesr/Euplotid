@@ -85,7 +85,7 @@ RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./buil
 RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
-ENV LD_LIBRARY_PATH /usr/local/lib /usr/local/bin/python
+ENV LD_LIBRARY_PATH /usr/local/lib /usr/local/bin
 
 # Install packages for microscope camera
 RUN mkdir -p /usr/src/app && \
@@ -118,12 +118,12 @@ RUN mkdir -p /usr/src/app && \
 
 	
 #Configure jupyter
-RUN jupyter notebook --generate-config --allow-root && \
-	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
+#RUN jupyter notebook --generate-config --allow-root && \
+#	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
 
 
 # Install wifi connect
