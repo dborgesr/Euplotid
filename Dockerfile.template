@@ -94,7 +94,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	
 ENV PATH=/opt/conda/bin:$PATH
 
-RUN pip3 install \
+RUN pip install \
 		setuptools \
 		gnureadline \
 		jupyter \
@@ -106,7 +106,7 @@ RUN pip3 install \
     	nbpresent \
     	networkx \
     	solidpython && \
-	pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
+	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get stuff for interacting in real life
 RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
