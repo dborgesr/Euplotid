@@ -1,23 +1,5 @@
-#Nanotid image to take in FPKM, normalized DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and build, annotate, and visualize INs
-#x86
-#FROM debian:jessie
-#FROM alpine:3.6
-
-#ARM
+#Minitid image for microscope and viewing
 FROM resin/rpi-raspbian:jessie
-#FROM resin/aarch64-debian:stretch
-#FROM resin/raspberry-pi-alpine
-FROM resin/aarch64-alpine:latest
-
-#ARM on x86
-#FROM resin/armv7hf-debian-qemu
-#FROM amtypaldos/armv7hf-alpine-qemu
-#RUN [ "cross-build-start" ]
-
-#set CUDA paths
-#ENV PATH /usr/local/cuda/bin:${PATH}
-#ENV LD_LIBRARY_PATH /usr/lib/aarch64-linux-gnu:/usr/local/cuda-8.0/targets/aarch64-linux/lib/:/usr/lib/aarch64-linux-gnu/tegra/"
-#ENV INITSYSTEM on
 
 USER root
 
@@ -81,7 +63,7 @@ RUN apt-get -q update && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
   
-RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv6l.sh > miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH  && \
@@ -108,10 +90,8 @@ RUN pip install \
 	mygene \
 	pysam \
     pandas \
-    joblib \
     biopython \
     pyliftover \
-    scipy \
     numpy \
     nbpresent \
     networkx \
@@ -130,35 +110,6 @@ RUN jupyter notebook --generate-config --allow-root && \
 RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
 RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
-
-# Install packages for microscope camera
-RUN mkdir -p /usr/src/app && \
-	cd /usr/src/app && \
-	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
-	cd RPi_Cam_Web_Interface && \
-    chmod u+x *.sh && \
-    mkdir -p /run/shm/mjpeg && \
-    sed -i 's/sudo //g' install.sh && \
-    sed -i 's/sudo //g' start.sh && \
-    sed -i 's/sudo //g' stop.sh && \
-    sed -i 's/sudo //g' remove.sh && \
-    sed -i 's/sudo //g' update.sh && \
-    sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
-    sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
-    sed -i 's/80/8080/g' install.sh && \  
-    sed -i '/raspizip/d' install.sh && \
-    rm www/macros/error_hard.sh && \
-    mkdir -p /opt/vc/bin && \
-	cp bin/raspimjpeg /opt/vc/bin/ && \
-	chmod 755 /opt/vc/bin/raspimjpeg && \
-	echo /opt/vc/lib > /etc/ld.so.conf	 && \
-	if [ ! -e /usr/bin/raspimjpeg ]; then ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg; fi && \
-	ldconfig && \
-	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
-	sed -i "s/80/8080/g" config.txt && \
-	sed -i "s/nginx/apache/g" config.txt && \
-	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
-	./install.sh q  
 
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
