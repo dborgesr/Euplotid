@@ -1,5 +1,6 @@
-#FROM resin/rpi-raspbian:jessie
-FROM resin/raspberry-pi-python:3.6.2
+FROM resin/rpi-raspbian:jessie
+#FROM resin/rpi-raspbian:stretch
+#FROM resin/raspberry-pi-python:3.6.2
 
 ENV INITSYSTEM on
 
@@ -62,9 +63,18 @@ ENV APT_PACKAGES=" \
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
-	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
-  	pip3 install --upgrade pip setuptools && \
   	rm -rf "/var/lib/apt/lists/*"
+
+#Compile python from source and update pip
+ENV version="3.6.2"
+RUN wget "https://www.python.org/ftp/python/$version/Python-$version.tgz" && \
+	tar zxvf "Python-$version.tgz" && \
+	cd "Python-$version" && \
+	./configure --enable-shared && \
+	make && \
+	make install && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
+  	pip3 install --upgrade pip setuptools
 
 RUN pip3 install \
 		setuptools \
