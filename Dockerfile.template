@@ -109,6 +109,17 @@ RUN apt-get -q update && \
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
+
+#Compile python from source and update pip
+ENV version="3.6.2"
+RUN wget "https://www.python.org/ftp/python/$version/Python-$version.tgz" && \
+	tar zxvf "Python-$version.tgz" && \
+	cd "Python-$version" && \
+	./configure && \
+	make && \
+	make install && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
+  	pip3 install --upgrade pip setuptools
   	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 #RUN apk update  \ 
@@ -123,24 +134,6 @@ RUN apt-get -q update && \
 #  && pip install --upgrade pip setuptools \
 #  && rm -r /root/.cache \
 #  && ln -s /usr/include/locale.h /usr/include/xlocale.h
-  
-RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /opt/conda && \
-    rm miniconda.sh && \
-    export PATH=/opt/conda/bin:$PATH  && \
-    conda config --set show_channel_urls True && \
-    conda config --add channels rpi && \
-    conda config --add channels conda-forge && \
-    conda update conda && \
-    conda update --all --yes && \
-#    conda install conda-build && \
-#    conda install anaconda-client && \
-    conda install -y pip \
-	    setuptools && \
-	conda clean -tipy && \
-	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-	
-#ENV PATH=/opt/conda/bin:$PATH
 
 RUN pip install \
 	setuptools \
