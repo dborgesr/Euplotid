@@ -1,4 +1,5 @@
-FROM resin/rpi-raspbian:jessie
+#FROM resin/rpi-raspbian:jessie
+FROM resin/raspberry-pi-python:3.6.2-slim
 
 ENV INITSYSTEM on
 
@@ -57,23 +58,11 @@ ENV APT_PACKAGES=" \
 		npm \
 		cron \
 		openscad "
-#		libncursesw5-dev \
-#		libreadline-dev"
 		
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
-	apt-get install -yq --no-install-recommends $APT_PACKAGES 
-	
-#Get Python from source
-RUN cd /root && \
-	wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tgz && \
-	tar xvf Python-3.6.0.tgz && \
-	cd Python-3.6.0 && \
-	./configure --enable-optimizations && \
-	make -j8 && \
-	make altinstall && \
-	apt-get install python3-pip && \
+	apt-get install -yq --no-install-recommends $APT_PACKAGES &&
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
   	pip3 install --upgrade pip setuptools && \
   	rm -rf "/var/lib/apt/lists/*"
