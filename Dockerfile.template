@@ -171,7 +171,7 @@ RUN pip install \
     nbpresent \
     networkx \
     python-louvain && \
-	pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
+	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get pytorch machine learning
 #ENV CMAKE_PREFIX_PATH=$CONDA_DIR
