@@ -56,7 +56,9 @@ ENV APT_PACKAGES=" \
 		nodejs \
 		npm \
 		cron \
-		openscad"
+		openscad \
+		libncursesw5-dev \
+		libreadline-dev"
 		
 
 RUN apt-get -q update && \ 
