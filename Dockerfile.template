@@ -58,7 +58,8 @@ ENV APT_PACKAGES=" \
 		rfkill \
 		nodejs \
 		npm \
-		cron"
+		cron \
+		openscad"
 		
 
 RUN apt-get -q update && \ 
@@ -75,16 +76,17 @@ RUN pip3 install \
 		plotly \
 		sense-hat \
 		pyliftover \
-#  		scipy \
-#    	numpy \
+  		scipy \
+    	numpy \
     	nbpresent \
-    	networkx && \
+    	networkx \
+    	solidpython && \
 	pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
 
 #Get stuff for interacting in real life
 RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
 RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
-RUN cd /root && git clone https://github.com/RPi-Distro/RTIMULib.git && cd RTIMULib/Linux/python && python3 setup.py build && python3 setup.py install
+RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install packages for microscope camera
 RUN git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
