@@ -24,9 +24,6 @@ ENV APT_PACKAGES=" \
 		libraspberrypi-dev \
 		libraspberrypi-doc \
 		libraspberrypi0 \
-		python3.6 \
-		python3.6-dev \
-		python3-pip \
 		vim \
 		tk-dev \
     	libpng-dev \
@@ -64,7 +61,17 @@ ENV APT_PACKAGES=" \
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
-	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+	apt-get install -yq --no-install-recommends $APT_PACKAGES 
+	
+#Get Python from source
+RUN cd /root &&
+	wget https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tgz && \
+	tar xvf Python-3.6.2.tgz && \
+	cd Python-3.6.2 && \
+	./configure --enable-optimizations && \
+	make -j8 && \
+	make altinstall && \
+	apt-get install python3-pip && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
   	pip3 install --upgrade pip setuptools && \
   	rm -rf "/var/lib/apt/lists/*"
