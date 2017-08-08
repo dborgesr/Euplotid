@@ -7,7 +7,7 @@
 FROM resin/rpi-raspbian:jessie
 #FROM resin/aarch64-debian:stretch
 #FROM resin/raspberry-pi-alpine
-#FROM resin/aarch64-alpine
+FROM resin/aarch64-alpine:latest
 
 #ARM on x86
 #FROM resin/armv7hf-debian-qemu
@@ -22,35 +22,6 @@ FROM resin/rpi-raspbian:jessie
 USER root
 
 WORKDIR /root
-
-ENV APK_PACKAGES=" \
-	tk-dev \
-	libpng-dev \
-	gfortran \
-	wget \
-	git \
-	vim \
-	libxml2-dev \
-	ca-certificates \
-	build-base \
-	bzip2-dev \
-	libc6-compat \
-	gdbm-dev \
-#	hdf5-dev \
-	jpeg-dev \
-	lapack-dev \
-	ncurses-dev \
-	sqlite-dev \
-	openssl-dev \
-	zlib-dev \
-	xz-dev \
-	linux-headers \
-	curl \
-	readline-dev \
-	patch \
-	bash \
-	cmake \
-	i2c-tools"
 
 ENV APT_PACKAGES=" \
 		psmisc \
@@ -109,32 +80,6 @@ RUN apt-get -q update && \
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
-
-#Compile python from source and update pip
-#ENV version="3.6.2"
-#RUN wget "https://www.python.org/ftp/python/$version/Python-$version.tgz" && \
-#	tar zxvf "Python-$version.tgz" && \
-#	cd "Python-$version" && \
-#	./configure && \
-#	make && \
-#	make install && \
-#	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
-#  	pip3 install --upgrade pip setuptools
-  	
-# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
-#RUN apk update  \ 
-#  # replacing default repositories with edge ones
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
-#  && apk add --no-cache $APK_PACKAGES  \
-#  && python3 -m ensurepip \
-#  && rm -r /usr/lib/python*/ensurepip \
-#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
-#  && pip install --upgrade pip setuptools \
-#  && rm -r /root/.cache \
-#  && ln -s /usr/include/locale.h /usr/include/xlocale.h
-
   
 RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
@@ -151,7 +96,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/opt/conda/bin:$PATH	
+#ENV PATH=/opt/conda/bin:$PATH	
 
 RUN pip install \
 	setuptools \
@@ -172,15 +117,6 @@ RUN pip install \
     networkx \
     python-louvain && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
-
-#Get pytorch machine learning
-#ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-#RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
-#	cd pytorch && \
-#	pip install -r requirements.txt && \
-#	python3 setup.py install
-	
-#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
