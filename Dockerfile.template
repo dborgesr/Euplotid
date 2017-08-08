@@ -147,13 +147,13 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
     conda update --all --yes && \
 #    conda install conda-build && \
 #    conda install anaconda-client && \
-    conda install -y pip pip3\
+    conda install -y pip \
 	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 	
 
-RUN pip3 install \
+RUN pip install \
 	setuptools \
 	gnureadline \
 	jupyter \
