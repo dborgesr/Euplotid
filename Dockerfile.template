@@ -113,8 +113,6 @@ RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./buil
 RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
-ENV LD_LIBRARY_PATH /usr/local/lib /usr/local/bin
-
 # Install packages for microscope camera
 RUN mkdir -p /usr/src/app && \
 	cd /usr/src/app && \
