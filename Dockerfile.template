@@ -100,7 +100,7 @@ RUN cd /usr/src/app && \
     sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
     sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
     sed -i 's/80/8080/g' install.sh && \  
-    sed -i 's/raspizip/,+1 d && \
+    sed -i 's/raspizip/,+1 d' install.sh && \
     rm www/macros/error_hard.sh && \
     mkdir -p /opt/vc/bin && \
 	cp bin/raspimjpeg /opt/vc/bin/ && \
