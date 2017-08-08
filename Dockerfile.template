@@ -70,7 +70,7 @@ ENV version="3.6.2"
 RUN wget "https://www.python.org/ftp/python/$version/Python-$version.tgz" && \
 	tar zxvf "Python-$version.tgz" && \
 	cd "Python-$version" && \
-	./configure --enable-shared && \
+	./configure && \
 	make && \
 	make install && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi  && \
