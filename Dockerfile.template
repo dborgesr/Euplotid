@@ -55,8 +55,7 @@ ENV APT_PACKAGES=" \
 		rfkill \
 		nodejs \
 		npm \
-		cron \
-		openscad "
+		cron "
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
@@ -78,7 +77,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-#ENV PATH=/opt/conda/bin:$PATH	
+ENV PATH=/opt/conda/bin:$PATH	
 
 RUN pip install \
 	setuptools \
