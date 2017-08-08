@@ -90,7 +90,7 @@ RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMUL
 RUN cd /usr/src/app && \
 	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
 	cd RPi_Cam_Web_Interface && \
-    chmod u+x *.sh && \
+    #chmod u+x *.sh && \
     mkdir -p /run/shm/mjpeg && \
     sed -i 's/sudo //g' install.sh && \
     sed -i 's/sudo //g' start.sh && \
