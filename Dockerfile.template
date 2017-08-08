@@ -39,7 +39,6 @@ ENV APK_PACKAGES=" \
 	patch \
 	bash \
 	cmake \
-	i2c-tools \
 	python3 \
 	python3-dev \
 	py-pip"
