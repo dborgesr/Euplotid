@@ -55,15 +55,14 @@ ENV APT_PACKAGES=" \
 		rfkill \
 		nodejs \
 		npm \
-		cron \
-		openscad "
+		cron "
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
   
-RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv6l.sh > miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH  && \
@@ -85,15 +84,9 @@ RUN pip install \
 	gnureadline \
 	jupyter \
 	plotly \
-#	myvariant \
-#	mygene \
-#	pysam \
+	sense-hat \
     pandas \
-    joblib \
-#    biopython \
-#    pyliftover \
-#    scipy \
-#    numpy \
+    biopython \
     nbpresent \
     networkx \
     python-louvain && \
@@ -107,34 +100,10 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
 
-# Install packages for microscope camera
-RUN mkdir -p /usr/src/app && \
-	cd /usr/src/app && \
-	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
-	cd RPi_Cam_Web_Interface && \
-    chmod u+x *.sh && \
-    mkdir -p /run/shm/mjpeg && \
-    sed -i 's/sudo //g' install.sh && \
-    sed -i 's/sudo //g' start.sh && \
-    sed -i 's/sudo //g' stop.sh && \
-    sed -i 's/sudo //g' remove.sh && \
-    sed -i 's/sudo //g' update.sh && \
-    sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
-    sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
-    sed -i 's/80/8080/g' install.sh && \  
-    sed -i '/raspizip/d' install.sh && \
-    rm www/macros/error_hard.sh && \
-    mkdir -p /opt/vc/bin && \
-	cp bin/raspimjpeg /opt/vc/bin/ && \
-	chmod 755 /opt/vc/bin/raspimjpeg && \
-	echo /opt/vc/lib > /etc/ld.so.conf	 && \
-	if [ ! -e /usr/bin/raspimjpeg ]; then ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg; fi && \
-	ldconfig && \
-	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
-	sed -i "s/80/8080/g" config.txt && \
-	sed -i "s/nginx/apache/g" config.txt && \
-	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
-	./install.sh q  
+#Get stuff for interacting in real life
+RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
+RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
+RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
@@ -148,6 +117,7 @@ RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-a
     npm config set unsafe-perm true -g --unsafe-perm && \
     rm -rf /tmp/*
 
+RUN mkdir -p /usr/src/app
 # Install resin-wifi-connect
 ENV RESIN_WIFI_CONNECT_VERSION 2.0.7
 RUN cd /usr/src/app && \
