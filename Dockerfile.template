@@ -147,8 +147,8 @@ RUN apt-get install -yq --no-install-recommends qtbase5-dev libqt5scintilla2-dev
     qt5-qmake qt5-default build-essential curl libffi-dev \ 
     libxmu-dev cmake bison flex git-core libboost-all-dev \
     libmpfr-dev libboost-dev libglew-dev libeigen3-dev \
-    libcgal-dev libopencsg-dev libgmp3-dev libgmp-dev imagemagickli \
-    bfreetype6-dev gtk-doc-tools libglib2.0-dev gettext xvfb \
+    libcgal-dev libopencsg-dev libgmp3-dev libgmp-dev imagemagick \
+    libfreetype6-dev gtk-doc-tools libglib2.0-dev gettext xvfb \
     pkg-config ragel libxi-dev libfontconfig-dev libharfbuzz-dev libzip-dev
 RUN cd /root/ && \
 	git clone https://github.com/openscad/openscad.git && \
