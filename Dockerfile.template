@@ -136,7 +136,7 @@ RUN mkdir -p /usr/src/app && \
 	sed -i "s/nginx/apache/g" config.txt && \
 	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
 	./install.sh q  && \
-	modprobe bcm2835-v4l2 && \
+#	modprobe bcm2835-v4l2 && \
 	./start.sh
 
 # Install wifi connect
