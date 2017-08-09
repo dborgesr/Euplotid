@@ -155,8 +155,10 @@ RUN cd /root/ && \
 	cd openscad && \
 	git submodule init && \
 	git submodule update 
-RUN	qmake openscad.pro 
-RUN	make && \
+RUN	cd /root/openscad && \
+	qmake openscad.pro 
+RUN	cd /root/openscad && \
+	make && \
 	make install
 
 # Install wifi connect
