@@ -80,7 +80,7 @@ RUN pip3 install \
     jupyter_contrib_nbextensions && \
 	pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
 
-RUN pip3 install pyyaml
+RUN pip3 install pyyaml && apk add --no-cache install python3-yaml
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
 RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
