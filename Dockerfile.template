@@ -58,7 +58,7 @@ RUN apk update  \
   && ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 
-RUN pip install \
+RUN pip3 install \
 	setuptools \
 	gnureadline \
 	jupyter \
@@ -76,13 +76,13 @@ RUN pip install \
     nbpresent \
     networkx \
     python-louvain && \
-	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+	pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
 
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
 RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
 	cd pytorch && \
-	pip install -r requirements.txt && \
+	pip3 install -r requirements.txt && \
 	python3 setup.py install
 	
 #RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
