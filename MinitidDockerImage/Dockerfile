@@ -1,74 +1,169 @@
-#Minitid image to take in FPKM, normalized DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and build, annotate, and visualize INs
-FROM frolvlad/alpine-glibc
-MAINTAINER Diego Borges <dborgesr@mit.edu>
+#Minitid image for microscope and viewing
+FROM resin/rpi-raspbian:jessie
+
 USER root
 
-#Install packages
-RUN apk add --no-cache bash
+WORKDIR /root
 
-ENV CONDA_DIR="/opt/conda"
-ENV PATH="$CONDA_DIR/bin:$PATH"
+ENV APT_PACKAGES=" \
+		psmisc \
+		dialog \
+#		nginx \
+		php5-fpm \
+		php5-cli \
+		php5-common \
+		php-apc \
+		apache2-utils \
+		gpac \
+		motion \
+		zip \
+		libav-tools \
+		gstreamer1.0-tools \
+		git \
+		libraspberrypi-bin \
+		libraspberrypi-dev \
+		libraspberrypi-doc \
+		libraspberrypi0 \
+		vim \
+		tk-dev \
+    	libpng-dev \
+		gfortran \
+		wget \
+		libncurses-dev \
+		libxml2-dev \
+		ca-certificates \
+		build-essential \
+		libbz2-dev \
+		libc6-dev \
+		libgdbm-dev \
+		libjpeg-dev \
+#	liblapack-dev \
+		libncurses-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		zlib1g-dev \
+		curl \
+		i2c-tools \
+		liblzma-dev \
+		xz-utils \
+		dnsmasq \
+		hostapd \
+		iproute2 \
+		iw \
+		libdbus-1-dev \
+		libexpat-dev \
+		rfkill \
+		nodejs \
+		npm \
+		cron \
+		openscad "
 
-#Install conda
-RUN CONDA_VERSION="4.0.5" && \
-    CONDA_MD5_CHECKSUM="b1b15a3436bb7de1da3ccc6e08c7a5df" && \
-    \
-    apk add --no-cache --virtual=.build-dependencies wget ca-certificates bash && \
-    \
-    mkdir -p "$CONDA_DIR" && \
-    wget "http://repo.continuum.io/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh" -O miniconda.sh && \
-    echo "$CONDA_MD5_CHECKSUM  miniconda.sh" | md5sum -c && \
-    bash miniconda.sh -f -b -p "$CONDA_DIR" && \
-    echo "export PATH=$CONDA_DIR/bin:\$PATH" > /etc/profile.d/conda.sh && \
+RUN apt-get -q update && \ 
+	apt-get dist-upgrade && \
+	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+  	rm -rf "/var/lib/apt/lists/*"
+  
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
+    bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
-    \
-    conda install -y -c soumith \
-    	pytorch \
-    	torchvision \
-    	jupyter \
-    	notebook \
-    	nbpresent \
-    	git && \
-        conda install -y -c edurand \
-    	myvariant \
-    	mygene && \
-    conda install -y -c bioconda \
-    	pysam \
-    	networkx \
-    	pandas \
-    	joblib \
-    	biopython \
-    	pyliftover \
-    	scipy \
-    	bedops \
-    	plotly && \
+    export PATH=/opt/conda/bin:$PATH  && \
+    conda config --set show_channel_urls True && \
+    conda config --add channels rpi && \
+#    conda config --add channels conda-forge && \
+    conda update conda && \
     conda update --all --yes && \
-    conda config --set auto_update_conda False && \
-    conda clean --all --yes && \
-    echo "Removing older versions of Python due to the bug #3177 in 'conda clean'" && \
-    rm -rf $(find "$CONDA_DIR/pkgs/" -maxdepth 1 -name "python-3*" | sort | head -n -1) && \
-    \
-    apk del --purge .build-dependencies && \
-    \
-    mkdir -p "$CONDA_DIR/locks" && \
-    chmod 777 "$CONDA_DIR/locks"
+#    conda install conda-build && \
+#    conda install anaconda-client && \
+    conda install -y pip \
+	    setuptools && \
+	conda clean -tipy && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+ENV PATH=/opt/conda/bin:$PATH	
 
-
-#Get Louvain
-RUN cd /root && git clone https://github.com/taynaud/python-louvain.git && cd python-louvain && python setup.py install
-
-#Get Euplotid  
-RUN cd /root && git clone https://github.com/dborgesr/Euplotid.git
-# Set pipelines as workdir
-WORKDIR /root/Euplotid
+RUN pip install \
+	setuptools \
+	gnureadline \
+	jupyter \
+	plotly \
+#	myvariant \
+#	mygene \
+#	pysam \
+    pandas \
+    joblib \
+#    biopython \
+#    pyliftover \
+#    scipy \
+#    numpy \
+    nbpresent \
+    networkx \
+    python-louvain && \
+	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
-	sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py    
-ENV TINI_VERSION v0.14.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
-ENTRYPOINT ["/tini", "--"]
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
 
-EXPOSE 8892
-CMD ["jupyter", "notebook", "--allow-root", "--port=8892", "--no-browser", "--ip=0.0.0.0"]
+# Install packages for microscope camera
+RUN mkdir -p /usr/src/app && \
+	cd /usr/src/app && \
+	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
+	cd RPi_Cam_Web_Interface && \
+    chmod u+x *.sh && \
+    mkdir -p /run/shm/mjpeg && \
+    sed -i 's/sudo //g' install.sh && \
+    sed -i 's/sudo //g' start.sh && \
+    sed -i 's/sudo //g' stop.sh && \
+    sed -i 's/sudo //g' remove.sh && \
+    sed -i 's/sudo //g' update.sh && \
+    sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
+    sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
+    sed -i 's/80/8080/g' install.sh && \  
+    sed -i '/raspizip/d' install.sh && \
+    rm www/macros/error_hard.sh && \
+    mkdir -p /opt/vc/bin && \
+	cp bin/raspimjpeg /opt/vc/bin/ && \
+	chmod 755 /opt/vc/bin/raspimjpeg && \
+	echo /opt/vc/lib > /etc/ld.so.conf	 && \
+	if [ ! -e /usr/bin/raspimjpeg ]; then ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg; fi && \
+	ldconfig && \
+	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
+	sed -i "s/80/8080/g" config.txt && \
+	sed -i "s/nginx/apache/g" config.txt && \
+	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
+	./install.sh q  
+
+# Install wifi connect
+ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
+
+# Install node
+ENV NODE_VERSION 6.9.1
+RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+    echo "0b30184fe98bd22b859db7f4cbaa56ecc04f7f526313c8da42315d89fabe23b2  node-v$NODE_VERSION-linux-armv6l.tar.gz" | sha256sum -c - && \
+    tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
+    rm "node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+    npm config set unsafe-perm true -g --unsafe-perm && \
+    rm -rf /tmp/*
+
+# Install resin-wifi-connect
+ENV RESIN_WIFI_CONNECT_VERSION 2.0.7
+RUN cd /usr/src/app && \
+	curl -SL "https://github.com/resin-io/resin-wifi-connect/archive/v$RESIN_WIFI_CONNECT_VERSION.tar.gz" \
+    | tar xzC /usr/src/app/ && \
+    mv resin-wifi-connect-$RESIN_WIFI_CONNECT_VERSION resin-wifi-connect && \
+    cd resin-wifi-connect && \
+    JOBS=MAX npm install --unsafe-perm --production && \
+    npm cache clean && \
+    ./node_modules/.bin/bower --allow-root install && \
+    ./node_modules/.bin/bower --allow-root cache clean && \
+    ./node_modules/.bin/coffee -c ./src
+
+#Get Euplotid 
+RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+WORKDIR /root/Euplotid
+
+EXPOSE 80
+CMD ["bash", "./start.sh"]

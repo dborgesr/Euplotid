@@ -1,57 +1,9 @@
-#Nanotid image to take in FPKM, normalized DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and build, annotate, and visualize INs
-#x86
-#FROM debian:jessie
-#FROM alpine:3.6
-
-#ARM
-#FROM resin/rpi-raspbian:jessie
-#FROM resin/aarch64-debian
-#FROM resin/raspberry-pi-alpine
-#FROM resin/aarch64-alpine
-
-#ARM on x86
-FROM resin/armv7hf-debian-qemu
-#FROM amtypaldos/armv7hf-alpine-qemu
-RUN [ "cross-build-start" ]
-
-#set CUDA paths
-ENV PATH /usr/local/cuda/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/lib/aarch64-linux-gnu:/usr/local/cuda-8.0/targets/aarch64-linux/lib/:/usr/lib/aarch64-linux-gnu/tegra/"
+#Minitid image for microscope and viewing
+FROM resin/rpi-raspbian:jessie
 
 USER root
 
 WORKDIR /root
-
-ENV APK_PACKAGES=" \
-	tk-dev \
-	libpng-dev \
-	gfortran \
-	wget \
-	git \
-	vim \
-	libxml2-dev \
-	ca-certificates \
-	build-base \
-	bzip2-dev \
-	libc6-compat \
-	gdbm-dev \
-#	hdf5-dev \
-	jpeg-dev \
-	lapack-dev \
-	ncurses-dev \
-	sqlite-dev \
-	openssl-dev \
-	zlib-dev \
-	xz-dev \
-	linux-headers \
-	curl \
-	python3 \
-	python3-dev \
-	readline-dev \
-	patch \
-	bash \
-	cmake \
-	i2c-tools"
 
 ENV APT_PACKAGES=" \
 		psmisc \
@@ -103,35 +55,20 @@ ENV APT_PACKAGES=" \
 		rfkill \
 		nodejs \
 		npm \
-		cron \
-		openscad "
+		cron "
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
-  	
-# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
-#RUN apk update  \ 
-#  # replacing default repositories with edge ones
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
-#  && apk add --no-cache $APK_PACKAGES  \
-#  && python3 -m ensurepip \
-#  && rm -r /usr/lib/python*/ensurepip \
-#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
-#  && pip install --upgrade pip setuptools \
-#  && rm -r /root/.cache \
-#  && ln -s /usr/include/locale.h /usr/include/xlocale.h
   
-RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv6l.sh > miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH  && \
     conda config --set show_channel_urls True && \
     conda config --add channels rpi && \
-    conda config --add channels conda-forge && \
+#    conda config --add channels conda-forge && \
     conda update conda && \
     conda update --all --yes && \
 #    conda install conda-build && \
@@ -140,8 +77,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-	
-#ENV PATH=/opt/conda/bin:$PATH
+ENV PATH=/opt/conda/bin:$PATH	
 
 RUN pip install \
 	setuptools \
@@ -149,64 +85,13 @@ RUN pip install \
 	jupyter \
 	plotly \
 	sense-hat \
-	myvariant \
-	mygene \
-	pysam \
     pandas \
-    joblib \
     biopython \
-    pyliftover \
-    scipy \
-    numpy \
     nbpresent \
     networkx \
     python-louvain && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-#Get pytorch machine learning
-#ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-#RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
-#	cd pytorch && \
-#	pip install -r requirements.txt && \
-#	python3 setup.py install
-	
-#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
-
-#Get stuff for interacting in real life
-RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
-RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
-RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
-
-# Install packages for microscope camera
-RUN mkdir -p /usr/src/app && \
-	cd /usr/src/app && \
-	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
-	cd RPi_Cam_Web_Interface && \
-    chmod u+x *.sh && \
-    mkdir -p /run/shm/mjpeg && \
-    sed -i 's/sudo //g' install.sh && \
-    sed -i 's/sudo //g' start.sh && \
-    sed -i 's/sudo //g' stop.sh && \
-    sed -i 's/sudo //g' remove.sh && \
-    sed -i 's/sudo //g' update.sh && \
-    sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
-    sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
-    sed -i 's/80/8080/g' install.sh && \  
-    sed -i '/raspizip/d' install.sh && \
-    rm www/macros/error_hard.sh && \
-    mkdir -p /opt/vc/bin && \
-	cp bin/raspimjpeg /opt/vc/bin/ && \
-	chmod 755 /opt/vc/bin/raspimjpeg && \
-	echo /opt/vc/lib > /etc/ld.so.conf	 && \
-	if [ ! -e /usr/bin/raspimjpeg ]; then ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg; fi && \
-	ldconfig && \
-	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
-	sed -i "s/80/8080/g" config.txt && \
-	sed -i "s/nginx/apache/g" config.txt && \
-	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
-	./install.sh q  
-
-	
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
 	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
@@ -215,6 +100,10 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py
 
+#Get stuff for interacting in real life
+RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
+RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
+RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
@@ -228,6 +117,7 @@ RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-a
     npm config set unsafe-perm true -g --unsafe-perm && \
     rm -rf /tmp/*
 
+RUN mkdir -p /usr/src/app
 # Install resin-wifi-connect
 ENV RESIN_WIFI_CONNECT_VERSION 2.0.7
 RUN cd /usr/src/app && \
