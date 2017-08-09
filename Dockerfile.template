@@ -45,9 +45,9 @@ ENV APK_PACKAGES=" \
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 RUN apk update  \ 
   # replacing default repositories with edge ones
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
   && apk add --no-cache $APK_PACKAGES  \
   && python3 -m ensurepip \
   && rm -r /usr/lib/python*/ensurepip \
@@ -61,18 +61,18 @@ RUN pip3 install \
 	gnureadline \
 	jupyter \
 	plotly \
-	myvariant \
-	mygene \
-	pysam \
+#	myvariant \
+#	mygene \
+#	pysam \
 #    pandas \
-    joblib \
+#    joblib \
 #    biopython \
 #    pyliftover \
 #    scipy \
-    numpy \
+#    numpy \
     nbpresent \
     networkx \
-    python-louvain \
+#    python-louvain \
     ipywidgets \
     jupyter_contrib_nbextensions \
     pyyaml && \
