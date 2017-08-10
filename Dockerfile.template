@@ -116,7 +116,7 @@ RUN jupyter notebook --generate-config --allow-root && \
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 WORKDIR /root/Euplotid
 
-RUN apt-get install -y cuda
+RUN apt-get install -y libcuda1
 
 EXPOSE 80
 CMD ["bash", "./start.sh"]
