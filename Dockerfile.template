@@ -93,7 +93,7 @@ ENV APT_PACKAGES=" \
 		iw \
 		libdbus-1-dev \
 		libexpat-dev \
-		rfkill 
+		rfkill \
 		cmake"
 
 RUN apt-get -q update && \ 
