@@ -1,11 +1,61 @@
 #Euplotid ARM image
 
 #ARM
-FROM resin/aarch64-debian:latest
+#FROM resin/aarch64-alpine:latest
+FROM resin/aarch64-debian:stretch
+
+#ARM on x86
+#FROM resin/armv7hf-debian-qemu
+#FROM amtypaldos/armv7hf-alpine-qemu
+#RUN [ "cross-build-start" ]
 
 USER root
 
 WORKDIR /root
+
+ENV APK_PACKAGES=" \
+	tk-dev \
+	libpng-dev \
+	gfortran \
+	wget \
+	git \
+	vim \
+	libxml2-dev \
+	ca-certificates \
+	build-base \
+	bzip2-dev \
+	libc6-compat \
+	gdbm-dev \
+#	hdf5-dev \
+	jpeg-dev \
+	lapack-dev \
+	ncurses-dev \
+	sqlite-dev \
+	openssl-dev \
+	zlib-dev \
+	xz-dev \
+	linux-headers \
+	curl \
+	readline-dev \
+	patch \
+	bash \
+	cmake \
+	python3 \
+	python3-dev"
+	
+# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
+#RUN apk update  \ 
+#  # replacing default repositories with edge ones
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+#  && apk add --no-cache $APK_PACKAGES  \
+#  && python3 -m ensurepip \
+#  && rm -r /usr/lib/python*/ensurepip \
+#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+#  && pip3 install --upgrade pip setuptools \
+#  && rm -r /root/.cache \
+#  && ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 ENV APT_PACKAGES=" \
 		psmisc \
@@ -43,9 +93,8 @@ ENV APT_PACKAGES=" \
 		iw \
 		libdbus-1-dev \
 		libexpat-dev \
-		rfkill "
-#		nodejs \
-#		npm"
+		rfkill 
+		cmake"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
@@ -65,7 +114,6 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
-
 
 RUN pip install \
 	setuptools \
@@ -115,8 +163,6 @@ RUN jupyter notebook --generate-config --allow-root && \
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 WORKDIR /root/Euplotid
-
-RUN apt-get install -y libcuda1
 
 EXPOSE 80
 CMD ["bash", "./start.sh"]
