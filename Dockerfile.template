@@ -84,7 +84,7 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-		nodejs \
+#		nodejs \
 		npm"
 
 RUN apt-get -q update && \ 
