@@ -54,10 +54,9 @@ RUN apt-get -q update && \
 
 RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
     bash miniconda.sh -b -p /root/conda && \
-    rm miniconda.sh
-ENV PATH=/root/conda/bin:$PATH
-RUN export PATH=/root/conda/bin:$PATH && \
-	config --set show_channel_urls True && \
+    rm miniconda.sh && \
+    export PATH=/root/conda/bin:$PATH && \
+	conda config --set show_channel_urls True && \
     conda config --add channels rpi && \
 #    conda config --add channels conda-forge && \
     conda update conda && \
