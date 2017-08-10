@@ -58,12 +58,9 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
     ls -lhR /root/conda && \
     export PATH=/root/conda/bin:$PATH && \
 	conda config --set show_channel_urls True && \
-    conda config --add channels rpi && \
-#    conda config --add channels conda-forge && \
+    conda config --add channels jetson-tx2 && \
     conda update conda && \
     conda update --all --yes && \
-#    conda install conda-build && \
-#    conda install anaconda-client && \
     conda install -y pip \
 	    setuptools && \
 	conda clean -tipy && \
@@ -92,9 +89,8 @@ RUN pip3 install \
     pyyaml && \
 	pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U
 
-RUN apk add --no-cache py3-yaml yaml yaml-dev
 #Get pytorch machine learning
-#ENV CMAKE_PREFIX_PATH=$CONDA_DIR
+ENV CMAKE_PREFIX_PATH=$CONDA_DIR
 RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
 	cd pytorch && \
 	pip3 install -r requirements.txt && \
