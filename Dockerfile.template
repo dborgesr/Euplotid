@@ -1,65 +1,18 @@
-#Euplotid ARM image
-
-#ARM
-#FROM resin/aarch64-alpine:latest
-FROM resin/aarch64-debian:stretch
-
-#ARM on x86
-#FROM resin/armv7hf-debian-qemu
-#FROM amtypaldos/armv7hf-alpine-qemu
-#RUN [ "cross-build-start" ]
+#Minitid image for microscope and viewing
+FROM resin/rpi-raspbian:jessie
 
 USER root
 
 WORKDIR /root
 
-ENV APK_PACKAGES=" \
-	tk-dev \
-	libpng-dev \
-	gfortran \
-	wget \
-	git \
-	vim \
-	libxml2-dev \
-	ca-certificates \
-	build-base \
-	bzip2-dev \
-	libc6-compat \
-	gdbm-dev \
-#	hdf5-dev \
-	jpeg-dev \
-	lapack-dev \
-	ncurses-dev \
-	sqlite-dev \
-	openssl-dev \
-	zlib-dev \
-	xz-dev \
-	linux-headers \
-	curl \
-	readline-dev \
-	patch \
-	bash \
-	cmake \
-	python3 \
-	python3-dev"
-	
-# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
-#RUN apk update  \ 
-#  # replacing default repositories with edge ones
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
-#  && apk add --no-cache $APK_PACKAGES  \
-#  && python3 -m ensurepip \
-#  && rm -r /usr/lib/python*/ensurepip \
-#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
-#  && pip3 install --upgrade pip setuptools \
-#  && rm -r /root/.cache \
-#  && ln -s /usr/include/locale.h /usr/include/xlocale.h
-
 ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
+#		nginx \
+		php5-fpm \
+		php5-cli \
+		php5-common \
+		php-apc \
 		apache2-utils \
 		gpac \
 		motion \
@@ -67,9 +20,14 @@ ENV APT_PACKAGES=" \
 		libav-tools \
 		gstreamer1.0-tools \
 		git \
+		libraspberrypi-bin \
+		libraspberrypi-dev \
+		libraspberrypi-doc \
+		libraspberrypi0 \
 		vim \
 		tk-dev \
     	libpng-dev \
+		gfortran \
 		wget \
 		libncurses-dev \
 		libxml2-dev \
@@ -85,6 +43,7 @@ ENV APT_PACKAGES=" \
 		libssl-dev \
 		zlib1g-dev \
 		curl \
+		i2c-tools \
 		liblzma-dev \
 		xz-utils \
 		dnsmasq \
@@ -94,58 +53,45 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-		cmake"
+		nodejs \
+		npm \
+		cron "
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
-
-RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /root/conda && \
+  
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv6l.sh > miniconda.sh && \
+    bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
-    export PATH=/root/conda/bin:$PATH && \
-	conda config --set show_channel_urls True && \
-    conda config --add channels jetson-tx2 && \
+    export PATH=/opt/conda/bin:$PATH  && \
+    conda config --set show_channel_urls True && \
+    conda config --add channels rpi && \
+#    conda config --add channels conda-forge && \
     conda update conda && \
     conda update --all --yes && \
+#    conda install conda-build && \
+#    conda install anaconda-client && \
     conda install -y pip \
 	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/root/conda/bin:$PATH
+ENV PATH=/opt/conda/bin:$PATH	
 
 RUN pip install \
 	setuptools \
 	gnureadline \
 	jupyter \
 	plotly \
-#	myvariant \
-#	mygene \
-#	pysam \
-#    pandas \
-#    joblib \
-#    biopython \
-#    pyliftover \
-#    scipy \
-#    numpy \
+	sense-hat \
+    biopython \
     nbpresent \
     networkx \
-#    python-louvain \
+    python-louvain \ 
     ipywidgets \
-    jupyter_contrib_nbextensions \
-    pyyaml && \
+    jupyter_contrib_nbextensions && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
-
-RUN apt-get install -y cmake
-#Get pytorch machine learning
-ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
-	cd pytorch && \
-	pip install -r requirements.txt && \
-	python3 setup.py install
-	
-#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -159,6 +105,37 @@ RUN jupyter notebook --generate-config --allow-root && \
         && jupyter nbextension install nbpresent --py --overwrite --system \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system 
+
+#Get stuff for interacting in real life
+RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
+RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
+RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
+
+# Install wifi connect
+ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
+
+# Install node
+ENV NODE_VERSION 6.9.1
+RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+    echo "0b30184fe98bd22b859db7f4cbaa56ecc04f7f526313c8da42315d89fabe23b2  node-v$NODE_VERSION-linux-armv6l.tar.gz" | sha256sum -c - && \
+    tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
+    rm "node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+    npm config set unsafe-perm true -g --unsafe-perm && \
+    rm -rf /tmp/*
+
+RUN mkdir -p /usr/src/app
+# Install resin-wifi-connect
+ENV RESIN_WIFI_CONNECT_VERSION 2.0.7
+RUN cd /usr/src/app && \
+	curl -SL "https://github.com/resin-io/resin-wifi-connect/archive/v$RESIN_WIFI_CONNECT_VERSION.tar.gz" \
+    | tar xzC /usr/src/app/ && \
+    mv resin-wifi-connect-$RESIN_WIFI_CONNECT_VERSION resin-wifi-connect && \
+    cd resin-wifi-connect && \
+    JOBS=MAX npm install --unsafe-perm --production && \
+    npm cache clean && \
+    ./node_modules/.bin/bower --allow-root install && \
+    ./node_modules/.bin/bower --allow-root cache clean && \
+    ./node_modules/.bin/coffee -c ./src
 
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
