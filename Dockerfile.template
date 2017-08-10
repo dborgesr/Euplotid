@@ -56,7 +56,8 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
     bash miniconda.sh -b -p /root/conda && \
     rm miniconda.sh
 ENV PATH=/root/conda/bin:$PATH
-RUN conda config --set show_channel_urls True && \
+RUN export PATH=/root/conda/bin:$PATH && \
+	config --set show_channel_urls True && \
     conda config --add channels rpi && \
 #    conda config --add channels conda-forge && \
     conda update conda && \
