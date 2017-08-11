@@ -141,7 +141,8 @@ RUN mkdir -p /usr/src/app && \
 	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
 	sed -i "s/80/8080/g" config.txt && \
 	sed -i "s/nginx/apache/g" config.txt && \
-	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt
+	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
+	./install.sh q 
 
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
