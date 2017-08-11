@@ -151,7 +151,7 @@ ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
 ENV NODE_VERSION 6.3.1
 RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv7l.tar.gz" && \
     tar -xzf "node-v$NODE_VERSION-linux-armv7l.tar.gz" -C /usr/local --strip-components=1 && \
-    rm "node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+    rm "node-v$NODE_VERSION-linux-armv7l.tar.gz" && \
     npm config set unsafe-perm true -g --unsafe-perm && \
     rm -rf /tmp/*
 
