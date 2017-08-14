@@ -1,0 +1,26 @@
+#pull X reads from SRA
+#SRA2fq SRA_number output_directory run_name million_reads
+
+sra_paired() {
+  local SRA="$1"
+  local x=$(
+    fastq-dump -I -X 1 -Z --split-spot "$SRA" 2>/dev/null \
+      | awk '{if(NR % 2 == 1) print substr($1,length($1),1)}' \
+      | uniq \
+      | wc -l
+  )
+  [[ $x == 2 ]]
+}
+
+#Extract reads from SRA removing technical reads, clipping barcodes
+if [ "$#" -ne 4 ]; then
+        echo "Illegal number of parameters"
+else
+        reads=$(($4*4))
+        M_reads=$(($4/1000000))
+        if sra_paired "$1"; then
+		fastq-dump --split-files --skip-technical --readids --read-filter pass --dumpbase --clip -Z "$1" 2>/dev/null | head -n "$((2*$reads))" | tee >(awk '{if ((NR-1)%8<=3) print $0 }' | gzip > "$2"/"$3"_1_"$M_reads"M.fq.gz) | awk '{if ((NR-1)%8>=4) print $0 }' | gzip > "$2"/"$3"_2_"$M_reads"M.fq.gz
+	else
+		fastq-dump --skip-technical --readids --read-filter pass --dumpbase --clip -Z "$1" 2>/dev/null | head -n "$reads" | gzip > "$2"/"$3"_"$M_reads"M.fq.gz
+        fi
+fi
