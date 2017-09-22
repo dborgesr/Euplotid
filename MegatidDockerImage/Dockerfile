@@ -14,8 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libcairo2-dev \
   curl \
   zip \
-#  libzmq3-dev #iperl\
-#  libcairo2-dev #iperl\
+  unzip \
+  libzmq3-dev #iperl \
+  libcairo2-dev #iperl \
 	unzip \
 #	texlive-xetex #for printing pdf SUPER heavy (over 1Gb) for PDFs \
   && apt-get update \
@@ -115,6 +116,23 @@ RUN conda install -y -c r \
 	'r-randomforest=4.6*' \
 	&& conda clean -y -t -i -l -a
 
+#install bash kernel
+RUN pip install bash_kernel && \
+	python -m bash_kernel.install
+
+#Install perl package manager and perl kernel takes super long and currently broken
+RUN curl -sL http://cpanmin.us | perl - App::cpanminus \
+	&& /usr/local/bin/cpanm --notest Devel::IPerl \
+		PDL \
+ 		Moose \
+		MooseX::AbstractFactory \
+		MooseX::AbstractMethod \
+		MooseX::Storage \
+		Test::More
+
+#Enable C kernel after installed using pip above (jupyter-c-kernel)
+RUN install_c_kernel	
+	
 #Install python 2.7 kernel and environment
 RUN conda create -y -n py27 python=2.7 \
 	ipykernel \
@@ -140,17 +158,6 @@ RUN jupyter notebook --generate-config --allow-root && \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system
 		
-		
-#install bash kernel
-RUN pip install bash_kernel
-RUN python -m bash_kernel.install
-
-#Install perl package manager and perl kernel takes super long and currently broken
-#RUN cpanm --notest Reply::Plugin::IPerl
-
-#Enable C kernel
-RUN install_c_kernel
-
 #Get Homer
 RUN cd /root && mkdir Homer && wget http://homer.ucsd.edu/homer/configureHomer.pl && perl configureHomer.pl -install homer
 ENV PATH=~/Homer/bin/:$PATH
