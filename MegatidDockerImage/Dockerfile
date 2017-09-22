@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
-ENV CONDA_VERSION="4.2.0"  
+ENV CONDA_VERSION="4.4.0"  
 #Download, install, and update Anaconda3
 RUN cd /root && wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh
 ENV PATH=/root/anaconda3/bin:$PATH
@@ -61,14 +61,49 @@ RUN conda install -y \
 	perl-app-cpanminus \
 	libmagic \
 	wkhtmltopdf \
+	pip \
 	&& conda clean -y -t -i -l -a
 
+RUN pip install --no-cache-dir \
+		ipywidgets \
+#		seaborn \
+		pysam \
+		myvariant \
+		mygene \
+#		weblogo \
+		h5py \
+#		wand \
+#		rst2pdf \
+		argparse \
+		python-louvain \
+		joblib \
+		biopython \
+		pyliftover \
+#		nbbrowserpdf \
+		bx-python \
+		numpy-stl \
+		solidpython
+		
+#upgrade all python packages not working... not sure why
+#RUN pip install -U `pip list -o|cut -d ' ' -f1|tr '\n' ' '`
+	
+#install r kernel stuff	
 RUN conda install -y -c r \
-	r-essentials \
-	r-irkernel \
-	r-ggplot2 \
-	r-rcolorbrewer \
-	r-xml \
+    'r-base=3.3.2' \
+    'r-irkernel=0.7*' \
+    'r-plyr=1.8*' \
+    'r-devtools=1.12*' \
+    'r-tidyverse=1.0*' \
+    'r-shiny=0.14*' \
+    'r-rmarkdown=1.2*' \
+    'r-forecast=7.3*' \
+    'r-rsqlite=1.1*' \
+    'r-reshape2=1.4*' \
+    'r-nycflights13=0.2*' \
+    'r-caret=6.0*' \
+    'r-rcurl=1.95*' \
+    'r-crayon=1.3*' \
+	'r-randomforest=4.6*' \
 	&& conda clean -y -t -i -l -a
 
 #Install python 2.7 kernel and environment
@@ -121,6 +156,9 @@ RUN /bin/bash -c "source activate py27 && cd /root && git clone https://github.c
 #Get mirSTP
 RUN cd /root && wget http://bioinfo.vanderbilt.edu/mirSTP/download/mirSTP.zip && unzip mirSTP.zip && rm mirSTP.zip && chmod 755 mirSTP/bin/mirSTP
 ENV PATH=~/mirSTP/bin:$PATH
+
+#Get pytorch
+RUN conda install pytorch torchvision -y -c soumith
 
 #Get Euplotid
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
