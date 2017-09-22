@@ -1,5 +1,5 @@
 # Megatid image to suck in fastq and produce DNA-DNA interactions, chromatin accessibility, and RNA expression
-FROM debian:jessie
+FROM debian:buster
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   vim \
   libboost-dev \
   libcairo2-dev \
+  curl \
+  zip \
 #  libzmq3-dev #iperl\
 #  libcairo2-dev #iperl\
 	unzip \
@@ -20,49 +22,54 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
-ENV CONDA_VERSION="4.4.0"  
 #Download, install, and update Anaconda3
-RUN cd /root && wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh
+ENV CONDA_VERSION="4.4.0"  
+RUN wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
+    export PATH=/root/anaconda3/bin:$PATH  && \
+    conda config --set show_channel_urls True && \
+    conda config --add channels r && \
+	conda config --add channels bioconda && \
+#    conda config --add channels conda-forge && \
+    conda update conda && \
+    conda update --all --yes && \
+    conda install -y pip \
+	    setuptools \
+		nb_conda \
+		gcc \
+		conda-build \
+		git \
+		ipyparallel \
+		plotly \
+		ipywidgets \
+		ipywidgets \
+		autoconf \
+		bamtools \
+		bowtie \
+		bowtie2 \
+		htslib \
+		cython \
+		samtools \
+		bedops \
+		bwa \
+		star \
+		sra-tools \
+		sickle \
+		trimmomatic \
+		fastqc \
+		bedtools \
+		bamtools \
+		perl-bioperl \
+		perl-app-cpanminus \
+		libmagic \
+		wkhtmltopdf	&& \
+	conda install -c biobuilds perl=5.22.0 && \
+	conda install -y -c conda-forge \
+		fortran-magic \
+		make && \
+	conda update -y --all && \
+	conda clean -tipy && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/anaconda3/bin:$PATH
-RUN conda update conda anaconda jupyter notebook
-RUN conda config --add channels bioconda
-RUN conda config --add channels r
-RUN conda install -y -c conda-forge \
-	fortran-magic \
-	make \
-	&& conda clean -y -t -i -l -a
-RUN conda install -c biobuilds perl=5.22.0 
-RUN conda install -y \
-	nb_conda \
-	gcc \
-	conda-build \
-	git \
-	ipyparallel \
-	plotly \
-	ipywidgets \
-	ipywidgets \
-	autoconf \
-	bamtools \
-	bowtie \
-	bowtie2 \
-	htslib \
-	cython \
-	samtools \
-	bedops \
-	bwa \
-	star \
-	sra-tools \
-	sickle \
-	trimmomatic \
-	fastqc \
-	bedtools \
-	bamtools \
-	perl-bioperl \
-	perl-app-cpanminus \
-	libmagic \
-	wkhtmltopdf \
-	pip \
-	&& conda clean -y -t -i -l -a
 
 RUN pip install --no-cache-dir \
 		ipywidgets \
@@ -82,7 +89,9 @@ RUN pip install --no-cache-dir \
 #		nbbrowserpdf \
 		bx-python \
 		numpy-stl \
-		solidpython
+		solidpython \
+		jupyter_contrib_nbextensions \
+		jupyter-c-kernel
 		
 #upgrade all python packages not working... not sure why
 #RUN pip install -U `pip list -o|cut -d ' ' -f1|tr '\n' ' '`
@@ -118,11 +127,20 @@ RUN conda create -y -n py27 python=2.7 \
 	macs2 \
 	&& conda clean -y -t -i -l -a
 
-# Configure jupyter
+#Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
-	sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py && \
-	sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py 
-
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
+        && jupyter nbextension enable --py widgetsnbextension \
+        && jupyter contrib nbextension install --system \
+        && jupyter nbextension install nbpresent --py --overwrite --system \
+		&& jupyter nbextension enable nbpresent --py --system \
+		&& jupyter serverextension enable nbpresent --py --system
+		
+		
 #install bash kernel
 RUN pip install bash_kernel
 RUN python -m bash_kernel.install
@@ -130,9 +148,9 @@ RUN python -m bash_kernel.install
 #Install perl package manager and perl kernel takes super long and currently broken
 #RUN cpanm --notest Reply::Plugin::IPerl
 
-#Install C kernel
-RUN cd /root && wget -O - https://raw.githubusercontent.com/brendan-rius/jupyter-c-kernel/master/install.sh | sh
-	
+#Enable C kernel
+RUN install_c_kernel
+
 #Get Homer
 RUN cd /root && mkdir Homer && wget http://homer.ucsd.edu/homer/configureHomer.pl && perl configureHomer.pl -install homer
 ENV PATH=~/Homer/bin/:$PATH
@@ -163,9 +181,7 @@ RUN conda install pytorch torchvision -y -c soumith
 #Get Euplotid
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
-#run a closing update
-RUN conda update -y --all \
-	&& conda clean -y -t -i -l -a
+
 
 # Set root as workdir
 WORKDIR /root/Euplotid
