@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
   zip \
   unzip \
-  libzmq3-dev #iperl \
-  libcairo2-dev #iperl \
+#  libzmq3-dev #iperl \
+#  libcairo2-dev #iperl \
 	unzip \
 #	texlive-xetex #for printing pdf SUPER heavy (over 1Gb) for PDFs \
   && apt-get update \
@@ -121,14 +121,14 @@ RUN pip install bash_kernel && \
 	python -m bash_kernel.install
 
 #Install perl package manager and perl kernel takes super long and currently broken
-RUN curl -sL http://cpanmin.us | perl - App::cpanminus \
-	&& /usr/local/bin/cpanm --notest Devel::IPerl \
-		PDL \
- 		Moose \
-		MooseX::AbstractFactory \
-		MooseX::AbstractMethod \
-		MooseX::Storage \
-		Test::More
+#RUN curl -sL http://cpanmin.us | perl - App::cpanminus \
+#	&& /usr/local/bin/cpanm --notest Devel::IPerl \
+#		PDL \
+# 		Moose \
+#		MooseX::AbstractFactory \
+#		MooseX::AbstractMethod \
+#		MooseX::Storage \
+#		Test::More
 
 #Enable C kernel after installed using pip above (jupyter-c-kernel)
 RUN install_c_kernel	
