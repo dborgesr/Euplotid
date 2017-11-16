@@ -1,18 +1,65 @@
-#Minitid image for microscope and viewing
-FROM resin/rpi-raspbian:jessie
+#Euplotid ARM image
+
+#ARM
+#FROM resin/aarch64-alpine:latest
+FROM resin/aarch64-debian:stretch
+
+#ARM on x86
+#FROM resin/armv7hf-debian-qemu
+#FROM amtypaldos/armv7hf-alpine-qemu
+#RUN [ "cross-build-start" ]
 
 USER root
 
 WORKDIR /root
 
+ENV APK_PACKAGES=" \
+	tk-dev \
+	libpng-dev \
+	gfortran \
+	wget \
+	git \
+	vim \
+	libxml2-dev \
+	ca-certificates \
+	build-base \
+	bzip2-dev \
+	libc6-compat \
+	gdbm-dev \
+#	hdf5-dev \
+	jpeg-dev \
+	lapack-dev \
+	ncurses-dev \
+	sqlite-dev \
+	openssl-dev \
+	zlib-dev \
+	xz-dev \
+	linux-headers \
+	curl \
+	readline-dev \
+	patch \
+	bash \
+	cmake \
+	python3 \
+	python3-dev"
+	
+# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
+#RUN apk update  \ 
+#  # replacing default repositories with edge ones
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+#  && apk add --no-cache $APK_PACKAGES  \
+#  && python3 -m ensurepip \
+#  && rm -r /usr/lib/python*/ensurepip \
+#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+#  && pip3 install --upgrade pip setuptools \
+#  && rm -r /root/.cache \
+#  && ln -s /usr/include/locale.h /usr/include/xlocale.h
+
 ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
-#		nginx \
-		php5-fpm \
-		php5-cli \
-		php5-common \
-		php-apc \
 		apache2-utils \
 		gpac \
 		motion \
@@ -20,14 +67,9 @@ ENV APT_PACKAGES=" \
 		libav-tools \
 		gstreamer1.0-tools \
 		git \
-		libraspberrypi-bin \
-		libraspberrypi-dev \
-		libraspberrypi-doc \
-		libraspberrypi0 \
 		vim \
 		tk-dev \
     	libpng-dev \
-		gfortran \
 		wget \
 		libncurses-dev \
 		libxml2-dev \
@@ -43,7 +85,6 @@ ENV APT_PACKAGES=" \
 		libssl-dev \
 		zlib1g-dev \
 		curl \
-		i2c-tools \
 		liblzma-dev \
 		xz-utils \
 		dnsmasq \
@@ -53,54 +94,57 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-		nodejs \
-		npm \
-		cron \
-		openscad "
+		cmake"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
-  
-RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /opt/conda && \
+
+RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
+    bash miniconda.sh -b -p /root/conda && \
     rm miniconda.sh && \
-    export PATH=/opt/conda/bin:$PATH  && \
-    conda config --set show_channel_urls True && \
-    conda config --add channels rpi && \
-#    conda config --add channels conda-forge && \
+    export PATH=/root/conda/bin:$PATH && \
+	conda config --set show_channel_urls True && \
+    conda config --add channels jetson-tx2 && \
     conda update conda && \
     conda update --all --yes && \
-#    conda install conda-build && \
-#    conda install anaconda-client && \
     conda install -y pip \
 	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/opt/conda/bin:$PATH	
+ENV PATH=/root/conda/bin:$PATH
 
 RUN pip install \
 	setuptools \
 	gnureadline \
 	jupyter \
 	plotly \
-#	myvariant \
-#	mygene \
-#	pysam \
-#    pandas \
+	myvariant \
+	mygene \
+	pysam \
+    pandas \
     joblib \
-#    biopython \
-#    pyliftover \
-#    scipy \
-#    numpy \
+    biopython \
+    pyliftover \
+    scipy \
+    numpy \
     nbpresent \
     networkx \
     python-louvain \
-    jupyter_contrib_nbextensions \
     ipywidgets \
-    solidpython && \
+    jupyter_contrib_nbextensions \
+    pyyaml && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+
+#Get pytorch machine learning
+ENV CMAKE_PREFIX_PATH=$CONDA_DIR
+RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
+	cd pytorch && \
+	pip install -r requirements.txt && \
+	python3 setup.py install
+	
+#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -114,59 +158,6 @@ RUN jupyter notebook --generate-config --allow-root && \
         && jupyter nbextension install nbpresent --py --overwrite --system \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system 
-
-# Install packages for microscope camera
-RUN mkdir -p /usr/src/app && \
-	cd /usr/src/app && \
-	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
-	cd RPi_Cam_Web_Interface && \
-    chmod u+x *.sh && \
-    mkdir -p /run/shm/mjpeg && \
-    sed -i 's/sudo //g' install.sh && \
-    sed -i 's/sudo //g' start.sh && \
-    sed -i 's/sudo //g' stop.sh && \
-    sed -i 's/sudo //g' remove.sh && \
-    sed -i 's/sudo //g' update.sh && \
-    sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
-    sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
-    sed -i 's/80/8080/g' install.sh && \  
-    sed -i '/raspizip/d' install.sh && \
-    rm www/macros/error_hard.sh && \
-    mkdir -p /opt/vc/bin && \
-	cp bin/raspimjpeg /opt/vc/bin/ && \
-	chmod 755 /opt/vc/bin/raspimjpeg && \
-	echo /opt/vc/lib > /etc/ld.so.conf	 && \
-	if [ ! -e /usr/bin/raspimjpeg ]; then ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg; fi && \
-	ldconfig && \
-	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
-	sed -i "s/80/8080/g" config.txt && \
-	sed -i "s/nginx/apache/g" config.txt && \
-	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
-	./install.sh q 
-
-# Install wifi connect
-ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
-
-# Install node
-ENV NODE_VERSION 6.3.1
-RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv7l.tar.gz" && \
-    tar -xzf "node-v$NODE_VERSION-linux-armv7l.tar.gz" -C /usr/local --strip-components=1 && \
-    rm "node-v$NODE_VERSION-linux-armv7l.tar.gz" && \
-    npm config set unsafe-perm true -g --unsafe-perm && \
-    rm -rf /tmp/*
-
-# Install resin-wifi-connect
-ENV RESIN_WIFI_CONNECT_VERSION 2.0.7
-RUN cd /usr/src/app && \
-	curl -SL "https://github.com/resin-io/resin-wifi-connect/archive/v$RESIN_WIFI_CONNECT_VERSION.tar.gz" \
-    | tar xzC /usr/src/app/ && \
-    mv resin-wifi-connect-$RESIN_WIFI_CONNECT_VERSION resin-wifi-connect && \
-    cd resin-wifi-connect && \
-    JOBS=MAX npm install --unsafe-perm --production && \
-    npm cache clean && \
-    ./node_modules/.bin/bower --allow-root install && \
-    ./node_modules/.bin/bower --allow-root cache clean && \
-    ./node_modules/.bin/coffee -c ./src
 
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
