@@ -125,13 +125,13 @@ RUN pip install \
 	plotly \
 	myvariant \
 	mygene \
-	pysam \
+#	pysam \
 #    pandas \
     joblib \
     biopython \
     pyliftover \
  #   scipy \
- #   numpy \
+    numpy \
     nbpresent \
     networkx \
     python-louvain \
