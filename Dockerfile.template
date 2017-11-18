@@ -112,7 +112,8 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
     conda update --all --yes && \
     conda install -y pip \
 	    setuptools \
-		pandas && \
+		pandas \
+		numpy && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
