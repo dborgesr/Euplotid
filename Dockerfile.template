@@ -94,7 +94,8 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-		cmake"
+		cmake \
+		libxslt1-dev"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
