@@ -41,7 +41,11 @@ ENV APK_PACKAGES=" \
 	bash \
 	cmake \
 	python3 \
-	python3-dev"
+	python3-dev \
+	libffi-dev
+	libffi \
+	openssl-dev \
+	openssl"
 	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 RUN apk update  \ 
