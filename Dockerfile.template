@@ -126,6 +126,7 @@ RUN pip install \
 	mygene \
 #	pysam \
 #    pandas \
+	lxml \
     joblib \
 #    biopython \
     pyliftover \
