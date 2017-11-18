@@ -1,8 +1,8 @@
 #Euplotid ARM image
 
 #ARM
-#FROM resin/aarch64-alpine:latest
-FROM resin/aarch64-debian:stretch
+FROM resin/aarch64-alpine:latest
+#FROM resin/aarch64-debian:stretch
 
 #ARM on x86
 #FROM resin/armv7hf-debian-qemu
@@ -44,18 +44,18 @@ ENV APK_PACKAGES=" \
 	python3-dev"
 	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
-#RUN apk update  \ 
-#  # replacing default repositories with edge ones
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
-#  && apk add --no-cache $APK_PACKAGES  \
-#  && python3 -m ensurepip \
-#  && rm -r /usr/lib/python*/ensurepip \
-#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
-#  && pip3 install --upgrade pip setuptools \
-#  && rm -r /root/.cache \
-#  && ln -s /usr/include/locale.h /usr/include/xlocale.h
+RUN apk update  \ 
+  # replacing default repositories with edge ones
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+  && apk add --no-cache $APK_PACKAGES  \
+  && python3 -m ensurepip \
+  && rm -r /usr/lib/python*/ensurepip \
+  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+  && pip3 install --upgrade pip setuptools \
+  && rm -r /root/.cache \
+  && ln -s /usr/include/locale.h /usr/include/xlocale.h
 
 ENV APT_PACKAGES=" \
 		psmisc \
@@ -97,26 +97,26 @@ ENV APT_PACKAGES=" \
 		cmake \
 		libxslt1-dev"
 
-RUN apt-get -q update && \ 
-	apt-get dist-upgrade && \
-	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
-  	rm -rf "/var/lib/apt/lists/*"
+#RUN apt-get -q update && \ 
+#	apt-get dist-upgrade && \
+#	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+# 	rm -rf "/var/lib/apt/lists/*"
 
-RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /root/conda && \
-    rm miniconda.sh && \
-    export PATH=/root/conda/bin:$PATH && \
-	conda config --set show_channel_urls True && \
-    conda config --add channels jetson-tx2 && \
-    conda update conda && \
-    conda update --all --yes && \
-    conda install -y pip \
-	    setuptools \
-		pandas \
-		numpy && \
-	conda clean -tipy && \
-	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/root/conda/bin:$PATH
+#RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
+#    bash miniconda.sh -b -p /root/conda && \
+#    rm miniconda.sh && \
+#    export PATH=/root/conda/bin:$PATH && \
+#	conda config --set show_channel_urls True && \
+#    conda config --add channels jetson-tx2 && \
+#    conda update conda && \
+#    conda update --all --yes && \
+#    conda install -y pip \
+#	    setuptools \
+#		pandas \
+#		numpy && \
+#	conda clean -tipy && \
+#	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+#ENV PATH=/root/conda/bin:$PATH
 
 RUN pip install \
 	setuptools \
@@ -127,7 +127,7 @@ RUN pip install \
 	mygene \
 	pysam \
 	cffi \
-#    pandas \
+    pandas \
 	lxml \
     joblib \
     biopython \
