@@ -43,8 +43,8 @@ ENV APK_PACKAGES=" \
 	python3 \
 	python3-dev \
 	libffi-dev \
-	libffi-dev \
 	libffi \
+	libxslt-dev \
 	openssl-dev \
 	openssl"
 	
