@@ -149,8 +149,9 @@ RUN pip install \
 
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
+RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
 	cd pytorch && \
+	git submodule update --init && \
 	pip install -r requirements.txt && \
 	python3 setup.py install
 	
