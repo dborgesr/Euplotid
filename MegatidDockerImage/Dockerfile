@@ -1,5 +1,9 @@
 # Megatid image to suck in fastq and produce DNA-DNA interactions, chromatin accessibility, and RNA expression
+<<<<<<< HEAD
 FROM debian:jessie
+=======
+FROM debian:buster
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
@@ -12,14 +16,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   vim \
   libboost-dev \
   libcairo2-dev \
+<<<<<<< HEAD
 #  libzmq3-dev #iperl\
 #  libcairo2-dev #iperl\
+=======
+  curl \
+  zip \
+  unzip \
+#  libzmq3-dev #iperl \
+#  libcairo2-dev #iperl \
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 	unzip \
 #	texlive-xetex #for printing pdf SUPER heavy (over 1Gb) for PDFs \
   && apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
+<<<<<<< HEAD
 ENV CONDA_VERSION="4.2.0"  
 #Download, install, and update Anaconda3
 RUN cd /root && wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh
@@ -71,6 +84,118 @@ RUN conda install -y -c r \
 	r-xml \
 	&& conda clean -y -t -i -l -a
 
+=======
+#Download, install, and update Anaconda3
+ENV CONDA_VERSION="4.4.0"  
+RUN wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
+    export PATH=/root/anaconda3/bin:$PATH  && \
+    conda config --set show_channel_urls True && \
+    conda config --add channels r && \
+	conda config --add channels bioconda && \
+#    conda config --add channels conda-forge && \
+    conda update conda && \
+    conda update --all --yes && \
+    conda install -y pip \
+	    setuptools \
+		nb_conda \
+		gcc \
+		conda-build \
+		git \
+		ipyparallel \
+		plotly \
+		ipywidgets \
+		ipywidgets \
+		autoconf \
+		bamtools \
+		bowtie \
+		bowtie2 \
+		htslib \
+		cython \
+		samtools \
+		bedops \
+		bwa \
+		star \
+		sra-tools \
+		sickle \
+		trimmomatic \
+		fastqc \
+		bedtools \
+		bamtools \
+		perl-bioperl \
+		perl-app-cpanminus \
+		libmagic \
+		wkhtmltopdf	&& \
+	conda install -c biobuilds perl=5.22.0 && \
+	conda install -y -c conda-forge \
+		fortran-magic \
+		make && \
+	conda update -y --all && \
+	conda clean -tipy && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+ENV PATH=/root/anaconda3/bin:$PATH
+
+RUN pip install --no-cache-dir \
+		ipywidgets \
+#		seaborn \
+		pysam \
+		myvariant \
+		mygene \
+#		weblogo \
+		h5py \
+#		wand \
+#		rst2pdf \
+		argparse \
+		python-louvain \
+		joblib \
+		biopython \
+		pyliftover \
+#		nbbrowserpdf \
+		bx-python \
+		numpy-stl \
+		solidpython \
+		jupyter_contrib_nbextensions \
+		jupyter-c-kernel
+		
+#upgrade all python packages not working... not sure why
+#RUN pip install -U `pip list -o|cut -d ' ' -f1|tr '\n' ' '`
+	
+#install r kernel stuff	
+RUN conda install -y -c r \
+    'r-base=3.3.2' \
+    'r-irkernel=0.7*' \
+    'r-plyr=1.8*' \
+    'r-devtools=1.12*' \
+    'r-tidyverse=1.0*' \
+    'r-shiny=0.14*' \
+    'r-rmarkdown=1.2*' \
+    'r-forecast=7.3*' \
+    'r-rsqlite=1.1*' \
+    'r-reshape2=1.4*' \
+    'r-nycflights13=0.2*' \
+    'r-caret=6.0*' \
+    'r-rcurl=1.95*' \
+    'r-crayon=1.3*' \
+	'r-randomforest=4.6*' \
+	&& conda clean -y -t -i -l -a
+
+#install bash kernel
+RUN pip install bash_kernel && \
+	python -m bash_kernel.install
+
+#Install perl package manager and perl kernel takes super long and currently broken
+#RUN curl -sL http://cpanmin.us | perl - App::cpanminus \
+#	&& /usr/local/bin/cpanm --notest Devel::IPerl \
+#		PDL \
+# 		Moose \
+#		MooseX::AbstractFactory \
+#		MooseX::AbstractMethod \
+#		MooseX::Storage \
+#		Test::More
+
+#Enable C kernel after installed using pip above (jupyter-c-kernel)
+RUN install_c_kernel	
+	
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 #Install python 2.7 kernel and environment
 RUN conda create -y -n py27 python=2.7 \
 	ipykernel \
@@ -83,6 +208,7 @@ RUN conda create -y -n py27 python=2.7 \
 	macs2 \
 	&& conda clean -y -t -i -l -a
 
+<<<<<<< HEAD
 # Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
 	sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py && \
@@ -98,6 +224,21 @@ RUN python -m bash_kernel.install
 #Install C kernel
 RUN cd /root && wget -O - https://raw.githubusercontent.com/brendan-rius/jupyter-c-kernel/master/install.sh | sh
 	
+=======
+#Configure jupyter
+RUN jupyter notebook --generate-config --allow-root && \
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
+        && jupyter nbextension enable --py widgetsnbextension \
+        && jupyter contrib nbextension install --system \
+        && jupyter nbextension install nbpresent --py --overwrite --system \
+		&& jupyter nbextension enable nbpresent --py --system \
+		&& jupyter serverextension enable nbpresent --py --system
+		
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 #Get Homer
 RUN cd /root && mkdir Homer && wget http://homer.ucsd.edu/homer/configureHomer.pl && perl configureHomer.pl -install homer
 ENV PATH=~/Homer/bin/:$PATH
@@ -122,12 +263,22 @@ RUN /bin/bash -c "source activate py27 && cd /root && git clone https://github.c
 RUN cd /root && wget http://bioinfo.vanderbilt.edu/mirSTP/download/mirSTP.zip && unzip mirSTP.zip && rm mirSTP.zip && chmod 755 mirSTP/bin/mirSTP
 ENV PATH=~/mirSTP/bin:$PATH
 
+<<<<<<< HEAD
 #Get Euplotid
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
 #run a closing update
 RUN conda update -y --all \
 	&& conda clean -y -t -i -l -a
+=======
+#Get pytorch
+RUN conda install pytorch torchvision -y -c soumith
+
+#Get Euplotid
+RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+
+
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 
 # Set root as workdir
 WORKDIR /root/Euplotid

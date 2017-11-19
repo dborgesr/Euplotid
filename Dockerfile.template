@@ -1,10 +1,24 @@
+<<<<<<< HEAD
 #Minitid image for microscope and viewing
 FROM resin/rpi-raspbian:jessie
+=======
+#Euplotid ARM image
+
+#ARM
+FROM resin/aarch64-alpine:latest
+#FROM resin/aarch64-debian:stretch
+
+#ARM on x86
+#FROM resin/armv7hf-debian-qemu
+#FROM amtypaldos/armv7hf-alpine-qemu
+#RUN [ "cross-build-start" ]
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 
 USER root
 
 WORKDIR /root
 
+<<<<<<< HEAD
 ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
@@ -13,6 +27,62 @@ ENV APT_PACKAGES=" \
 		php5-cli \
 		php5-common \
 		php-apc \
+=======
+ENV APK_PACKAGES=" \
+	tk-dev \
+	libpng-dev \
+	gfortran \
+	wget \
+	git \
+	vim \
+	libxml2-dev \
+	ca-certificates \
+	build-base \
+	bzip2-dev \
+	libc6-compat \
+	gdbm-dev \
+#	hdf5-dev \
+	jpeg-dev \
+	lapack-dev \
+	ncurses-dev \
+	sqlite-dev \
+	openssl-dev \
+	zlib-dev \
+	xz-dev \
+	linux-headers \
+	curl \
+	readline-dev \
+	patch \
+	bash \
+	cmake \
+	python3 \
+	python3-dev \
+	libffi-dev \
+	libffi \
+	libxslt-dev \
+	openssl-dev \
+	openssl"
+	
+# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
+RUN apk update  \ 
+  # replacing default repositories with edge ones
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+  && apk add --no-cache $APK_PACKAGES  \
+  && python3 -m ensurepip \
+  && rm -r /usr/lib/python*/ensurepip \
+  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+  && pip3 install --upgrade pip setuptools \
+  && rm -r /root/.cache \
+  && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+  && apk update \
+  && apk upgrade
+
+ENV APT_PACKAGES=" \
+		psmisc \
+		dialog \
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 		apache2-utils \
 		gpac \
 		motion \
@@ -20,6 +90,7 @@ ENV APT_PACKAGES=" \
 		libav-tools \
 		gstreamer1.0-tools \
 		git \
+<<<<<<< HEAD
 		libraspberrypi-bin \
 		libraspberrypi-dev \
 		libraspberrypi-doc \
@@ -28,6 +99,11 @@ ENV APT_PACKAGES=" \
 		tk-dev \
     	libpng-dev \
 		gfortran \
+=======
+		vim \
+		tk-dev \
+    	libpng-dev \
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 		wget \
 		libncurses-dev \
 		libxml2-dev \
@@ -43,7 +119,10 @@ ENV APT_PACKAGES=" \
 		libssl-dev \
 		zlib1g-dev \
 		curl \
+<<<<<<< HEAD
 		i2c-tools \
+=======
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 		liblzma-dev \
 		xz-utils \
 		dnsmasq \
@@ -53,6 +132,7 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
+<<<<<<< HEAD
 		nodejs \
 		npm \
 		cron \
@@ -79,12 +159,38 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
+=======
+		cmake \
+		libxslt1-dev"
+
+#RUN apt-get -q update && \ 
+#	apt-get dist-upgrade && \
+#	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+# 	rm -rf "/var/lib/apt/lists/*"
+
+#RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
+#    bash miniconda.sh -b -p /root/conda && \
+#    rm miniconda.sh && \
+#    export PATH=/root/conda/bin:$PATH && \
+#	conda config --set show_channel_urls True && \
+#    conda config --add channels jetson-tx2 && \
+#    conda update conda && \
+#    conda update --all --yes && \
+#    conda install -y pip \
+#	    setuptools \
+#		pandas \
+#		numpy && \
+#	conda clean -tipy && \
+#	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+#ENV PATH=/root/conda/bin:$PATH
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 
 RUN pip install \
 	setuptools \
 	gnureadline \
 	jupyter \
 	plotly \
+<<<<<<< HEAD
 #	myvariant \
 #	mygene \
 #	pysam \
@@ -102,6 +208,37 @@ RUN pip install \
     solidpython && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
+=======
+	myvariant \
+	mygene \
+	pysam \
+	cffi \
+    pandas \
+	lxml \
+    joblib \
+    biopython \
+    pyliftover \
+    scipy \
+    numpy \
+    nbpresent \
+    networkx \
+    python-louvain \
+    ipywidgets \
+    jupyter_contrib_nbextensions \
+    pyyaml && \
+	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+
+#Get pytorch machine learning
+ENV CMAKE_PREFIX_PATH=$CONDA_DIR
+RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
+	cd pytorch && \
+	git submodule update --init && \
+	pip install -r requirements.txt && \
+	python3 setup.py install
+	
+#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
+
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
 	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
@@ -115,6 +252,7 @@ RUN jupyter notebook --generate-config --allow-root && \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system 
 
+<<<<<<< HEAD
 # Install packages for microscope camera
 RUN mkdir -p /usr/src/app && \
 	cd /usr/src/app && \
@@ -168,6 +306,8 @@ RUN cd /usr/src/app && \
     ./node_modules/.bin/bower --allow-root cache clean && \
     ./node_modules/.bin/coffee -c ./src
 
+=======
+>>>>>>> 57b841b819a707d5213102f4c59f219b50c5cb2d
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 WORKDIR /root/Euplotid
