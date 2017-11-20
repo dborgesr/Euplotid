@@ -155,6 +155,7 @@ RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && 
 	cd pytorch && \
 	git submodule update --init && \
 	pip install -r requirements.txt && \
+	python3 setup.py build develop && \
 	python3 setup.py install
 	
 #RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
