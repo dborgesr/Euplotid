@@ -1,8 +1,8 @@
 #Euplotid ARM image
 
 #ARM
-#FROM resin/aarch64-alpine:latest
-FROM resin/aarch64-debian:stretch
+FROM resin/aarch64-alpine:latest
+#FROM resin/aarch64-debian:stretch
 
 #ARM on x86
 #FROM resin/armv7hf-debian-qemu
@@ -41,21 +41,28 @@ ENV APK_PACKAGES=" \
 	bash \
 	cmake \
 	python3 \
-	python3-dev"
+	python3-dev \
+	libffi-dev \
+	libffi \
+	libxslt-dev \
+	openssl-dev \
+	openssl"
 	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
-#RUN apk update  \ 
-#  # replacing default repositories with edge ones
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
-#  && apk add --no-cache $APK_PACKAGES  \
-#  && python3 -m ensurepip \
-#  && rm -r /usr/lib/python*/ensurepip \
-#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
-#  && pip3 install --upgrade pip setuptools \
-#  && rm -r /root/.cache \
-#  && ln -s /usr/include/locale.h /usr/include/xlocale.h
+RUN apk update  \ 
+  # replacing default repositories with edge ones
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+  && apk add --no-cache $APK_PACKAGES  \
+  && python3 -m ensurepip \
+  && rm -r /usr/lib/python*/ensurepip \
+  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+  && pip3 install --upgrade pip setuptools \
+  && rm -r /root/.cache \
+  && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+  && apk update \
+  && apk upgrade
 
 ENV APT_PACKAGES=" \
 		psmisc \
@@ -94,44 +101,49 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-		cmake"
+		cmake \
+		libxslt1-dev"
 
-RUN apt-get -q update && \ 
-	apt-get dist-upgrade && \
-	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
-  	rm -rf "/var/lib/apt/lists/*"
+#RUN apt-get -q update && \ 
+#	apt-get dist-upgrade && \
+#	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+# 	rm -rf "/var/lib/apt/lists/*"
 
-RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /root/conda && \
-    rm miniconda.sh && \
-    export PATH=/root/conda/bin:$PATH && \
-	conda config --set show_channel_urls True && \
-    conda config --add channels jetson-tx2 && \
-    conda update conda && \
-    conda update --all --yes && \
-    conda install -y pip \
-	    setuptools && \
-	conda clean -tipy && \
-	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/root/conda/bin:$PATH
+#RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
+#    bash miniconda.sh -b -p /root/conda && \
+#    rm miniconda.sh && \
+#    export PATH=/root/conda/bin:$PATH && \
+#	conda config --set show_channel_urls True && \
+#    conda config --add channels jetson-tx2 && \
+#    conda update conda && \
+#    conda update --all --yes && \
+#    conda install -y pip \
+#	    setuptools \
+#		pandas \
+#		numpy && \
+#	conda clean -tipy && \
+#	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+#ENV PATH=/root/conda/bin:$PATH
 
 RUN pip install \
 	setuptools \
 	gnureadline \
 	jupyter \
 	plotly \
-#	myvariant \
-#	mygene \
-#	pysam \
-#    pandas \
-#    joblib \
-#    biopython \
-#    pyliftover \
-#    scipy \
-#    numpy \
+	myvariant \
+	mygene \
+	pysam \
+	cffi \
+    pandas \
+	lxml \
+    joblib \
+    biopython \
+    pyliftover \
+    scipy \
+    numpy \
     nbpresent \
     networkx \
-#    python-louvain \
+    python-louvain \
     ipywidgets \
     jupyter_contrib_nbextensions \
     pyyaml && \
@@ -139,9 +151,11 @@ RUN pip install \
 
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone https://github.com/pytorch/pytorch.git && \
+RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
 	cd pytorch && \
+	git submodule update --init && \
 	pip install -r requirements.txt && \
+	python3 setup.py build develop && \
 	python3 setup.py install
 	
 #RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
