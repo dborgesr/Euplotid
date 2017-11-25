@@ -64,8 +64,7 @@ ENV APT_PACKAGES=" \
 		libffi-dev \
 		libffi6 \
 		libxslt-dev \
-		openssl-dev \
-		openssl"
+		libssl-dev"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
