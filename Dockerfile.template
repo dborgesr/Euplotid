@@ -62,7 +62,7 @@ ENV APT_PACKAGES=" \
 		usbutils \
 		make \
 		libffi-dev \
-		libffi \
+		libffi6 \
 		libxslt-dev \
 		openssl-dev \
 		openssl"
