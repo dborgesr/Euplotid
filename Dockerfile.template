@@ -60,7 +60,12 @@ ENV APT_PACKAGES=" \
 		g++ \
 		gcc \
 		usbutils \
-		make"
+		make \
+		libffi-dev \
+		libffi \
+		libxslt-dev \
+		openssl-dev \
+		openssl"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
