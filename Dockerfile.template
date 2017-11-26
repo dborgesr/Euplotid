@@ -150,5 +150,6 @@ RUN cd /usr/src/app && \
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 WORKDIR /root/Euplotid
 
+
 EXPOSE 80
 CMD ["bash", "./start.sh"]
