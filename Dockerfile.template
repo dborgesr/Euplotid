@@ -153,5 +153,4 @@ WORKDIR /root/Euplotid
 
 
 EXPOSE 80
-CMD ["jupyter", "notebook", "--allow-root",  "--port=80", "--no-browser", "--ip=0.0.0.0"]
-#CMD ["bash", "./start.sh"]
+CMD ["bash", "./start.sh"]
