@@ -12,14 +12,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   vim \
   libboost-dev \
   libcairo2-dev \
-#  libzmq3-dev #iperl\
-#  libcairo2-dev #iperl\
   curl \
   zip \
   unzip \
 #  libzmq3-dev #iperl \
 #  libcairo2-dev #iperl \
-	unzip \
 #	texlive-xetex #for printing pdf SUPER heavy (over 1Gb) for PDFs \
   && apt-get update \
   && apt-get clean \
@@ -38,7 +35,7 @@ RUN wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_
     conda install -y pip \
 	    setuptools \
 		nb_conda \
-		gcc \
+		libgcc \
 		conda-build \
 		git \
 		ipyparallel \
