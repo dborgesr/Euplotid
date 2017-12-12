@@ -116,28 +116,30 @@ ENV APT_PACKAGES=" \
 		libexpat-dev \
 #		rfkill \
 		cmake \
-		libxslt1-dev"
+		libxslt1-dev \
+		python3 \
+		python3-dev"
 
 RUN apt-get -q update && \ 
 	apt-get upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
  	rm -rf "/var/lib/apt/lists/*"
 
-RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /root/conda && \
-    rm miniconda.sh && \
-    export PATH=/root/conda/bin:$PATH && \
-	conda config --set show_channel_urls True && \
-    conda config --add channels jetson-tx2 && \
-    conda update conda && \
-    conda update --all --yes && \
-    conda install -y pip \
-	    setuptools \
-		pandas \
-		numpy && \
-	conda clean -tipy && \
-	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/root/conda/bin:$PATH
+#RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
+#    bash miniconda.sh -b -p /root/conda && \
+#    rm miniconda.sh && \
+#    export PATH=/root/conda/bin:$PATH && \
+#	conda config --set show_channel_urls True && \
+#    conda config --add channels jetson-tx2 && \
+#    conda update conda && \
+#    conda update --all --yes && \
+#    conda install -y pip \
+#	    setuptools \
+#		pandas \
+#		numpy && \
+#	conda clean -tipy && \
+#	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+# ENV PATH=/root/conda/bin:$PATH
 
 RUN pip install \
 	setuptools \
