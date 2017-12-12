@@ -119,7 +119,7 @@ ENV APT_PACKAGES=" \
 		libxslt1-dev"
 
 RUN apt-get -q update && \ 
-	apt-get dist-upgrade && \
+	apt-get upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
  	rm -rf "/var/lib/apt/lists/*"
 
