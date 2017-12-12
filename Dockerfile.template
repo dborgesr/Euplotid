@@ -119,7 +119,7 @@ ENV APT_PACKAGES=" \
 		libxslt1-dev \
 		python3 \
 		python3-dev \
-		python-pip"
+		python-pip3"
 
 RUN apt-get -q update && \ 
 	apt-get upgrade && \
