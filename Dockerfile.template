@@ -129,7 +129,8 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 	    setuptools \
 		pandas \
 		numpy \
-		scipy && \
+		scipy \
+		pyyaml && \
 	conda clean -tipy
 ENV PATH=/root/conda/bin:$PATH
 
@@ -145,8 +146,8 @@ RUN /root/conda/bin/pip install \
 #    pandas \
 	lxml \
     joblib \
-    biopython \
-    pyliftover \
+#    biopython \
+#    pyliftover \
 #    scipy \
 #    numpy \
     nbpresent \
