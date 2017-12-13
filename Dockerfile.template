@@ -141,9 +141,9 @@ RUN pip install \
 	plotly \
 	myvariant \
 	mygene \
-	pysam \
+#	pysam \
 	cffi \
-    pandas \
+#    pandas \
 	lxml \
     joblib \
     biopython \
