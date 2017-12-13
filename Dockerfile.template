@@ -106,7 +106,7 @@ ENV APT_PACKAGES=" \
 		mate-desktop-environment \
 		mate-desktop-environment-extras \
 		libffi-dev \
-		libffi \
+		libffi6 \
 		libxslt-dev \
 		openssl-dev \
 		openssl"
