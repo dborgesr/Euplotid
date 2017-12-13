@@ -128,7 +128,8 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
     	wheel \
 	    setuptools \
 		pandas \
-		numpy && \
+		numpy \
+		scipy && \
 	conda clean -tipy
 ENV PATH=/root/conda/bin:$PATH
 
@@ -146,8 +147,8 @@ RUN /root/conda/bin/pip install \
     joblib \
     biopython \
     pyliftover \
-    scipy \
-    numpy \
+#    scipy \
+#    numpy \
     nbpresent \
     networkx \
     python-louvain \
