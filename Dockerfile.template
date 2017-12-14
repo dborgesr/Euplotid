@@ -131,8 +131,7 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 		numpy \
 		scipy \
 		pyyaml \
-		pandas \
-		gcc && \
+		pandas && \
 	conda clean -tipy
 ENV PATH=/root/conda/bin:$PATH
 
