@@ -130,7 +130,8 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 		pandas \
 		numpy \
 		scipy \
-		pyyaml && \
+		pyyaml \
+		pandas && \
 	conda clean -tipy
 ENV PATH=/root/conda/bin:$PATH
 
@@ -150,13 +151,13 @@ RUN /root/conda/bin/pip install \
 #    pyliftover \
 #    scipy \
 #    numpy \
+#	 pyyaml \
     nbpresent \
     networkx \
     python-louvain \
     ipywidgets \
-    jupyter_contrib_nbextensions \
-    pyyaml && \
-	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+    jupyter_contrib_nbextensions
+#	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
