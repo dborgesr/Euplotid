@@ -131,7 +131,8 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 		numpy \
 		scipy \
 		pyyaml \
-		pandas && \
+		pandas \
+		gcc && \
 	conda clean -tipy
 ENV PATH=/root/conda/bin:$PATH
 
@@ -164,9 +165,9 @@ ENV CMAKE_PREFIX_PATH=$CONDA_DIR
 RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
 	cd pytorch && \
 	git submodule update --init && \
-	pip install -r requirements.txt && \
-	python3 setup.py build develop && \
-	python3 setup.py install
+	/root/conda/bin/pip install -r requirements.txt && \
+	/root/conda/bin/python3 setup.py build develop && \
+	/root/conda/bin/python3 setup.py install
 	
 #RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
