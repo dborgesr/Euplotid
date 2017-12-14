@@ -160,13 +160,13 @@ RUN /root/conda/bin/pip install \
 #	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get pytorch machine learning
-ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
-	cd pytorch && \
-	git submodule update --init && \
-	/root/conda/bin/pip install -r requirements.txt && \
-	/root/conda/bin/python3 setup.py build develop && \
-	/root/conda/bin/python3 setup.py install
+#ENV CMAKE_PREFIX_PATH=$CONDA_DIR
+#RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
+#	cd pytorch && \
+#	git submodule update --init && \
+#	/root/conda/bin/pip install -r requirements.txt && \
+#	/root/conda/bin/python3 setup.py build && \
+#	/root/conda/bin/python3 setup.py install
 	
 #RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
