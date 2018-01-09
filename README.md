@@ -1,7 +1,9 @@
 
 <div style="text-align:center"><img src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/Title_slide.png" style="width: 1000px;"></div>
 
+
 <div style="position:relative;height:0;padding-bottom:56.25%"><iframe src="https://www.youtube.com/embed/wNuoL09rqtc" width="640" height="360" frameborder="0" style="position:absolute;width:100%;height:100%;left:0" allowfullscreen></iframe></div>
+
 
 # Abstract
 ### http://dborgesr.github.io/Euplotid/
