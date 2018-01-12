@@ -1,13 +1,17 @@
 
+<div style="text-align:center"><img src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/Title_slide.png" style="width: 1000px;"></div>
 
-<div style="text-align:center"><img src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/lab_meeting_slides_Title_slide.png" style="width: 1000px;"></div>
+
+<div style="position:relative;height:0;padding-bottom:56.25%"><iframe src="https://www.youtube.com/embed/wNuoL09rqtc" width="640" height="360" frameborder="0" style="position:absolute;width:100%;height:100%;left:0" allowfullscreen></iframe></div>
+
 
 # Abstract
 ### http://dborgesr.github.io/Euplotid/
-### http://www.biorxiv.org/content/early/2017/08/03/170159
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Euplotid is composed of a set of constantly evolving bioinformatic pipelines encapsulated and running in Docker containers enabling a user to build and annotate the local regulatory structure of every gene starting from raw sequencing reads of DNA-interactions, chromatin accessibility, and RNA-sequencing. Reads are quantified using the latest computational tools and the results are normalized, quality-checked, and stored. The local regulatory neighborhood of each gene is built using a Louvain based graph partitioning algorithm parameterized by the chromatin extrusion model and CTCF-CTCF interactions. Cis-Regulatory Elements are defined using chromatin accessibility peaks which are then mapped to Transcription Start Sites based on inclusion within the same neighborhood. Convolutional Neural Networks are combined with Long-Short Term Memory in order to provide a statistical model mimicking transcription factor binding, one neural network for each transcription factor in the genome is trained on all available Chip-Seq and SELEX data, learning what pattern of DNA oligonucleotides the factor binds. The neural networks are then merged and trained on chromatin accessibility data, building a rationally designed neural network architecture capable of predicting chromatin accessibility. Transcription factor binding and identity at each peak is annotated using this trained neural network architecture. By in-silico mutating and re-applying the neural network we are able to gauge the impact of a transition mutation on the binding of any human transcription factor. The annotated output can be visualized in a variety of 1D, 2D and 3D ways overlaid with existing bodies of knowledge, such as GWAS results. Once a particular CRE of interest has been identified by a biologist the difficulty of a <a href="https://blog.benchling.com/base-editor/"> Base Editor 2 (BE2) </a> mediated transition mutation can be quantitatively assessed and induced in a model organism.
+### https://www.biorxiv.org/content/early/2018/01/08/170159
 
-<div style="text-align:center"><img src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/lab_meeting_slides_graphical_abstract.png" style="width: 5=800px;"></div>
+Life as we know it has continued to shock and amaze us, consistently reminding us that truth is far stranger than fiction. Euplotid is a quantized geometric model of the eukaryotic cell, a first attempt at quantifying, using planck's constant geometric shape as its base, the incredible complexity that gives rise to a living cell. By beginning from the very bottom we are able to build the pieces, which when hierarchically and combinatorially combined, produce the emergent complex behavior that even a single celled organism can show. Euplotid is composed of a set of quantized geometric 3D building blocks and constantly evolving bioinformatic pipelines encapsulated and running in Docker containers enabling a user to build and annotate the local regulatory structure of every gene starting from raw sequencing reads of DNA-interactions, chromatin accessibility, and RNA-sequencing. Reads are quantified using the latest computational tools and the results are normalized, quality-checked, and stored. The local regulatory neighborhood of each gene is built using a Louvain based graph partitioning algorithm parameterized by the chromatin extrusion model and CTCF-CTCF interactions. Cis-Regulatory Elements are defined using chromatin accessibility peaks which are then mapped to Transcription Start Sites based on inclusion within the same neighborhood. Deep Neural Networks are trained in order to provide a statistical model mimicking transcription factor binding, giving the ability to identify all TFs within a given chromatin accessibility peak. By in-silico mutating and re-applying the neural network we are able to gauge the impact of a transition mutation on the binding of any transcription factor. The annotated output can be visualized in a variety of 1D, 2D, 3D and 4D ways overlaid with existing bodies of knowledge, such as GWAS results or PDB structures. Once a particular CRE of interest has been identified by a biologist the difficulty of a Base Editor mediated transition mutation can be quantitatively observed and induced in a model organism.
+
+<div style="text-align:center"><img src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/graphical_abstract.png" style="width: 5=800px;"></div>
 
 ## Get Docker
 [**INSTALL DOCKER HERE**](https://www.docker.com/community-edition#/download")
@@ -16,7 +20,7 @@ The pipelines available and their capabilities are described in [Methods](docs/0
 
 Remember to define the correct directories when running the Docker image depending on your local OS machine, ex:
 
-Whitehead (Linux):
+Cluster (Linux):
 ~~~
     -v "/lab/solexa_public:/input_dir" \
     -v "/home/dborgesr/work_space/tmp:/tmp_dir" \
