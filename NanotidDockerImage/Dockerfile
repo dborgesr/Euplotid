@@ -55,7 +55,12 @@ ENV APT_PACKAGES=" \
 		rfkill \
 		nodejs \
 		npm \
-		cron "
+		cron \
+        arduino \
+        g++ \
+        gcc \
+        usbutils \
+        make"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
@@ -139,7 +144,13 @@ RUN cd /usr/src/app && \
 
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+
+#Define arduino board attached to RpiOw and setup
+ENV ARDUINODIR /usr/share/arduino
+ENV BOARD mega2560
+RUN cd /root/Euplotid/arduino_code && make
 WORKDIR /root/Euplotid
+
 
 EXPOSE 80
 CMD ["bash", "./start.sh"]

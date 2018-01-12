@@ -1,5 +1,13 @@
 #!/bin/bash
 
+diff /Euplotid/arduino_code/euplouino.ino /data/euplouino.ino || PROGRAMMER=1
+if [ "${PROGRAMMER:-}" == "1" ]; then
+  pushd /Euplotid/arduino_code/
+  make upload && cp euplouino.ino /data/
+  unset PROGRAMMER
+  popd
+fi
+
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
 sleep 1
