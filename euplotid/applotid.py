@@ -18,10 +18,12 @@ server = Flask('applotid')
 server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/Euplotid/euploDB.db'
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(server)
-app = dash.Dash('applotid-front', server=server,csrf_protect=False)
 #create tables, may need to make sure to not create if they exist already
 db.create_all()
+#start Dash app
+app = dash.Dash('applotid-front', server=server,csrf_protect=False)
 
+#Add css style to dash app
 app.css.append_css({
     "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 })
@@ -62,9 +64,7 @@ class tentacleRead(db.Model):
         self.sal = sal
         self.sg = sg
         
-def draw_tentacle_graph(results):
-    
-    #Generate plots
+def draw_ph_graph(results):
     ph_plot = go.Scatter(
         x = results["date_time"],
         y = results["ph"],
@@ -73,6 +73,10 @@ def draw_tentacle_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
+    fig['layout']['yaxis'].update(title = "pH", range = [1,12])
+    return fig
+
+def draw_ec_graph(results):
     ec_plot = go.Scatter(
         x = results["date_time"],
         y = results["ec"],
@@ -81,6 +85,10 @@ def draw_tentacle_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
+    fig['layout']['yaxis'].update(title = "MicroSiemens", range = [5,200])
+    return fig
+
+def draw_tds_plot(results):
     tds_plot = go.Scatter(
         x = results["date_time"],
         y = results["tds"],
@@ -89,6 +97,9 @@ def draw_tentacle_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
+    fig['layout']['yaxis'].update(title = "Concentration", range = [0,100])
+
+def draw_sal_plot(results):
     sal_plot = go.Scatter(
         x = results["date_time"],
         y = results["sal"],
@@ -97,6 +108,10 @@ def draw_tentacle_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
+    fig['layout']['yaxis'].update(title = "Practical salinity unit", range = [0,100])
+    return fig
+
+def draw_sg_plot(results):
     sg_plot = go.Scatter(
         x = results["date_time"],
         y = results["sg"],
@@ -105,29 +120,10 @@ def draw_tentacle_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    
-    fig = tools.make_subplots(rows=2, cols=3)
-                              
-    fig.append_trace(ph_plot, 1, 1)
-    fig.append_trace(ec_plot, 1, 2)
-    fig.append_trace(sal_plot, 1, 3)
-    fig.append_trace(sg_plot, 2, 1)
-    fig.append_trace(tds_plot, 2, 2)
-                              
-    fig['layout']['yaxis1'].update(title = "pH", range = [1,12])
-    fig['layout']['yaxis2'].update(title = "MicroSiemens", range = [5,200])
-    fig['layout']['yaxis3'].update(title = "Concentration", range = [0,100])
-    fig['layout']['yaxis4'].update(title = "Density", range = [0,100])
-    fig['layout']['yaxis5'].update(title = "Parts per Million", range = [0,100]) 
-    
-    fig['layout'].update(height=700, width=1000, title='Tentacle Readings')
-    
+    fig['layout']['yaxis'].update(range = [0,100]) 
     return fig
-        
-    
-def draw_pisense_graph(results):
-    
-    #Generate plots
+
+def draw_temp_plot(results):
     temp_plot = go.Scatter(
         x = results["date_time"],
         y = results["temperature"],
@@ -136,6 +132,10 @@ def draw_pisense_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
+    fig['layout']['yaxis'].update(title = "Farenheit", range = [-10,100])
+    return fig
+
+def draw_pressure_plot(results):
     pres_plot = go.Scatter(
         x = results["date_time"],
         y = results["pressure"],
@@ -144,6 +144,10 @@ def draw_pisense_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
+    fig['layout']['yaxis'].update(title = "Millibars", range = [0,1100])
+    return fig
+
+def draw_humidity_graph(results):
     hum_plot = go.Scatter(
         x = results["date_time"],
         y = results["humidity"],
@@ -152,26 +156,15 @@ def draw_pisense_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-                              
-    fig = tools.make_subplots(rows=1, cols=3)
-                              
-    fig.append_trace(temp_plot, 1, 1)
-    fig.append_trace(pres_plot, 1, 2)
-    fig.append_trace(hum_plot, 1, 3)
-                              
-    fig['layout']['yaxis1'].update(title = "Farenheit", range = [-10,100])
-    fig['layout']['yaxis2'].update(title = "Millibars", range = [0,1100])
-    fig['layout']['yaxis3'].update(title = "Relative Humidity", range = [0,100])
-    
-    fig['layout'].update(height=700, width=1000, title='PiSense Readings')
-    
+    fig['layout']['yaxis'].update(title = "Relative Humidity", range = [0,100])
     return fig
         
 def add_to_cron(minute, hour, day, month, day_week, cron_job):
     cron_euplo = CronTab(user='root')
-    job  = cron_euplo.new(command=cron_job)
-    job.setall(minute, hour, day, month, day_week)
-    cron_euplo.write()
+    if cron_job:
+        job  = cron_euplo.new(command=cron_job)
+        job.setall(minute, hour, day, month, day_week)
+        cron_euplo.write()
     df = pd.DataFrame(columns=["minute", "hour", "day", "month", "day of week", "command"])
     for saved_job in cron_euplo:
         a = saved_job.split("\t")
@@ -214,114 +207,177 @@ def generate_table(dataframe, max_rows=10):
 app.layout = html.Div([
     
     html.Div([
-        html.H1('Euplotid Dashboard')
+        html.H1('Euplotid Dashboard', style={'text-align': 'center'})
     ]),
-    
-    #Environmental monitoring
-    html.Div([
-        #date selector
-        dcc.DatePickerRange(
-            id='date-picker-range',
-            start_date=dt(2018, 1, 1),
-            end_date_placeholder_text='Select a date!',
-            end_date=dt(2019,1,1),
-            min_date_allowed=dt(2018,1,1),
-            max_date_allowed=dt(2020,1,1)
-        ),
-        # pisense output Graph
-        dcc.Graph(id='pisense-graph'),
-        # graph
-        dcc.Graph(id='tentacle-graph')
-    ], className='one column'),
-    
-    #Cron job input and scheduling
-    html.Div([
-        dcc.Slider(
-            id="min-slider",
-            min=0,
-            max=59,
-            marks={i: 'Minute {}'.format(i) for i in range(60)},
-            value='-1'
-        ),
-        dcc.Slider(
-            id="hour-slider",
-            min=0,
-            max=23,
-            marks={i: 'Hour {}'.format(i) for i in range(23)},
-            value='-1'
-        ),        
-        dcc.Slider(
-            id="day-slider",
-            min=1,
-            max=31,
-            marks={i: 'Day of month {}'.format(i) for i in range(32)},
-            value='-1'
-        ),       
-        dcc.Dropdown(
-            id="month-picker",
-            options=[
-                {'label': 'January', 'value': 'jan'},
-                {'label': 'February', 'value': 'feb'},
-                {'label': 'March', 'value': 'SF'},
-                {'label': 'April', 'value': 'apr'},
-                {'label': 'May', 'value': 'may'},
-                {'label': 'June', 'value': 'jun'},
-                {'label': 'July', 'value': 'jul'},
-                {'label': 'August', 'value': 'aug'},
-                {'label': 'September', 'value': 'sept'},
-                {'label': 'October', 'value': 'oct'},
-                {'label': 'November', 'value': 'nov'},
-                {'label': 'December', 'value': 'dec'}
-            ],
-            value='*'
-        ),
-        dcc.Dropdown(
-            id="day-picker",
-            options=[
-                {'label': 'Monday', 'value': 'mon'},
-                {'label': 'Tuesday', 'value': 'tue'},
-                {'label': 'Wednesday', 'value': 'wed'},
-                {'label': 'Thursday', 'value': 'thr'},
-                {'label': 'Friday', 'value': 'fri'},
-                {'label': 'Saturday', 'value': 'sat'},
-                {'label': 'Sunday', 'value': 'sun'}
-            ],
-            value='*'
-        ),
-        dcc.Input(
-            id='cron-input',
-            placeholder='Enter a valid command',
-            type='text',
-            value=''),
-        html.Button('Submit', id='cron-submit'),
-        html.Div([
-            html.Table(id='cron-jobs')
-        ], className='six columns')
-    ],className='two columns'),
     
     #Control RF connected devices
     html.Div([
-        html.Button('RF1 ON', id='rf_on_button1'),
-        html.Button('RF1 OFF', id='rf_off_button1'),
-        html.Button('RF2 ON', id='rf_on_button2'),
-        html.Button('RF2 OFF', id='rf_off_button2'),
-        html.Button('RF3 ON', id='rf_on_button3'),
-        html.Button('RF3 OFF', id='rf_off_button3'),
-        html.Button('RF4 ON', id='rf_on_button4'),
-        html.Button('RF4 OFF', id='rf_off_button4'),
-        html.Button('RF5 ON', id='rf_on_button5'),
-        html.Button('RF5 OFF', id='rf_off_button5')
-    ], className='two columns'),
-    html.P(id='placeholder1'),
-    html.P(id='placeholder2'),
-    html.P(id='placeholder3'),
-    html.P(id='placeholder4'),
-    html.P(id='placeholder5'),
-    html.P(id='placeholder6'),
-    html.P(id='placeholder7'),
-    html.P(id='placeholder8'),
-    html.P(id='placeholder9'),
-    html.P(id='placeholder10')
+        html.Div([
+            html.H2('Control X10 devices')
+        ]),
+        html.Div([
+            html.Button('RF1 ON', id='rf_on_button1'),
+            html.Button('RF1 OFF', id='rf_off_button1'),
+            html.P(id='placeholder1'),
+            html.P(id='placeholder2')
+        ], className='row'),
+        html.Div([
+            html.Button('RF2 ON', id='rf_on_button2'),
+            html.Button('RF2 OFF', id='rf_off_button2'),
+            html.P(id='placeholder3'),
+            html.P(id='placeholder4')
+        ], className='row'),
+        html.Div([
+            html.Button('RF3 ON', id='rf_on_button3'),
+            html.Button('RF3 OFF', id='rf_off_button3'),
+            html.P(id='placeholder5'),
+            html.P(id='placeholder6')
+        ], className='row'),
+        html.Div([
+            html.Button('RF4 ON', id='rf_on_button4'),
+            html.Button('RF4 OFF', id='rf_off_button4'),
+            html.P(id='placeholder7'),
+            html.P(id='placeholder8')
+        ], className='row'),
+        html.Div([
+            html.Button('RF5 ON', id='rf_on_button5'),
+            html.Button('RF5 OFF', id='rf_off_button5'),
+            html.P(id='placeholder9'),
+            html.P(id='placeholder10')
+        ], className='row')
+    ]),
+    
+    
+    #Environmental Monitoring
+    html.Div([
+        
+        html.Div([
+            html.H2('Environmental Monitoring', style={'text-align': 'center'})
+        ]),
+        
+        html.Div([
+            html.H3('Pick dates to query environment'),
+            #pick dates for environmental monitoring
+            dcc.DatePickerRange(
+                id='date-picker-range',
+                start_date=dt(2018, 1, 1),
+                end_date_placeholder_text='Select a date!',
+                end_date=dt(2019,1,1),
+                min_date_allowed=dt(2018,1,1),
+                max_date_allowed=dt(2020,1,1)
+            ),
+            html.Button(id='date-enviro-submit', n_clicks=0, children='Submit')
+        ], className="row"),
+        
+        html.Div([
+            html.Div([
+                html.H3('pH Graph'),
+                dcc.Graph(id='ph-graph')
+            ], className="six columns"),
+            html.Div([
+                html.H3('Electrical Conductivity Graph'),
+                dcc.Graph(id='ec-graph')
+            ], className="six columns"),
+        ], className="row"),
+        
+        html.Div([
+            html.Div([
+                html.H3('Total Dissolved Solids Graph'),
+                dcc.Graph(id='tds-graph')
+            ], className="six columns"),
+            html.Div([
+                html.H3('Salinity Graph'),
+                dcc.Graph(id='sal-graph')
+            ], className="six columns"),
+        ], className="row"),
+        
+        html.Div([
+            html.Div([
+                html.H3('Specific Gravity Graph'),
+                dcc.Graph(id='sg-graph')
+            ], className="six columns"),
+            html.Div([
+                html.H3('Temperature Graph'),
+                dcc.Graph(id='temp-graph')
+            ], className="six columns"),
+        ], className="row"),
+        
+        html.Div([
+            html.Div([
+                html.H3('Pressure Graph'),
+                dcc.Graph(id='pressure-graph')
+            ], className="six columns"),
+            html.Div([
+                html.H3('Humidity Graph'),
+                dcc.Graph(id='humidity-graph')
+            ], className="six columns")
+        ], className="row")
+    ]),
+    
+    #Cron job input and scheduling
+    html.Div([
+        html.H2('Schedule jobs using CRON', style={'text-align': 'center'}),
+        html.Div([
+            dcc.Dropdown(
+                id="min-slider",
+                options=[{ 'label': minute, 'value': minute } for minute in range(60)],
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="hour-slider",
+                options=[{ 'label': hour, 'value': hour } for hour in range(24)],
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="day-slider",
+                options=[{ 'label': day, 'value': day } for day in range(1,32)],
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="month-picker",
+                options=[
+                    {'label': 'January', 'value': 'jan'},
+                    {'label': 'February', 'value': 'feb'},
+                    {'label': 'March', 'value': 'SF'},
+                    {'label': 'April', 'value': 'apr'},
+                    {'label': 'May', 'value': 'may'},
+                    {'label': 'June', 'value': 'jun'},
+                    {'label': 'July', 'value': 'jul'},
+                    {'label': 'August', 'value': 'aug'},
+                    {'label': 'September', 'value': 'sept'},
+                    {'label': 'October', 'value': 'oct'},
+                    {'label': 'November', 'value': 'nov'},
+                    {'label': 'December', 'value': 'dec'}
+                ],
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="day-picker",
+                options=[
+                    {'label': 'Monday', 'value': 'mon'},
+                    {'label': 'Tuesday', 'value': 'tue'},
+                    {'label': 'Wednesday', 'value': 'wed'},
+                    {'label': 'Thursday', 'value': 'thr'},
+                    {'label': 'Friday', 'value': 'fri'},
+                    {'label': 'Saturday', 'value': 'sat'},
+                    {'label': 'Sunday', 'value': 'sun'}
+                ],
+                value='*'
+            ),
+            dcc.Input(
+                id='cron-input',
+                placeholder='Enter a valid command',
+                type='text',
+                value=''),
+            html.Button(id='cron-submit', n_clicks=0, children='Submit')
+            
+        ],className="seven columns"),
+        
+        html.Div([
+            html.Table(id='cron-jobs')
+        ], className="six columns")
+    ]),
+    
 ])
 
 
@@ -333,7 +389,7 @@ app.layout = html.Div([
 @app.callback(
     Output(component_id='cron-jobs', component_property='children'),
     [
-        Input(component_id='cron-submit', component_property='children')
+        Input(component_id='cron-submit', component_property='n_clicks')
     ],
     [
         State('min-slider', 'value'),
@@ -348,34 +404,149 @@ def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
     results = add_to_cron(minute, hour, day, month, day_week, cron_job)
     return generate_table(results, max_rows=50)
 
-# Update piSense graph
+# Update environmental graphs
 @app.callback(
-    Output(component_id='pisense-graph', component_property='figure'),
+    Output(component_id='ph-graph', component_property='figure'),
     [
-        Input(component_id='date-picker-range', component_property='start_date'),
-        Input(component_id='date-picker-range', component_property='end_date')
-    ]
-)
-def load_pisense_graph(start_date, end_date):
-    results = get_pisense_readings(start_date, end_date)
-    figure = []
-    if len(results) > 0:
-        figure = draw_pisense_graph(results)
-    return figure
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
 
-# Update tentacle graph
-@app.callback(
-    Output(component_id='tentacle-graph', component_property='figure'),
+    ],
     [
-        Input(component_id='date-picker-range', component_property='start_date'),
-        Input(component_id='date-picker-range', component_property='end_date')
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
     ]
 )
-def load_tentacle_graph(start_date, end_date):
+def load_ph_graph(date_enviro_submit, start_date, end_date):
     results = get_tentacle_readings(start_date, end_date)
     figure = []
     if len(results) > 0:
-        figure = draw_tentacle_graph(results)
+        figure = draw_ph_graph(results)
+    return figure
+
+@app.callback(
+    Output(component_id='ec-graph', component_property='figure'),
+    [
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
+
+    ],
+    [
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
+    ]
+)
+def load_ec_graph(date_enviro_submit, start_date, end_date):
+    results = get_tentacle_readings(start_date, end_date)
+    figure = []
+    if len(results) > 0:
+        figure = draw_ec_graph(results)
+    return figure
+
+@app.callback(
+    Output(component_id='tds-graph', component_property='figure'),
+    [
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
+
+    ],
+    [
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
+    ]
+)
+def load_tds_graph(date_enviro_submit, start_date, end_date):
+    results = get_tentacle_readings(start_date, end_date)
+    figure = []
+    if len(results) > 0:
+        figure = draw_tds_graph(results)
+    return figure
+
+@app.callback(
+    Output(component_id='sal-graph', component_property='figure'),
+    [
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
+
+    ],
+    [
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
+    ]
+)
+def load_sal_graph(date_enviro_submit, start_date, end_date):
+    results = get_tentacle_readings(start_date, end_date)
+    figure = []
+    if len(results) > 0:
+        figure = draw_sal_graph(results)
+    return figure
+
+@app.callback(
+    Output(component_id='sg-graph', component_property='figure'),
+    [
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
+
+    ],
+    [
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
+    ]
+)
+def load_sg_graph(date_enviro_submit, start_date, end_date):
+    results = get_tentacle_readings(start_date, end_date)
+    figure = []
+    if len(results) > 0:
+        figure = draw_sg_graph(results)
+    return figure
+
+@app.callback(
+    Output(component_id='temp-graph', component_property='figure'),
+    [
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
+
+    ],
+    [
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
+    ]
+)
+def load_temp_graph(date_enviro_submit, start_date, end_date):
+    results = get_pisense_readings(start_date, end_date)
+    figure = []
+    if len(results) > 0:
+        figure = draw_temp_graph(results)
+    return figure
+
+@app.callback(
+    Output(component_id='pressure-graph', component_property='figure'),
+    [
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
+
+    ],
+    [
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
+    ]
+)
+def load_pressure_graph(date_enviro_submit, start_date, end_date):
+    results = get_pisense_readings(start_date, end_date)
+    figure = []
+    if len(results) > 0:
+        figure = draw_pressure_graph(results)
+    return figure
+
+@app.callback(
+    Output(component_id='humidity-graph', component_property='figure'),
+    [
+        Input(component_id='date-enviro-submit', component_property='n_clicks')
+
+    ],
+    [
+        State(component_id='date-picker-range', component_property='start_date'),
+        State(component_id='date-picker-range', component_property='end_date')
+    ]
+)
+def load_humidity_graph(date_enviro_submit, start_date, end_date):
+    results = get_pisense_readings(start_date, end_date)
+    figure = []
+    if len(results) > 0:
+        figure = draw_humidity_graph(results)
     return figure
 
 #Buttons for RF control
