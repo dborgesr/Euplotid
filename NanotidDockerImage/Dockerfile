@@ -60,7 +60,10 @@ ENV APT_PACKAGES=" \
         g++ \
         gcc \
         usbutils \
-        make"
+        make \
+	sqlite \
+	sqlite3 \
+	libsqlite3-dev"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \

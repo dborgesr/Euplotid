@@ -1,5 +1,5 @@
 from sense_hat import SenseHat
-import subprocess, re, sys, os, pandas as pd
+import subprocess, re, sys, os, pandas as pd, datetime
 from applotid import db
 
 def main():
@@ -22,7 +22,7 @@ def main():
     sense.show_message(msg, scroll_speed=0.02)
     
     #create and save entry in DB
-    pisense_dbrow = piSenseRead(date_time, p, t_c, h)
+    pisense_dbrow = piSenseRead(datetime.datetime.now(), p, t_c, h)
     db.session.add(pisense_dbrow)
     db.session.commit()
     sense.clear()

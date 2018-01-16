@@ -1,4 +1,4 @@
-import subprocess, re, sys, os, pandas as pd, io, fcntl, time, string
+import subprocess, re, sys, os, pandas as pd, io, fcntl, time, string, datetime
 from applotid import db
 
 class AtlasI2C:
@@ -57,6 +57,14 @@ class AtlasI2C:
         self.set_i2c_address(prev_addr) # restore the address we were using
         return i2c_devices
 
+def dose_liquid(value):
+    #Dose liquid using the dosing pump
+    tentacle = AtlasI2C()
+    tentacle.set_i2c_address(103)
+    dispensed = tentacle.query("D,"+str(value)).rstrip("\x00")
+    tentacle.close()
+    return dispensed
+
 def main():
     # Query tentacle shield: 99 = pH, 100 = E.C., 103 = Pump
     tentacle = AtlasI2C()
@@ -72,7 +80,7 @@ def main():
     sg = ec_split[3]
     #close tentacle and save to DB
     tentacle.close()
-    tentacle_dbrow = tentacleRead(date_time, pH, ec, tds, sal, sg)
+    tentacle_dbrow = tentacleRead(datetime.datetime.now(), pH, ec, tds, sal, sg)
     db.session.add(tentacle_dbrow)
     db.session.commit()
     
