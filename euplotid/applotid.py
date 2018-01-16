@@ -1,15 +1,30 @@
 import os
 import dash
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
 import pandas as pd
+import subprocess
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Date, cast
 from datetime import datetime as dt
 from crontab import CronTab
+
+# Set up Dash app and database
+server = Flask('applotid')
+server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/Euplotid/euploDB.db'
+server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(server)
+app = dash.Dash('applotid-front', server=server,csrf_protect=False)
+#create tables, may need to make sure to not create if they exist already
+db.create_all()
+
+app.css.append_css({
+    "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
+})
 
 ###########################
 # Data Manipulation / Model
@@ -179,19 +194,6 @@ def get_pisense_readings(start_date, end_date):
     results = pd.read_sql(query.statement, query.session.bind)
     return results
 
-# Set up Dash app and database
-app = dash.Dash()
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/Euplotid/euploDB.db'
-db = SQLAlchemy(app)
-
-engine = create_engine("sqlite:////root/Euplotid/euploDB.db")  # Access the DB Engine
-if not engine.dialect.has_table(engine, Variable_tableName):  # If table don't exist, Create.
-    db.create_all()
-
-app.css.append_css({
-    "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
-})
-
 #########################
 # Dashboard Layout / View
 #########################
@@ -256,7 +258,7 @@ app.layout = html.Div([
             value='-1'
         ),       
         dcc.Dropdown(
-            id="month-picker"
+            id="month-picker",
             options=[
                 {'label': 'January', 'value': 'jan'},
                 {'label': 'February', 'value': 'feb'},
@@ -309,7 +311,17 @@ app.layout = html.Div([
         html.Button('RF4 OFF', id='rf_off_button4'),
         html.Button('RF5 ON', id='rf_on_button5'),
         html.Button('RF5 OFF', id='rf_off_button5')
-    ], className='two columns')
+    ], className='two columns'),
+    html.P(id='placeholder1'),
+    html.P(id='placeholder2'),
+    html.P(id='placeholder3'),
+    html.P(id='placeholder4'),
+    html.P(id='placeholder5'),
+    html.P(id='placeholder6'),
+    html.P(id='placeholder7'),
+    html.P(id='placeholder8'),
+    html.P(id='placeholder9'),
+    html.P(id='placeholder10')
 ])
 
 
@@ -368,44 +380,64 @@ def load_tentacle_graph(start_date, end_date):
 
 #Buttons for RF control
 #ON
-@app.callback( ,Input(component_id='rf_on_button1', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder1', component_property='children'),
+    [Input(component_id='rf_on_button1', component_property='n_clicks')])
 def rf1_on(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5264691 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_on_button2', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder2', component_property='children'),
+    [Input(component_id='rf_on_button2', component_property='n_clicks')])
 def rf2_on(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5264835 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_on_button3', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder3', component_property='children'),
+    [Input(component_id='rf_on_button3', component_property='n_clicks')])
 def rf3_on(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5265155 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_on_button4', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder4', component_property='children'),
+    [Input(component_id='rf_on_button4', component_property='n_clicks')])
 def rf4_on(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5266691 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_on_button5', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder5', component_property='children'),
+    [Input(component_id='rf_on_button5', component_property='n_clicks')])
 def rf5_on(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5272835 -l 192 -p 0", shell=True)  
     return
 #OFF
-@app.callback( ,Input(component_id='rf_off_button1', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder6', component_property='children'),
+    [Input(component_id='rf_off_button1', component_property='n_clicks')])
 def rf1_off(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5264700 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_off_button2', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder7', component_property='children'),
+    [Input(component_id='rf_off_button2', component_property='n_clicks')])
 def rf2_off(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5264844 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_off_button3', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder8', component_property='children'),
+    [Input(component_id='rf_off_button3', component_property='n_clicks')])
 def rf3_off(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5265164 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_off_button4', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder9', component_property='children'),
+    [Input(component_id='rf_off_button4', component_property='n_clicks')])
 def rf4_off(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5266700 -l 192 -p 0", shell=True)  
     return
-@app.callback( ,Input(component_id='rf_off_button5', 'n_clicks'))
+@app.callback(
+    Output(component_id='placeholder10', component_property='children'),
+    [Input(component_id='rf_off_button5', component_property='n_clicks')])
 def rf5_off(n_clicks):
     subprocess.check_output("var/www/rfoutlet/codesend 5272844 -l 192 -p 0", shell=True)  
     return
