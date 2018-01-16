@@ -82,7 +82,8 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 #    conda install conda-build && \
 #    conda install anaconda-client && \
     conda install -y pip \
-	    setuptools && \
+	    setuptools \
+        pandas && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
@@ -98,7 +99,11 @@ RUN pip install \
     networkx \
     python-louvain \ 
     ipywidgets \
-    jupyter_contrib_nbextensions && \
+    jupyter_contrib_nbextensions \
+    dash \
+    dash-html-components \
+    dash-core-components \
+    dash-renderer && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Configure jupyter
