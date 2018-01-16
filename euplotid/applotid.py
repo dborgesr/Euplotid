@@ -333,7 +333,7 @@ app.layout = html.Div([
 @app.callback(
     Output(component_id='cron-jobs', component_property='children'),
     [
-        Input(component_id='cron-submit', component_property='n_clicks')
+        Input(component_id='cron-submit', component_property='children')
     ],
     [
         State('min-slider', 'value'),
