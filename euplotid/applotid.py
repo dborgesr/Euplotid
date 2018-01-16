@@ -168,7 +168,7 @@ def draw_pisense_graph(results):
     return fig
         
 def add_to_cron(minute, hour, day, month, day_week, cron_job):
-    cron_euplo = CronTab(user="Euplotid")
+    cron_euplo = CronTab()
     job  = cron_euplo.new(command=cron_job)
     job.setall(minute, hour, day, month, day_week)
     cron_euplo.write()
@@ -384,62 +384,62 @@ def load_tentacle_graph(start_date, end_date):
     Output(component_id='placeholder1', component_property='children'),
     [Input(component_id='rf_on_button1', component_property='n_clicks')])
 def rf1_on(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5264691 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5264691 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder2', component_property='children'),
     [Input(component_id='rf_on_button2', component_property='n_clicks')])
 def rf2_on(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5264835 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5264835 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder3', component_property='children'),
     [Input(component_id='rf_on_button3', component_property='n_clicks')])
 def rf3_on(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5265155 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5265155 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder4', component_property='children'),
     [Input(component_id='rf_on_button4', component_property='n_clicks')])
 def rf4_on(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5266691 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5266691 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder5', component_property='children'),
     [Input(component_id='rf_on_button5', component_property='n_clicks')])
 def rf5_on(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5272835 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5272835 -l 192 -p 0", shell=True)  
     return
 #OFF
 @app.callback(
     Output(component_id='placeholder6', component_property='children'),
     [Input(component_id='rf_off_button1', component_property='n_clicks')])
 def rf1_off(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5264700 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5264700 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder7', component_property='children'),
     [Input(component_id='rf_off_button2', component_property='n_clicks')])
 def rf2_off(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5264844 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5264844 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder8', component_property='children'),
     [Input(component_id='rf_off_button3', component_property='n_clicks')])
 def rf3_off(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5265164 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5265164 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder9', component_property='children'),
     [Input(component_id='rf_off_button4', component_property='n_clicks')])
 def rf4_off(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5266700 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5266700 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder10', component_property='children'),
     [Input(component_id='rf_off_button5', component_property='n_clicks')])
 def rf5_off(n_clicks):
-    subprocess.check_output("var/www/rfoutlet/codesend 5272844 -l 192 -p 0", shell=True)  
+    subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 192 -p 0", shell=True)  
     return
 
 if __name__ == '__main__':
