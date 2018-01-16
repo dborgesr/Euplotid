@@ -168,7 +168,7 @@ def draw_pisense_graph(results):
     return fig
         
 def add_to_cron(minute, hour, day, month, day_week, cron_job):
-    cron_euplo = CronTab()
+    cron_euplo = CronTab(user='root')
     job  = cron_euplo.new(command=cron_job)
     job.setall(minute, hour, day, month, day_week)
     cron_euplo.write()
@@ -333,7 +333,7 @@ app.layout = html.Div([
 @app.callback(
     Output(component_id='cron-jobs', component_property='children'),
     [
-        Input(component_id='cron-submit', component_property='value')
+        Input(component_id='cron-submit', component_property='n_clicks')
     ],
     [
         State('min-slider', 'value'),
