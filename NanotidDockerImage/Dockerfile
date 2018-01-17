@@ -103,7 +103,10 @@ RUN pip install \
     dash \
     dash-html-components \
     dash-core-components \
-    dash-renderer && \
+    dash-renderer \
+    subprocess \
+    flask \
+    flask_sqlalchemy && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Configure jupyter
@@ -113,6 +116,7 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.base_url/c c.NotebookApp.base_url = /jupyter/" /root/.jupyter/jupyter_notebook_config.py \
         && jupyter nbextension enable --py widgetsnbextension \
         && jupyter contrib nbextension install --system \
         && jupyter nbextension install nbpresent --py --overwrite --system \

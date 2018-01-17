@@ -207,9 +207,9 @@ def generate_table(dataframe, max_rows=10):
 app.layout = html.Div([
     
     html.Div([
-        html.H1('Euplotid Dashboard', style={'text-align': 'center'})
+        html.H1('Euplotid Dashboard', style={'text-align': 'center'}),
+        dcc.Link('Jupyter link', href='/jupyter/')
     ]),
-    
     #Control RF connected devices
     html.Div([
         html.Div([
