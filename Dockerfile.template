@@ -77,13 +77,12 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
     conda config --set show_channel_urls True && \
     conda config --add channels rpi && \
 #    conda config --add channels conda-forge && \
-#    conda update conda && \
-#    conda update --all --yes && \
+    conda update conda && \
+    conda update --all --yes && \
 #    conda install conda-build && \
 #    conda install anaconda-client && \
     conda install -y pip \
 	    setuptools && \
-	conda install -c anaconda pandas && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
@@ -105,7 +104,8 @@ RUN pip install \
     dash-core-components \
     dash-renderer \
     flask \
-    flask_sqlalchemy && \
+    flask_sqlalchemy \
+    pandas && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Configure jupyter
