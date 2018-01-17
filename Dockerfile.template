@@ -134,7 +134,7 @@ RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMUL
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
 
-# Install node
+# Install noded
 ENV NODE_VERSION 9.4.0
 RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
     tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
