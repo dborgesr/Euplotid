@@ -64,7 +64,7 @@ ENV APT_PACKAGES=" \
 	sqlite3 \
 	libsqlite3-dev \
 	libxslt-dev \
-	python3-lxml \
+#	python3-lxml \
 	libffi-dev \
 	libffi"
 
