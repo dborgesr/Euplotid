@@ -57,34 +57,6 @@ byte code = 0;                      // used to hold the I2C response code.
 byte in_char = 0;                   // used as a 1 byte buffer to store in bound bytes from the I2C Circuit.
 int time;                   	    // used to change the dynamic polling delay needed for I2C read operations.
 
-
-void setup() {                      // startup function
-  Serial.begin(serial_host);	    // Set the hardware serial port.
-  Wire.begin();			    // enable I2C port.
-  intro();			    // display startup message
-}
-
-
-void serialEvent() {               						// This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
-  computer_bytes_received = Serial.readBytesUntil(13, computerdata, 20); 	// We read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received
-  computerdata[computer_bytes_received] = 0; 				        // We add a 0 to the spot in the array just after the last character we received.. This will stop us from transmitting incorrect data that may have been left in the buffer
-}
-
-
-void loop() {                                 	// main loop
-
-  if (computer_bytes_received != 0) {           // If computer_bytes_received does not equal zero
-    
-    channel = atoi(strtok(computerdata, ":"));  // Let's parse the string at each colon
-    cmd = strtok(NULL, ":");                    // Let's parse the string at each colon
-
-    I2C_call();		                        // send to I2C
-
-    computer_bytes_received = 0;                // Reset the var computer_bytes_received to equal 0
-  }
-
-}
-
 void intro() {                                  // print intro
   Serial.flush();
   Serial.println(" ");
@@ -150,4 +122,31 @@ void I2C_call() {  			        // function to parse and call I2C commands
   }
 
   Serial.println(sensordata);	        // print the data.
+}
+
+void setup() {                      // startup function
+  Serial.begin(serial_host);	    // Set the hardware serial port.
+  Wire.begin();			    // enable I2C port.
+  intro();			    // display startup message
+}
+
+
+void serialEvent() {               						// This interrupt will trigger when the data coming from the serial monitor(pc/mac/other) is received
+  computer_bytes_received = Serial.readBytesUntil(13, computerdata, 20); 	// We read the data sent from the serial monitor(pc/mac/other) until we see a <CR>. We also count how many characters have been received
+  computerdata[computer_bytes_received] = 0; 				        // We add a 0 to the spot in the array just after the last character we received.. This will stop us from transmitting incorrect data that may have been left in the buffer
+}
+
+
+void loop() {                                 	// main loop
+
+  if (computer_bytes_received != 0) {           // If computer_bytes_received does not equal zero
+    
+    channel = atoi(strtok(computerdata, ":"));  // Let's parse the string at each colon
+    cmd = strtok(NULL, ":");                    // Let's parse the string at each colon
+
+    I2C_call();		                        // send to I2C
+
+    computer_bytes_received = 0;                // Reset the var computer_bytes_received to equal 0
+  }
+
 }
