@@ -65,7 +65,8 @@ ENV APT_PACKAGES=" \
 	libsqlite3-dev \
 	libxslt-dev \
 	python3-lxml \
-	libffi-dev"
+	libffi-dev \
+	libffi"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
