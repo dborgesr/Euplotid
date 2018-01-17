@@ -66,7 +66,7 @@ ENV APT_PACKAGES=" \
 	libxslt-dev \
 #	python3-lxml \
 	libffi-dev \
-	libffi7"
+	libffi6"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
