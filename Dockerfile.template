@@ -63,7 +63,8 @@ ENV APT_PACKAGES=" \
         make \
 	sqlite \
 	sqlite3 \
-	libsqlite3-dev"
+	libsqlite3-dev \
+	python3-lxml"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
