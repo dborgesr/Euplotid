@@ -106,7 +106,7 @@ RUN pip install \
     dash-renderer \
     flask \
     flask_sqlalchemy && \
-#    pandas && \
+    pandas && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Configure jupyter
