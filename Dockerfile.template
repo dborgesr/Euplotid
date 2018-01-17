@@ -103,7 +103,6 @@ RUN pip install \
     dash-html-components \
     dash-core-components \
     dash-renderer \
-    subprocess \
     flask \
     flask_sqlalchemy \
     pandas && \
