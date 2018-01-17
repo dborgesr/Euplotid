@@ -106,7 +106,7 @@ RUN pip install \
     dash-core-components \
     dash-renderer \
     flask \
-    flask_sqlalchemy && \
+    flask_sqlalchemy \
     pandas && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
@@ -143,17 +143,10 @@ RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-a
 
 RUN mkdir -p /usr/src/app
 # Install resin-wifi-connect
-ENV RESIN_WIFI_CONNECT_VERSION 2.0.7
-RUN cd /usr/src/app && \
-	curl -SL "https://github.com/resin-io/resin-wifi-connect/archive/v$RESIN_WIFI_CONNECT_VERSION.tar.gz" \
-    | tar xzC /usr/src/app/ && \
-    mv resin-wifi-connect-$RESIN_WIFI_CONNECT_VERSION resin-wifi-connect && \
-    cd resin-wifi-connect && \
-    JOBS=MAX npm install --unsafe-perm --production && \
-    npm cache clean && \
-    ./node_modules/.bin/bower --allow-root install && \
-    ./node_modules/.bin/bower --allow-root cache clean && \
-    ./node_modules/.bin/coffee -c ./src
+RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/latest -s \
+    | grep -hoP 'browser_download_url": "\K.*%%RESIN_ARCH%%\.tar\.gz' \
+    | xargs -n1 curl -Ls \
+| tar -xvz -C /usr/src/app/
 
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
