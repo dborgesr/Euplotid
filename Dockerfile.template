@@ -64,6 +64,7 @@ ENV APT_PACKAGES=" \
 	sqlite \
 	sqlite3 \
 	libsqlite3-dev \
+	libxslt-dev \
 	python3-lxml"
 
 RUN apt-get -q update && \ 
