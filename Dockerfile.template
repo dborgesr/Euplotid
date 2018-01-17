@@ -9,16 +9,16 @@ ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
 #		nginx \
-		php5-fpm \
-		php5-cli \
-		php5-common \
-		php-apc \
-		apache2-utils \
-		gpac \
-		motion \
+#		php5-fpm \
+#		php5-cli \
+#		php5-common \
+#		php-apc \
+#		apache2-utils \
+#		gpac \
+#		motion \
 		zip \
-		libav-tools \
-		gstreamer1.0-tools \
+#		libav-tools \
+#		gstreamer1.0-tools \
 		git \
 		libraspberrypi-bin \
 		libraspberrypi-dev \
@@ -27,7 +27,7 @@ ENV APT_PACKAGES=" \
 		vim \
 		tk-dev \
     	libpng-dev \
-		gfortran \
+#		gfortran \
 		wget \
 		libncurses-dev \
 		libxml2-dev \
@@ -39,7 +39,6 @@ ENV APT_PACKAGES=" \
 		libjpeg-dev \
 #	liblapack-dev \
 		libncurses-dev \
-		libsqlite3-dev \
 		libssl-dev \
 		zlib1g-dev \
 		curl \
@@ -53,8 +52,8 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-		nodejs \
-		npm \
+#		nodejs \
+#		npm \
 		cron \
         arduino \
         g++ \
@@ -65,7 +64,8 @@ ENV APT_PACKAGES=" \
 	sqlite3 \
 	libsqlite3-dev \
 	libxslt-dev \
-	python3-lxml"
+	python3-lxml \
+	libffi-dev"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
@@ -134,7 +134,7 @@ RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMUL
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
 
 # Install node
-ENV NODE_VERSION 6.9.1
+ENV NODE_VERSION 9.4.0
 RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
     echo "0b30184fe98bd22b859db7f4cbaa56ecc04f7f526313c8da42315d89fabe23b2  node-v$NODE_VERSION-linux-armv6l.tar.gz" | sha256sum -c - && \
     tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
