@@ -76,7 +76,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
     export PATH=/opt/conda/bin:$PATH  && \
     conda config --set show_channel_urls True && \
     conda config --add channels rpi && \
-#    conda config --add channels conda-forge && \
+    conda config --add channels conda-forge && \
     conda update conda && \
     conda update --all --yes && \
 #    conda install conda-build && \
