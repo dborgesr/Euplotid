@@ -17,4 +17,4 @@ cd /usr/src/app/ && ./wifi-connect --clear=false
 cd /root/Euplotid/euplotid && python applotid.py &
 #Start jupyter
 cd /root/Euplotid
-jupyter notebook --allow-root --port=80 --no-browser --ip=0.0.0.0
+jupyter notebook --allow-root --port=8888 --no-browser --ip=0.0.0.0

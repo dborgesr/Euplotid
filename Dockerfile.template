@@ -121,7 +121,6 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.base_url/c c.NotebookApp.base_url = '/jupyter/'" /root/.jupyter/jupyter_notebook_config.py \
         && jupyter nbextension enable --py widgetsnbextension \
         && jupyter contrib nbextension install --system \
         && jupyter nbextension install nbpresent --py --overwrite --system \
@@ -136,7 +135,7 @@ RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMUL
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
 
-# Install noded
+# Install node
 ENV NODE_VERSION 9.4.0
 RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
     tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
@@ -151,7 +150,6 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
     | xargs -n1 curl -Ls \
 | tar -xvz -C /usr/src/app/
 
-RUN echo "EHLLO"
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
@@ -163,4 +161,5 @@ WORKDIR /root/Euplotid
 
 
 EXPOSE 80
+EXPOSE 8888
 CMD ["bash", "./start.sh"]
