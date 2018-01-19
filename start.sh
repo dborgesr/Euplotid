@@ -1,8 +1,8 @@
 #!/bin/bash
 
-diff /Euplotid/arduino_code/euplouino.ino /data/euplouino.ino || PROGRAMMER=1
+diff /root/Euplotid/arduino_code/euplouino.ino /data/euplouino.ino || PROGRAMMER=1
 if [ "${PROGRAMMER:-}" == "1" ]; then
-  cd /Euplotid/arduino_code/
+  cd /root/Euplotid/arduino_code/
   make upload && cp euplouino.ino /data/
   unset PROGRAMMER
 fi
