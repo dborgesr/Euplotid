@@ -6,6 +6,7 @@ import dash_html_components as html
 import plotly.figure_factory as ff
 import plotly.graph_objs as go
 import pandas as pd
+import numpy as np
 import subprocess
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -164,15 +165,25 @@ def add_to_cron(minute, hour, day, month, day_week, cron_job):
     if cron_job:
         job  = cron_euplo.new(command=cron_job)
         job.setall(minute, hour, day, month, day_week)
-        cron_euplo.write()
+        if job.is_valid():
+            cron_euplo.write()
+        else:
+            job.clear()
     df = pd.DataFrame(columns=["minute", "hour", "day", "month", "day of week", "command"])
+    job_arr = np.empty((0,6), str)
     for saved_job in cron_euplo:
-        a = saved_job.split("\t")
-        job_row = [a[0],a[1],a[2],a[3],a[4],"\t".join(a[5:(len(a)-1)])]
-        df.append(job_row)
+        a = str(saved_job).split(" ")
+        job_row = np.reshape(np.array([a[0],a[1],a[2],a[3],a[4]," ".join(a[5:(len(a))])]),(1,6))
+        job_arr = np.vstack((job_arr,job_row))
+    job_df = pd.DataFrame(job_arr, columns=["minute", "hour", "day", "month", "day of week", "command"])  
+    return job_df
     
-    return df
-    
+def clear_cron():
+    cron_euplo = CronTab(user='root')
+    cron_euplo.remove_all()
+    cron_euplo.write()
+    return
+
 def get_tentacle_readings(start_date, end_date):
     #fetch all results within a date range from DB and return dataframe
     query = tentacleRead.query.filter_by(tentacleRead.date_time >= start_date 
@@ -203,6 +214,14 @@ def generate_table(dataframe, max_rows=10):
             html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
         ]) for i in range(min(len(dataframe), max_rows))]
     )
+
+#Cron job input and scheduling options
+min_opts = [dict(label=str(minute), value=str(minute)) for minute in range(60)]
+min_opts.append(dict(label=str('*'), value=str('*')))
+hr_opts = [dict(label=str(hour), value=str(hour)) for hour in range(24)]
+hr_opts.append(dict(label=str('*'), value=str('*')))
+dat_opts = [dict(label=str(day), value=str(day)) for day in range(1,32)]
+dat_opts.append(dict(label=str('*'), value=str('*')))
 
 app.layout = html.Div([
     
@@ -314,53 +333,55 @@ app.layout = html.Div([
         ], className="row")
     ]),
     
-    #Cron job input and scheduling
+    
     html.Div([
         html.H2('Schedule jobs using CRON', style={'text-align': 'center'}),
         html.Div([
             dcc.Dropdown(
                 id="min-slider",
-                options=[{ 'label': minute, 'value': minute } for minute in range(60)],
+                options=min_opts,
                 value='*'
             ),
             dcc.Dropdown(
                 id="hour-slider",
-                options=[{ 'label': hour, 'value': hour } for hour in range(24)],
+                options=hr_opts,
                 value='*'
             ),
             dcc.Dropdown(
                 id="day-slider",
-                options=[{ 'label': day, 'value': day } for day in range(1,32)],
+                options=dat_opts,
                 value='*'
             ),
             dcc.Dropdown(
                 id="month-picker",
                 options=[
-                    {'label': 'January', 'value': 'jan'},
-                    {'label': 'February', 'value': 'feb'},
-                    {'label': 'March', 'value': 'SF'},
-                    {'label': 'April', 'value': 'apr'},
-                    {'label': 'May', 'value': 'may'},
-                    {'label': 'June', 'value': 'jun'},
-                    {'label': 'July', 'value': 'jul'},
-                    {'label': 'August', 'value': 'aug'},
-                    {'label': 'September', 'value': 'sept'},
-                    {'label': 'October', 'value': 'oct'},
-                    {'label': 'November', 'value': 'nov'},
-                    {'label': 'December', 'value': 'dec'}
+                    {'label': 'January', 'value': '1'},
+                    {'label': 'February', 'value': '2'},
+                    {'label': 'March', 'value': '3'},
+                    {'label': 'April', 'value': '4'},
+                    {'label': 'May', 'value': '5'},
+                    {'label': 'June', 'value': '6'},
+                    {'label': 'July', 'value': '7'},
+                    {'label': 'August', 'value': '8'},
+                    {'label': 'September', 'value': '9'},
+                    {'label': 'October', 'value': '10'},
+                    {'label': 'November', 'value': '11'},
+                    {'label': 'December', 'value': '12'},
+                    {'label': '*', 'value': '*'}
                 ],
                 value='*'
             ),
             dcc.Dropdown(
                 id="day-picker",
                 options=[
-                    {'label': 'Monday', 'value': 'mon'},
-                    {'label': 'Tuesday', 'value': 'tue'},
-                    {'label': 'Wednesday', 'value': 'wed'},
-                    {'label': 'Thursday', 'value': 'thr'},
-                    {'label': 'Friday', 'value': 'fri'},
-                    {'label': 'Saturday', 'value': 'sat'},
-                    {'label': 'Sunday', 'value': 'sun'}
+                    {'label': 'Monday', 'value': '0'},
+                    {'label': 'Tuesday', 'value': '1'},
+                    {'label': 'Wednesday', 'value': '2'},
+                    {'label': 'Thursday', 'value': '3'},
+                    {'label': 'Friday', 'value': '4'},
+                    {'label': 'Saturday', 'value': '5'},
+                    {'label': 'Sunday', 'value': '6'},
+                    {'label': '*', 'value': '*'}
                 ],
                 value='*'
             ),
@@ -375,7 +396,11 @@ app.layout = html.Div([
         
         html.Div([
             html.Table(id='cron-jobs')
-        ], className="six columns")
+        ], className="six columns"),
+        html.Div([
+            html.Button('Erase all CRON jobs', id='cron-erase'),
+            html.P(id='placeholdercron')
+        ], className='row'),
     ]),
     
 ])
@@ -404,6 +429,17 @@ def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
     results = add_to_cron(minute, hour, day, month, day_week, cron_job)
     return generate_table(results, max_rows=50)
 
+# Erase cron jobs
+@app.callback(
+    Output(component_id='placeholdercron', component_property='children'),
+    [
+        Input(component_id='cron-erase', component_property='n_clicks')
+    ]
+)
+def erase_cron_jobs(n_clicks):
+    clear_cron()
+    return
+    
 # Update environmental graphs
 @app.callback(
     Output(component_id='ph-graph', component_property='figure'),
