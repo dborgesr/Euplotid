@@ -9,9 +9,9 @@ ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
 		nginx \
-		php7-fpm \
-		php7-cli \
-		php7-common \
+		php-fpm \
+		php-cli \
+		php-common \
 		php-apc \
 #		apache2-utils \
 		gpac \
