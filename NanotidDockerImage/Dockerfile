@@ -9,16 +9,16 @@ ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
 #		nginx \
-		php5-fpm \
-		php5-cli \
-		php5-common \
-		php-apc \
-		apache2-utils \
-		gpac \
-		motion \
+#		php5-fpm \
+#		php5-cli \
+#		php5-common \
+#		php-apc \
+#		apache2-utils \
+#		gpac \
+#		motion \
 		zip \
-		libav-tools \
-		gstreamer1.0-tools \
+#		libav-tools \
+#		gstreamer1.0-tools \
 		git \
 		libraspberrypi-bin \
 		libraspberrypi-dev \
@@ -27,7 +27,7 @@ ENV APT_PACKAGES=" \
 		vim \
 		tk-dev \
     	libpng-dev \
-		gfortran \
+#		gfortran \
 		wget \
 		libncurses-dev \
 		libxml2-dev \
@@ -39,7 +39,6 @@ ENV APT_PACKAGES=" \
 		libjpeg-dev \
 #	liblapack-dev \
 		libncurses-dev \
-		libsqlite3-dev \
 		libssl-dev \
 		zlib1g-dev \
 		curl \
@@ -53,8 +52,8 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-		nodejs \
-		npm \
+#		nodejs \
+#		npm \
 		cron \
         arduino \
         g++ \
@@ -63,7 +62,11 @@ ENV APT_PACKAGES=" \
         make \
 	sqlite \
 	sqlite3 \
-	libsqlite3-dev"
+	libsqlite3-dev \
+	libxslt-dev \
+#	python3-lxml \
+	libffi-dev \
+	libffi6"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
@@ -82,8 +85,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 #    conda install conda-build && \
 #    conda install anaconda-client && \
     conda install -y pip \
-	    setuptools \
-        pandas && \
+	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
@@ -94,7 +96,7 @@ RUN pip install \
 	jupyter \
 	plotly \
 	sense-hat \
-    biopython \
+#    biopython \
     nbpresent \
     networkx \
     python-louvain \ 
@@ -104,10 +106,13 @@ RUN pip install \
     dash-html-components \
     dash-core-components \
     dash-renderer \
-    subprocess \
     flask \
-    flask_sqlalchemy && \
+    flask_sqlalchemy \
+    pandas \
+    cffi && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+
+RUN pip install python-crontab
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -116,14 +121,13 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.base_url/c c.NotebookApp.base_url = /jupyter/" /root/.jupyter/jupyter_notebook_config.py \
         && jupyter nbextension enable --py widgetsnbextension \
         && jupyter contrib nbextension install --system \
         && jupyter nbextension install nbpresent --py --overwrite --system \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system 
 
-#Get stuff for interacting in real life
+#Get stuff for interacting in real lifef
 RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
 RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
@@ -132,9 +136,8 @@ RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMUL
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
 
 # Install node
-ENV NODE_VERSION 6.9.1
+ENV NODE_VERSION 9.4.0
 RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
-    echo "0b30184fe98bd22b859db7f4cbaa56ecc04f7f526313c8da42315d89fabe23b2  node-v$NODE_VERSION-linux-armv6l.tar.gz" | sha256sum -c - && \
     tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
     rm "node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
     npm config set unsafe-perm true -g --unsafe-perm && \
@@ -142,17 +145,10 @@ RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-a
 
 RUN mkdir -p /usr/src/app
 # Install resin-wifi-connect
-ENV RESIN_WIFI_CONNECT_VERSION 2.0.7
-RUN cd /usr/src/app && \
-	curl -SL "https://github.com/resin-io/resin-wifi-connect/archive/v$RESIN_WIFI_CONNECT_VERSION.tar.gz" \
-    | tar xzC /usr/src/app/ && \
-    mv resin-wifi-connect-$RESIN_WIFI_CONNECT_VERSION resin-wifi-connect && \
-    cd resin-wifi-connect && \
-    JOBS=MAX npm install --unsafe-perm --production && \
-    npm cache clean && \
-    ./node_modules/.bin/bower --allow-root install && \
-    ./node_modules/.bin/bower --allow-root cache clean && \
-    ./node_modules/.bin/coffee -c ./src
+RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/latest -s \
+    | grep -hoP 'browser_download_url": "\K.*%%RESIN_ARCH%%\.tar\.gz' \
+    | xargs -n1 curl -Ls \
+| tar -xvz -C /usr/src/app/
 
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
@@ -165,4 +161,5 @@ WORKDIR /root/Euplotid
 
 
 EXPOSE 80
+EXPOSE 8888
 CMD ["bash", "./start.sh"]
