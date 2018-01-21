@@ -8,6 +8,10 @@ import plotly.graph_objs as go
 import pandas as pd
 import numpy as np
 import subprocess
+#from picamera.array import PiRGBArray
+#from picamera import PiCamera
+import time
+#import cv2
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Date, cast
@@ -19,6 +23,16 @@ server = Flask('applotid')
 server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/Euplotid/euploDB.db'
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(server)
+
+#start webcam
+#camera = PiCamera()
+#camera.start_preview()
+#camera.capture('t.jpg')
+ 
+# initialize the camera and grab a reference to the raw camera capture
+#camera = PiCamera()
+#rawCapture = PiRGBArray(camera)
+
 #create tables, may need to make sure to not create if they exist already
 db.create_all()
 #start Dash app
@@ -66,7 +80,7 @@ class tentacleRead(db.Model):
         self.sg = sg
         
 def draw_ph_graph(results):
-    ph_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["ph"],
         name = 'pH',
@@ -74,11 +88,23 @@ def draw_ph_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(title = "pH", range = [1,12])
+    
+    layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            title='pH',
+            range=[1,12]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
     return fig
 
 def draw_ec_graph(results):
-    ec_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["ec"],
         name = 'Electrical Conductivity',
@@ -86,11 +112,23 @@ def draw_ec_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(title = "MicroSiemens", range = [5,200])
+    
+    layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            title='MicroSiemens',
+            range=[5,200]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
     return fig
 
 def draw_tds_plot(results):
-    tds_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["tds"],
         name = 'Total Dissolved Solids',
@@ -98,10 +136,22 @@ def draw_tds_plot(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(title = "Concentration", range = [0,100])
-
+        layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            title='Concentration',
+            range=[0,100]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
+    return fig
+    
 def draw_sal_plot(results):
-    sal_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["sal"],
         name = 'Salinity',
@@ -109,11 +159,22 @@ def draw_sal_plot(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(title = "Practical salinity unit", range = [0,100])
+        layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            title='Practical salinity unit',
+            range=[0,100]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
     return fig
 
 def draw_sg_plot(results):
-    sg_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["sg"],
         name = 'Density',
@@ -121,11 +182,21 @@ def draw_sg_plot(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(range = [0,100]) 
+        layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            range=[0,100]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
     return fig
 
 def draw_temp_plot(results):
-    temp_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["temperature"],
         name = 'Temperature',
@@ -133,11 +204,22 @@ def draw_temp_plot(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(title = "Farenheit", range = [-10,100])
+        layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            title='Farenheit',
+            range=[-10,100]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
     return fig
 
 def draw_pressure_plot(results):
-    pres_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["pressure"],
         name = 'Pressure',
@@ -145,11 +227,22 @@ def draw_pressure_plot(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(title = "Millibars", range = [0,1100])
+        layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            title='Millibars',
+            range=[0,1100]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
     return fig
 
 def draw_humidity_graph(results):
-    hum_plot = go.Scatter(
+    data = go.Scatter(
         x = results["date_time"],
         y = results["humidity"],
         name = 'Humidity',
@@ -157,7 +250,18 @@ def draw_humidity_graph(results):
             color = ('rgb(22, 96, 167)'),
             width = 4,),
         showlegend = False)
-    fig['layout']['yaxis'].update(title = "Relative Humidity", range = [0,100])
+        layout = go.Layout(
+        xaxis=dict(
+            title='Date'
+        ),
+        yaxis=dict(
+            title='Relative Humidity',
+            range=[0,100]
+        )
+    )
+    
+    fig = go.Figure(data=data, layout=layout)
+    
     return fig
         
 def add_to_cron(minute, hour, day, month, day_week, cron_job):
@@ -175,7 +279,8 @@ def add_to_cron(minute, hour, day, month, day_week, cron_job):
         a = str(saved_job).split(" ")
         job_row = np.reshape(np.array([a[0],a[1],a[2],a[3],a[4]," ".join(a[5:(len(a))])]),(1,6))
         job_arr = np.vstack((job_arr,job_row))
-    job_df = pd.DataFrame(job_arr, columns=["minute", "hour", "day", "month", "day of week", "command"])  
+    job_df = pd.DataFrame(job_arr, columns=["minute", "hour", "day", "month", "day of week", "command"])
+    
     return job_df
     
 def clear_cron():
@@ -223,47 +328,66 @@ hr_opts.append(dict(label=str('*'), value=str('*')))
 dat_opts = [dict(label=str(day), value=str(day)) for day in range(1,32)]
 dat_opts.append(dict(label=str('*'), value=str('*')))
 
+rf_code_on = [5264691,5264835,5265155,5266691,5272835,267571,267715,268035,269571,275715]
+rf_code_on_time = [192,192,192,192,192,185,187,186,186,186]
+rf_code_off = [5264700,5264844,5265164,5266700,5272844,267580,267724,268044,269580,275724]
+rf_code_off_time = [192,192,192,192,192,185,187,186,186,186]
+columns_rf = { "RF code ON":rf_code_on, "RF code ON timing":rf_code_on_time, "RF code OFF":rf_code_off, "RF code OFF timing":rf_code_off_time }
+rf_df = pd.DataFrame(data=columns_rf)
+
 app.layout = html.Div([
     
     html.Div([
         html.H1('Euplotid Dashboard', style={'text-align': 'center'}),
         dcc.Link('Jupyter link', href='/jupyter/')
     ]),
+    html.Div([
+        html.H2('Webcam'),
+        html.Img(id='webcam-src',src='1.jpg'),
+        dcc.Interval(
+            id='interval-component',
+            interval=10000, # in milliseconds
+            n_intervals=0
+        )
+    ],className='row'),
     #Control RF connected devices
     html.Div([
         html.Div([
-            html.H2('Control X10 devices')
+            html.H2('Control X10 devices'),
+            html.Div([
+                html.Button('RF1 ON', id='rf_on_button1'),
+                html.Button('RF1 OFF', id='rf_off_button1'),
+                html.P(id='placeholder1'),
+                html.P(id='placeholder2')
+            ], className='row'),
+            html.Div([
+                html.Button('RF2 ON', id='rf_on_button2'),
+                html.Button('RF2 OFF', id='rf_off_button2'),
+                html.P(id='placeholder3'),
+                html.P(id='placeholder4')
+            ], className='row'),
+            html.Div([
+                html.Button('RF3 ON', id='rf_on_button3'),
+                html.Button('RF3 OFF', id='rf_off_button3'),
+                html.P(id='placeholder5'),
+                html.P(id='placeholder6')
+            ], className='row'),
+            html.Div([
+                html.Button('RF4 ON', id='rf_on_button4'),
+                html.Button('RF4 OFF', id='rf_off_button4'),
+                html.P(id='placeholder7'),
+                html.P(id='placeholder8')
+            ], className='row'),
+            html.Div([
+                html.Button('RF5 ON', id='rf_on_button5'),
+                html.Button('RF5 OFF', id='rf_off_button5'),
+                html.P(id='placeholder9'),
+                html.P(id='placeholder10')
+            ], className='row')
         ]),
         html.Div([
-            html.Button('RF1 ON', id='rf_on_button1'),
-            html.Button('RF1 OFF', id='rf_off_button1'),
-            html.P(id='placeholder1'),
-            html.P(id='placeholder2')
-        ], className='row'),
-        html.Div([
-            html.Button('RF2 ON', id='rf_on_button2'),
-            html.Button('RF2 OFF', id='rf_off_button2'),
-            html.P(id='placeholder3'),
-            html.P(id='placeholder4')
-        ], className='row'),
-        html.Div([
-            html.Button('RF3 ON', id='rf_on_button3'),
-            html.Button('RF3 OFF', id='rf_off_button3'),
-            html.P(id='placeholder5'),
-            html.P(id='placeholder6')
-        ], className='row'),
-        html.Div([
-            html.Button('RF4 ON', id='rf_on_button4'),
-            html.Button('RF4 OFF', id='rf_off_button4'),
-            html.P(id='placeholder7'),
-            html.P(id='placeholder8')
-        ], className='row'),
-        html.Div([
-            html.Button('RF5 ON', id='rf_on_button5'),
-            html.Button('RF5 OFF', id='rf_off_button5'),
-            html.P(id='placeholder9'),
-            html.P(id='placeholder10')
-        ], className='row')
+            generate_table(rf_df,max_rows=50)
+        ], className="four columns")
     ]),
     
     
@@ -405,10 +529,19 @@ app.layout = html.Div([
     
 ])
 
-
 #############################################
 # Interaction Between Components / Controller
 #############################################
+
+# Update webcam stream
+@app.callback(Output('webcam-src', 'src'),
+              [Input('interval-component', 'n_intervals')])
+def update_metrics(n):
+#    camera.capture(rawCapture, format="bgr")
+#    image = rawCapture.array
+#    camera.capture('1.jpg')
+#    cv2.imwrite('t.jpg')
+    return '1.jpg'
 
 # Update cron jobs Table
 @app.callback(
