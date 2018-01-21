@@ -9,16 +9,16 @@ ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
 #		nginx \
-#		php5-fpm \
-#		php5-cli \
-#		php5-common \
-#		php-apc \
-#		apache2-utils \
-#		gpac \
-#		motion \
+		php5-fpm \
+		php5-cli \
+		php5-common \
+		php-apc \
+		apache2-utils \
+		gpac \
+		motion \
 		zip \
-#		libav-tools \
-#		gstreamer1.0-tools \
+		libav-tools \
+		gstreamer1.0-tools \
 		git \
 		libraspberrypi-bin \
 		libraspberrypi-dev \
@@ -27,7 +27,7 @@ ENV APT_PACKAGES=" \
 		vim \
 		tk-dev \
     	libpng-dev \
-#		gfortran \
+		gfortran \
 		wget \
 		libncurses-dev \
 		libxml2-dev \
@@ -39,6 +39,7 @@ ENV APT_PACKAGES=" \
 		libjpeg-dev \
 #	liblapack-dev \
 		libncurses-dev \
+		libsqlite3-dev \
 		libssl-dev \
 		zlib1g-dev \
 		curl \
@@ -52,28 +53,23 @@ ENV APT_PACKAGES=" \
 		libdbus-1-dev \
 		libexpat-dev \
 		rfkill \
-#		nodejs \
-#		npm \
+		nodejs \
+		npm \
 		cron \
-        arduino \
-        g++ \
-        gcc \
-        usbutils \
-        make \
-	sqlite \
-	sqlite3 \
-	libsqlite3-dev \
-	libxslt-dev \
-#	python3-lxml \
-	libffi-dev \
-	libffi6"
+		openscad \
+		sqlite \
+		sqlite3 \
+		libsqlite3-dev \
+		libxslt-dev \
+		libffi-dev \
+		libffi6"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
   
-RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv6l.sh > miniconda.sh && \
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH  && \
@@ -95,13 +91,21 @@ RUN pip install \
 	gnureadline \
 	jupyter \
 	plotly \
-	sense-hat \
+#	myvariant \
+#	mygene \
+#	pysam \
+#    pandas \
+    joblib \
 #    biopython \
+#    pyliftover \
+#    scipy \
+    numpy \
     nbpresent \
     networkx \
-    python-louvain \ 
-    ipywidgets \
+    python-louvain \
     jupyter_contrib_nbextensions \
+    ipywidgets \
+    solidpython 
     dash \
     dash-html-components \
     dash-core-components \
@@ -111,6 +115,35 @@ RUN pip install \
     pandas \
     cffi && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+
+# Install packages for microscope camera
+RUN mkdir -p /usr/src/app && \
+	cd /usr/src/app && \
+	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
+	cd RPi_Cam_Web_Interface && \
+    chmod u+x *.sh && \
+    mkdir -p /run/shm/mjpeg && \
+    sed -i 's/sudo //g' install.sh && \
+    sed -i 's/sudo //g' start.sh && \
+    sed -i 's/sudo //g' stop.sh && \
+    sed -i 's/sudo //g' remove.sh && \
+    sed -i 's/sudo //g' update.sh && \
+    sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
+    sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
+    sed -i 's/80/8080/g' install.sh && \  
+    sed -i '/raspizip/d' install.sh && \
+    rm www/macros/error_hard.sh && \
+    mkdir -p /opt/vc/bin && \
+	cp bin/raspimjpeg /opt/vc/bin/ && \
+	chmod 755 /opt/vc/bin/raspimjpeg && \
+	echo /opt/vc/lib > /etc/ld.so.conf	 && \
+	if [ ! -e /usr/bin/raspimjpeg ]; then ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg; fi && \
+	ldconfig && \
+	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
+	sed -i "s/80/8080/g" config.txt && \
+	sed -i "s/nginx/apache/g" config.txt && \
+	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
+	./install.sh q 
 
 RUN pip install python-crontab
 
