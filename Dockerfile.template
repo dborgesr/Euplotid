@@ -8,12 +8,12 @@ WORKDIR /root
 ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
-#		nginx \
+		nginx \
 		php5-fpm \
 		php5-cli \
 		php5-common \
 		php-apc \
-		apache2-utils \
+#		apache2-utils \
 		gpac \
 		motion \
 		zip \
@@ -141,7 +141,7 @@ RUN mkdir -p /usr/src/app && \
 	ldconfig && \
 	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
 	sed -i "s/80/8080/g" config.txt && \
-	sed -i "s/nginx/apache/g" config.txt && \
+#	sed -i "s/nginx/apache/g" config.txt && \
 	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
 	./install.sh q 
 
@@ -186,9 +186,6 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
 #Get Euplotid 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
-#Define arduino board attached to RpiOw and setup
-ENV ARDUINODIR /usr/share/arduino
-ENV BOARD mega2560
 RUN cd /root/Euplotid/arduino_code && make
 WORKDIR /root/Euplotid
 
