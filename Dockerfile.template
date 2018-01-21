@@ -9,9 +9,9 @@ ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
 		nginx \
-		php5-fpm \
-		php5-cli \
-		php5-common \
+		php7.0-fpm \
+		php7.0-cli \
+		php7.0-common \
 		php-apc \
 #		apache2-utils \
 		gpac \
@@ -85,6 +85,8 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
+
+RUN conda install pandas
 
 RUN pip install \
 	setuptools \
