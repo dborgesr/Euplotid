@@ -56,7 +56,7 @@ ENV APT_PACKAGES=" \
 		nodejs \
 		npm \
 		cron \
-		openscad \
+#		openscad \
 		sqlite \
 		sqlite3 \
 		libsqlite3-dev \
@@ -189,6 +189,12 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
     | grep -hoP 'browser_download_url": "\K.*%%RESIN_ARCH%%\.tar\.gz' \
     | xargs -n1 curl -Ls \
 | tar -xvz -C /usr/src/app/
+
+#Install openscad
+RUN cd /root && \
+	git clone https://github.com/openscad/openscad.git && \
+	cd openscad && ./scripts/uni-get-dependencies.sh && \
+	qmake openscad.pro && make && make install 
 
 # Install Waveforms SDK for Digilent
 RUN cd /root && \
