@@ -135,8 +135,8 @@ def draw_tds_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -158,8 +158,8 @@ def draw_sal_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -181,8 +181,8 @@ def draw_sg_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -203,8 +203,8 @@ def draw_temp_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -226,8 +226,8 @@ def draw_pressure_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -249,8 +249,8 @@ def draw_humidity_graph(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -341,15 +341,6 @@ app.layout = html.Div([
         html.H1('Euplotid Dashboard', style={'text-align': 'center'}),
         dcc.Link('Jupyter link', href='/jupyter/')
     ]),
-    html.Div([
-        html.H2('Webcam'),
-        html.Img(id='webcam-src',src='1.jpg'),
-        dcc.Interval(
-            id='interval-component',
-            interval=10000, # in milliseconds
-            n_intervals=0
-        )
-    ],className='row'),
     #Control RF connected devices
     html.Div([
         html.Div([
@@ -532,16 +523,6 @@ app.layout = html.Div([
 #############################################
 # Interaction Between Components / Controller
 #############################################
-
-# Update webcam stream
-@app.callback(Output('webcam-src', 'src'),
-              [Input('interval-component', 'n_intervals')])
-def update_metrics(n):
-#    camera.capture(rawCapture, format="bgr")
-#    image = rawCapture.array
-#    camera.capture('1.jpg')
-#    cv2.imwrite('t.jpg')
-    return '1.jpg'
 
 # Update cron jobs Table
 @app.callback(
