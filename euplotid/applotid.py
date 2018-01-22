@@ -16,6 +16,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Date, cast
 from datetime import datetime as dt
+import time
 from crontab import CronTab
 
 # Set up Dash app and database
@@ -23,6 +24,7 @@ server = Flask('applotid')
 server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/Euplotid/euploDB.db'
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(server)
+
 
 #start webcam
 #camera = PiCamera()
@@ -135,8 +137,8 @@ def draw_tds_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -158,8 +160,8 @@ def draw_sal_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -181,8 +183,8 @@ def draw_sg_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -203,8 +205,8 @@ def draw_temp_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -226,8 +228,8 @@ def draw_pressure_plot(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -249,8 +251,8 @@ def draw_humidity_graph(results):
         line = dict(
             color = ('rgb(22, 96, 167)'),
             width = 4,),
-        showlegend = False)
-        layout = go.Layout(
+        showlegend = False),
+    layout = go.Layout(
         xaxis=dict(
             title='Date'
         ),
@@ -328,32 +330,56 @@ hr_opts.append(dict(label=str('*'), value=str('*')))
 dat_opts = [dict(label=str(day), value=str(day)) for day in range(1,32)]
 dat_opts.append(dict(label=str('*'), value=str('*')))
 
+rf_code_button = ['RF1','RF2','RF3','RF4','RF5','NA','NA','NA','NA','NA']
 rf_code_on = [5264691,5264835,5265155,5266691,5272835,267571,267715,268035,269571,275715]
 rf_code_on_time = [192,192,192,192,192,185,187,186,186,186]
 rf_code_off = [5264700,5264844,5265164,5266700,5272844,267580,267724,268044,269580,275724]
 rf_code_off_time = [192,192,192,192,192,185,187,186,186,186]
-columns_rf = { "RF code ON":rf_code_on, "RF code ON timing":rf_code_on_time, "RF code OFF":rf_code_off, "RF code OFF timing":rf_code_off_time }
+columns_rf = { "RF Button":rf_code_button, "RF code ON":rf_code_on, "RF code ON timing":rf_code_on_time, "RF code OFF":rf_code_off, "RF code OFF timing":rf_code_off_time }
 rf_df = pd.DataFrame(data=columns_rf)
 
 app.layout = html.Div([
     
-    html.Div([
-        html.H1('Euplotid Dashboard', style={'text-align': 'center'}),
-        dcc.Link('Jupyter link', href='/jupyter/')
-    ]),
-    html.Div([
-        html.H2('Webcam'),
-        html.Img(id='webcam-src',src='1.jpg'),
-        dcc.Interval(
-            id='interval-component',
-            interval=10000, # in milliseconds
-            n_intervals=0
-        )
-    ],className='row'),
+    html.Div(
+            [
+                html.H1(
+                    'Euplotid Dashboard',
+                    className='two columns',
+                ),
+                html.Img(
+                    src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/Title_slide.png",
+                    className='one columns',
+                    style={
+                        'height': '200',
+                        'width': '200',
+                        'float': 'right',
+                        'position': 'relative',
+                    },
+                ),
+                dcc.Link('Jupyter link', href='/jupyter/'),
+                html.Div([
+                    html.H3('Current time', id='date_now'),
+                    dcc.Interval(
+                        id='interval-component',
+                        interval=1*1000, # in milliseconds
+                        n_intervals=0
+                    )
+                ], className='seven columns'),
+            ],
+            className='row'),
+    
+        
     #Control RF connected devices
     html.Div([
+        
+        html.H2('Control X10 devices', className='row'),
+        #RF codes for known X10 devices
         html.Div([
-            html.H2('Control X10 devices'),
+            generate_table(rf_df,max_rows=50)
+        ], className="five columns"),
+        
+        #Buttons for RF devices
+        html.Div([
             html.Div([
                 html.Button('RF1 ON', id='rf_on_button1'),
                 html.Button('RF1 OFF', id='rf_off_button1'),
@@ -384,12 +410,77 @@ app.layout = html.Div([
                 html.P(id='placeholder9'),
                 html.P(id='placeholder10')
             ], className='row')
-        ]),
-        html.Div([
-            generate_table(rf_df,max_rows=50)
-        ], className="four columns")
-    ]),
+        ], className='two columns'),
+    ],className='row'),
     
+    html.Div([
+        html.H2('Schedule jobs using CRON', style={'text-align': 'center'}, className='row'),
+        html.Div([
+            dcc.Dropdown(
+                id="min-slider",
+                options=min_opts,
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="hour-slider",
+                options=hr_opts,
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="day-slider",
+                options=dat_opts,
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="month-picker",
+                options=[
+                    {'label': 'January', 'value': '1'},
+                    {'label': 'February', 'value': '2'},
+                    {'label': 'March', 'value': '3'},
+                    {'label': 'April', 'value': '4'},
+                    {'label': 'May', 'value': '5'},
+                    {'label': 'June', 'value': '6'},
+                    {'label': 'July', 'value': '7'},
+                    {'label': 'August', 'value': '8'},
+                    {'label': 'September', 'value': '9'},
+                    {'label': 'October', 'value': '10'},
+                    {'label': 'November', 'value': '11'},
+                    {'label': 'December', 'value': '12'},
+                    {'label': '*', 'value': '*'}
+                ],
+                value='*'
+            ),
+            dcc.Dropdown(
+                id="day-picker",
+                options=[
+                    {'label': 'Monday', 'value': '0'},
+                    {'label': 'Tuesday', 'value': '1'},
+                    {'label': 'Wednesday', 'value': '2'},
+                    {'label': 'Thursday', 'value': '3'},
+                    {'label': 'Friday', 'value': '4'},
+                    {'label': 'Saturday', 'value': '5'},
+                    {'label': 'Sunday', 'value': '6'},
+                    {'label': '*', 'value': '*'}
+                ],
+                value='*'
+            ),
+            dcc.Input(
+                id='cron-input',
+                placeholder='Enter a valid command',
+                type='text',
+                value=''),
+            html.Button(id='cron-submit', n_clicks=0, children='Submit')
+            
+        ],className="seven columns"),
+        
+        html.Div([
+            html.Table(id='cron-jobs')
+        ], className="six columns"),
+        html.Div([
+            html.Button('Erase all CRON jobs', id='cron-erase'),
+            html.P(id='placeholdercron')
+        ], className='row')
+    ]),
     
     #Environmental Monitoring
     html.Div([
@@ -455,93 +546,13 @@ app.layout = html.Div([
                 dcc.Graph(id='humidity-graph')
             ], className="six columns")
         ], className="row")
-    ]),
-    
-    
-    html.Div([
-        html.H2('Schedule jobs using CRON', style={'text-align': 'center'}),
-        html.Div([
-            dcc.Dropdown(
-                id="min-slider",
-                options=min_opts,
-                value='*'
-            ),
-            dcc.Dropdown(
-                id="hour-slider",
-                options=hr_opts,
-                value='*'
-            ),
-            dcc.Dropdown(
-                id="day-slider",
-                options=dat_opts,
-                value='*'
-            ),
-            dcc.Dropdown(
-                id="month-picker",
-                options=[
-                    {'label': 'January', 'value': '1'},
-                    {'label': 'February', 'value': '2'},
-                    {'label': 'March', 'value': '3'},
-                    {'label': 'April', 'value': '4'},
-                    {'label': 'May', 'value': '5'},
-                    {'label': 'June', 'value': '6'},
-                    {'label': 'July', 'value': '7'},
-                    {'label': 'August', 'value': '8'},
-                    {'label': 'September', 'value': '9'},
-                    {'label': 'October', 'value': '10'},
-                    {'label': 'November', 'value': '11'},
-                    {'label': 'December', 'value': '12'},
-                    {'label': '*', 'value': '*'}
-                ],
-                value='*'
-            ),
-            dcc.Dropdown(
-                id="day-picker",
-                options=[
-                    {'label': 'Monday', 'value': '0'},
-                    {'label': 'Tuesday', 'value': '1'},
-                    {'label': 'Wednesday', 'value': '2'},
-                    {'label': 'Thursday', 'value': '3'},
-                    {'label': 'Friday', 'value': '4'},
-                    {'label': 'Saturday', 'value': '5'},
-                    {'label': 'Sunday', 'value': '6'},
-                    {'label': '*', 'value': '*'}
-                ],
-                value='*'
-            ),
-            dcc.Input(
-                id='cron-input',
-                placeholder='Enter a valid command',
-                type='text',
-                value=''),
-            html.Button(id='cron-submit', n_clicks=0, children='Submit')
-            
-        ],className="seven columns"),
-        
-        html.Div([
-            html.Table(id='cron-jobs')
-        ], className="six columns"),
-        html.Div([
-            html.Button('Erase all CRON jobs', id='cron-erase'),
-            html.P(id='placeholdercron')
-        ], className='row'),
-    ]),
+    ])
     
 ])
 
 #############################################
 # Interaction Between Components / Controller
 #############################################
-
-# Update webcam stream
-@app.callback(Output('webcam-src', 'src'),
-              [Input('interval-component', 'n_intervals')])
-def update_metrics(n):
-#    camera.capture(rawCapture, format="bgr")
-#    image = rawCapture.array
-#    camera.capture('1.jpg')
-#    cv2.imwrite('t.jpg')
-    return '1.jpg'
 
 # Update cron jobs Table
 @app.callback(
@@ -781,6 +792,13 @@ def rf4_off(n_clicks):
 def rf5_off(n_clicks):
     subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 192 -p 0", shell=True)  
     return
+    
+@app.callback(Output('date_now', 'children'),
+              [Input('interval-component', 'n_intervals')])
+def update_time(n): 
+    now = time.strftime("%c")
+    ## date and time representation
+    return("Current date & time " + time.strftime("%c"))
 
 if __name__ == '__main__':
     app.run_server(
