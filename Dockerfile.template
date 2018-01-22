@@ -12,7 +12,7 @@ ENV APT_PACKAGES=" \
 		php7.0-fpm \
 		php7.0-cli \
 		php7.0-common \
-		php-apc \
+#		php-apc \
 #		apache2-utils \
 		gpac \
 		motion \
@@ -57,7 +57,6 @@ ENV APT_PACKAGES=" \
 		npm \
 		cron \
 #		openscad \
-		sqlite \
 		sqlite3 \
 		libsqlite3-dev \
 		libxslt-dev \
