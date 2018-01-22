@@ -40,7 +40,7 @@ ENV APT_PACKAGES=" \
 #	liblapack-dev \
 		libncurses-dev \
 		libsqlite3-dev \
-		libssl-dev \
+#		libssl-dev \
 		zlib1g-dev \
 		curl \
 		i2c-tools \
