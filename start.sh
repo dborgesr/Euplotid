@@ -1,14 +1,14 @@
 #!/bin/bash
 
 diff /root/Euplotid/arduino_code/euplouino.ino /data/euplouino.ino || PROGRAMMER=1
-if [ "${EUPLO_IMAGE:-}" == "true" ] && [ "${PROGRAMMER:-}" == "1" ]; then
+if [ "${EUPLO_ARDUINO:-}" == "true" ] && [ "${PROGRAMMER:-}" == "1" ]; then
   cd /root/Euplotid/arduino_code/
   make upload && cp euplouino.ino /data/
   unset PROGRAMMER
 fi
 
 if [ "${EUPLO_RPICAM:-}" == "true" ]; then
-	cd /usr/src/app/RPi_Cam_Web_Interface && ./install.sh q && ./start.sh
+	cd /usr/src/app/RPi_Cam_Web_Interface && ./start.sh
 fi
 
 
