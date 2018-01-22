@@ -1,7 +1,7 @@
 #!/bin/bash
 
 diff /root/Euplotid/arduino_code/euplouino.ino /data/euplouino.ino || PROGRAMMER=1
-if [ "${PROGRAMMER:-}" == "1" ]; then
+if [ dpkg -s arduino ] && [ "${PROGRAMMER:-}" == "1" ]; then
   cd /root/Euplotid/arduino_code/
   make upload && cp euplouino.ino /data/
   unset PROGRAMMER
