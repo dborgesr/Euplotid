@@ -64,12 +64,16 @@ ENV APT_PACKAGES=" \
 		libffi6 \
 		node-gyp \
 		nodejs-dev \
-		libssl1.0-dev"
+		libssl1.0-dev \
+		"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
+  
+RUN add-apt-repository ppa:openscad/releases && \
+	apt-get install openscad  
   
 #Install php7
 #RUN cd /root && git clone https://github.com/kasparsd/php-7-debian.git && \
