@@ -216,6 +216,7 @@ RUN mkdir /root/digilent_software/ && cd /root/digilent_software && \
 #	dpkg -i digilent.waveforms_3.7.5_armhf.deb
 
 #Get Euplotid and define variables
+ENV EUPLO_IMAGE=minitid
 ENV EUPLO_ARDUINO=false
 ENV EUPLO_RPICAM=true
 
