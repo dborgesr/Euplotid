@@ -92,8 +92,6 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
 
-RUN conda install pandas
-
 RUN pip install \
 	setuptools \
 	gnureadline \
@@ -121,7 +119,8 @@ RUN pip install \
     flask \
     flask_sqlalchemy \
     pandas \
-    cffi && \
+    cffi \
+    python-crontab && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 # Install packages for microscope camera
@@ -152,8 +151,6 @@ RUN mkdir -p /usr/src/app && \
 #	sed -i "s/nginx/apache/g" config.txt && \
 	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
 	./install.sh q 
-
-RUN pip install python-crontab
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
