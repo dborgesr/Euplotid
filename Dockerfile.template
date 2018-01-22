@@ -63,7 +63,8 @@ ENV APT_PACKAGES=" \
 		libffi-dev \
 		libffi6 \
 		node-gyp \
-		nodejs-dev"
+		nodejs-dev \
+		libssl1.0-dev"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
