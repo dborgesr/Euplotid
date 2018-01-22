@@ -207,6 +207,7 @@ RUN cd /root && \
 # Install Waveforms SDK for Digilent
 RUN cd /root && \
 	wget -O digilent.waveforms_3.7.5_armhf.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=08c5c9&media=https%3A%2F%2Ffiles.digilent.com%2FSoftware%2FWaveforms2015%2F3.7.5%2Fdigilent.waveforms_3.7.5_armhf.deb" && \
+	apt-get install xdg-utils && \
 	dpkg -i digilent.waveforms_3.7.5_armhf.deb
 
 #Get Euplotid and define variables
