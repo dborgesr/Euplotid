@@ -65,7 +65,6 @@ ENV APT_PACKAGES=" \
 		node-gyp \
 		nodejs-dev \
 		libssl1.0-dev \
-		python-software-properties \
 		"
 
 RUN apt-get -q update && \ 
@@ -73,8 +72,6 @@ RUN apt-get -q update && \
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
   	rm -rf "/var/lib/apt/lists/*"
   
-RUN add-apt-repository ppa:openscad/releases && \
-	apt-get install openscad  
   
 #Install php7
 #RUN cd /root && git clone https://github.com/kasparsd/php-7-debian.git && \
@@ -198,6 +195,10 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
 | tar -xvz -C /usr/src/app/
 
 #Install openscad
+RUN cd root && \
+	wget https://download.opensuse.org/repositories/home:/t-paul/AppImage.arm/OpenSCAD-latest-armv7l.AppImage \
+	chmod a+x OpenSCAD-latest-armv7l.AppImage
+	
 RUN cd /root && \
 	git clone https://github.com/openscad/openscad.git && \
 	cd openscad && ./scripts/uni-get-dependencies.sh && \
