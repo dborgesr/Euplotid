@@ -1,5 +1,5 @@
 #Minitid image for microscope and viewing
-FROM resin/rpi-raspbian:jessie
+FROM resin/rpi-raspbian:stretch
 
 USER root
 
@@ -9,10 +9,10 @@ ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
 		nginx \
-#		php5-fpm \
-#		php5-cli \
-#		php5-common \
-#		php-apc \
+		php7.0-fpm \
+		php7.0-cli \
+		php7.0-common \
+		php-apc \
 #		apache2-utils \
 		gpac \
 		motion \
@@ -70,10 +70,10 @@ RUN apt-get -q update && \
   	rm -rf "/var/lib/apt/lists/*"
   
 #Install php7
-RUN cd /root && git clone https://github.com/kasparsd/php-7-debian.git && \
-	cd php-7-debian/  && \
-	./build.sh && \
-	./install.sh
+#RUN cd /root && git clone https://github.com/kasparsd/php-7-debian.git && \
+#	cd php-7-debian/  && \
+#	./build.sh && \
+#	./install.sh
   
 RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
@@ -121,7 +121,8 @@ RUN pip install \
     flask_sqlalchemy \
     pandas \
     cffi \
-    python-crontab && \
+    python-crontab \
+    dwf && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 # Install packages for microscope camera
@@ -189,8 +190,13 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
     | xargs -n1 curl -Ls \
 | tar -xvz -C /usr/src/app/
 
+# Install Waveforms SDK for Digilent
+RUN cd /root && \
+	wget https://reference.digilentinc.com/lib/exe/fetch.php?tok=08c5c9&media=https%3A%2F%2Ffiles.digilent.com%2FSoftware%2FWaveforms2015%2F3.7.5%2Fdigilent.waveforms_3.7.5_armhf.deb && \
+	dpkg -i digilent.waveforms_3.7.5_armhf.deb
+
 #Get Euplotid and define variables
-ENV EUPLO_ARDUINO=true
+ENV EUPLO_ARDUINO=false
 ENV EUPLO_RPICAM=true
 
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
