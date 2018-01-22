@@ -1,11 +1,16 @@
 #!/bin/bash
 
 diff /root/Euplotid/arduino_code/euplouino.ino /data/euplouino.ino || PROGRAMMER=1
-if [ dpkg -s arduino ] && [ "${PROGRAMMER:-}" == "1" ]; then
+if [ "${EUPLO_IMAGE:-}" == "true" ] && [ "${PROGRAMMER:-}" == "1" ]; then
   cd /root/Euplotid/arduino_code/
   make upload && cp euplouino.ino /data/
   unset PROGRAMMER
 fi
+
+if [ "${EUPLO_RPICAM:-}" == "true" ]; then
+	cd /usr/src/app/RPi_Cam_Web_Interface && ./install.sh q && ./start.sh
+fi
+
 
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
