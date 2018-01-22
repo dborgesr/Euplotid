@@ -62,7 +62,8 @@ ENV APT_PACKAGES=" \
 		libxslt-dev \
 		libffi-dev \
 		libffi6 \
-		node-gyp"
+		node-gyp \
+		nodejs-dev"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
