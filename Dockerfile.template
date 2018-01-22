@@ -196,8 +196,8 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
 
 #Install openscad
 RUN cd /root && \
-	wget https://download.opensuse.org/repositories/home:/t-paul/AppImage.arm/OpenSCAD-latest-armv7l.AppImage \
-	chmod a+x OpenSCAD-latest-armv7l.AppImage
+	wget https://download.opensuse.org/repositories/home:/t-paul/AppImage.arm/OpenSCAD-latest-armv7l.AppImage 
+#	chmod a+x OpenSCAD-latest-armv7l.AppImage
 	
 #RUN cd /root && \
 #	git clone https://github.com/openscad/openscad.git && \
