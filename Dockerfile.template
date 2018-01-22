@@ -205,7 +205,7 @@ RUN cd /root && \
 #	qmake openscad.pro && make && make install 
 
 # Install Waveforms SDK for Digilent
-RUN cd /root && \
+RUN mkdir /root/digilent_software/ && cd /root/digilent_software && \
 	apt-get install xdg-utils && \
 	wget -O digilent.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=275b28&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2BRuntime%2F2.16.6%2Fdigilent.adept.runtime_2.16.6-armhf.deb" && \
 	wget -O digilent.utilities.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=efa267&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2Fdigilent.adept.utilities_2.2.1-armhf.deb" && \
