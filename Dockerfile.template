@@ -210,10 +210,10 @@ RUN mkdir /root/digilent_software/ && cd /root/digilent_software && \
 	wget -O digilent.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=275b28&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2BRuntime%2F2.16.6%2Fdigilent.adept.runtime_2.16.6-armhf.deb" && \
 	wget -O digilent.utilities.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=efa267&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2Fdigilent.adept.utilities_2.2.1-armhf.deb" && \
 	wget -O digilent.waveforms_3.7.5_armhf.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=08c5c9&media=https%3A%2F%2Ffiles.digilent.com%2FSoftware%2FWaveforms2015%2F3.7.5%2Fdigilent.waveforms_3.7.5_armhf.deb" && \
-	wget -O digilent.sdk.tar.gz "http://files.digilent.com/Software/Adept2+SDK/2.4.2/digilent.adept.sdk_2.4.2.tar.gz" && \
-	dpkg -i digilent.utilities.adept.deb && \
-	dpkg -i digilent.adept.deb && \
-	dpkg -i digilent.waveforms_3.7.5_armhf.deb
+	wget -O digilent.sdk.tar.gz "http://files.digilent.com/Software/Adept2+SDK/2.4.2/digilent.adept.sdk_2.4.2.tar.gz" 
+#	dpkg -i digilent.utilities.adept.deb && \
+#	dpkg -i digilent.adept.deb && \
+#	dpkg -i digilent.waveforms_3.7.5_armhf.deb
 
 #Get Euplotid and define variables
 ENV EUPLO_ARDUINO=false
