@@ -1,4 +1,4 @@
-#Minitid image for microscope and viewing
+#Nanotid image for arduinos, environmental monitoring, controlling X10
 FROM resin/rpi-raspbian:jessie
 
 USER root
@@ -150,7 +150,14 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
     | xargs -n1 curl -Ls \
 | tar -xvz -C /usr/src/app/
 
-#Get Euplotid 
+#Get Euplotid, define variable and define timezone
+ENV EUPLO_IMAGE=nanotid
+ENV EUPLO_ARDUINO=true
+ENV EUPLO_RPICAM=false
+
+#set correct timezone (EST)
+RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
+
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
 #Define arduino board attached to RpiOw and setup
