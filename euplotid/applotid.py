@@ -275,6 +275,16 @@ def add_to_cron(minute, hour, day, month, day_week, cron_job):
             cron_euplo.write()
         else:
             job.clear()
+    return
+    
+def clear_cron():
+    cron_euplo = CronTab(user='root')
+    cron_euplo.remove_all()
+    cron_euplo.write()
+    return
+
+def get_cron_table():
+    cron_euplo = CronTab(user='root')
     df = pd.DataFrame(columns=["minute", "hour", "day", "month", "day of week", "command"])
     job_arr = np.empty((0,6), str)
     for saved_job in cron_euplo:
@@ -284,12 +294,6 @@ def add_to_cron(minute, hour, day, month, day_week, cron_job):
     job_df = pd.DataFrame(job_arr, columns=["minute", "hour", "day", "month", "day of week", "command"])
     
     return job_df
-    
-def clear_cron():
-    cron_euplo = CronTab(user='root')
-    cron_euplo.remove_all()
-    cron_euplo.write()
-    return
 
 def get_tentacle_readings(start_date, end_date):
     #fetch all results within a date range from DB and return dataframe
@@ -469,7 +473,8 @@ app.layout = html.Div([
                 placeholder='Enter a valid command',
                 type='text',
                 value=''),
-            html.Button(id='cron-submit', n_clicks=0, children='Submit')
+            html.Button(id='cron-submit', n_clicks=0, children='Submit'),
+            html.P(id='placeholdercron2')
             
         ],className="seven columns"),
         
@@ -478,7 +483,8 @@ app.layout = html.Div([
         ], className="six columns"),
         html.Div([
             html.Button('Erase all CRON jobs', id='cron-erase'),
-            html.P(id='placeholdercron')
+            html.P(id='placeholdercron'),
+            html.Button('Refresh CRON table', id='cron-refresh')
         ], className='row')
     ]),
     
@@ -556,7 +562,7 @@ app.layout = html.Div([
 
 # Update cron jobs Table
 @app.callback(
-    Output(component_id='cron-jobs', component_property='children'),
+    Output(component_id='placeholdercron2', component_property='children'),
     [
         Input(component_id='cron-submit', component_property='n_clicks')
     ],
@@ -571,9 +577,9 @@ app.layout = html.Div([
 )
 def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
     results = add_to_cron(minute, hour, day, month, day_week, cron_job)
-    return generate_table(results, max_rows=50)
+    return 
 
-# Erase cron jobs
+# Erase CRON jobs
 @app.callback(
     Output(component_id='placeholdercron', component_property='children'),
     [
@@ -583,6 +589,19 @@ def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
 def erase_cron_jobs(n_clicks):
     clear_cron()
     return
+    
+# Refresh CRON table
+@app.callback(
+    Output(component_id='cron-jobs', component_property='children'),
+    [
+        Input(component_id='cron-refresh', component_property='n_clicks'),
+        Input(component_id='cron-submit', component_property='n_clicks'),
+        Input(component_id='cron-erase', component_property='n_clicks')
+    ]
+)
+def refresh_cron_table(cron_refresh_clicks, cron_submit_clicks, cron_erase_clicks):
+    results = get_cron_table()
+    return generate_table(results, max_rows=50)
     
 # Update environmental graphs
 @app.callback(
@@ -735,62 +754,72 @@ def load_humidity_graph(date_enviro_submit, start_date, end_date):
     Output(component_id='placeholder1', component_property='children'),
     [Input(component_id='rf_on_button1', component_property='n_clicks')])
 def rf1_on(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5264691 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264691 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder2', component_property='children'),
     [Input(component_id='rf_on_button2', component_property='n_clicks')])
 def rf2_on(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5264835 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264835 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder3', component_property='children'),
     [Input(component_id='rf_on_button3', component_property='n_clicks')])
 def rf3_on(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5265155 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5265155 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder4', component_property='children'),
     [Input(component_id='rf_on_button4', component_property='n_clicks')])
 def rf4_on(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5266691 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5266691 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder5', component_property='children'),
     [Input(component_id='rf_on_button5', component_property='n_clicks')])
 def rf5_on(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5272835 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5272835 -l 192 -p 0", shell=True)  
     return
 #OFF
 @app.callback(
     Output(component_id='placeholder6', component_property='children'),
     [Input(component_id='rf_off_button1', component_property='n_clicks')])
 def rf1_off(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5264700 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264700 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder7', component_property='children'),
     [Input(component_id='rf_off_button2', component_property='n_clicks')])
 def rf2_off(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5264844 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264844 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder8', component_property='children'),
     [Input(component_id='rf_off_button3', component_property='n_clicks')])
 def rf3_off(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5265164 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        (n_clicks) and subprocess.check_output("/var/www/rfoutlet/codesend 5265164 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder9', component_property='children'),
     [Input(component_id='rf_off_button4', component_property='n_clicks')])
 def rf4_off(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5266700 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5266700 -l 192 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder10', component_property='children'),
     [Input(component_id='rf_off_button5', component_property='n_clicks')])
 def rf5_off(n_clicks):
-    subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 192 -p 0", shell=True)  
+    if (n_clicks):
+        subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 192 -p 0", shell=True)  
     return
     
 @app.callback(Output('date_now', 'children'),
