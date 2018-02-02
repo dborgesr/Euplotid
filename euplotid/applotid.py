@@ -267,14 +267,19 @@ def draw_humidity_graph(results):
     return fig
         
 def add_to_cron(minute, hour, day, month, day_week, cron_job):
-    cron_euplo = CronTab(user='root')
     if cron_job:
+        cron_euplo = CronTab(user='root')
         job  = cron_euplo.new(command=cron_job)
         job.setall(minute, hour, day, month, day_week)
-        if job.is_valid():
-            cron_euplo.write()
-        else:
+        if not job.is_valid():
             job.clear()
+#        else:
+#            with open("/var/spool/cron/crontabs/root", "rw") as cron_file:
+#                cron_file.write(str(job))
+#                cron_file.write("\n")
+#                cron_file.close()
+#                job.clear()
+        cron_euplo.write()
     return
     
 def clear_cron():
@@ -576,8 +581,8 @@ app.layout = html.Div([
     ]
 )
 def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
-	if (cron_submit):
-    	results = add_to_cron(minute, hour, day, month, day_week, cron_job)
+    if (cron_submit):
+        results = add_to_cron(minute, hour, day, month, day_week, cron_job)
     return 
 
 # Erase CRON jobs
@@ -588,8 +593,8 @@ def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
     ]
 )
 def erase_cron_jobs(n_clicks):
-	if (n_clicks):
-    	clear_cron()
+    if (n_clicks):
+        clear_cron()
     return
     
 # Refresh CRON table
@@ -602,8 +607,7 @@ def erase_cron_jobs(n_clicks):
     ]
 )
 def refresh_cron_table(cron_refresh_clicks, cron_submit_clicks, cron_erase_clicks):
-	if (cron_refresh_clicks) and (cron_submit_clicks) and (cron_erase_clicks):
-    	results = get_cron_table()
+    results = get_cron_table()
     return generate_table(results, max_rows=50)
     
 # Update environmental graphs
