@@ -220,6 +220,9 @@ ENV EUPLO_IMAGE=minitid
 ENV EUPLO_ARDUINO=false
 ENV EUPLO_RPICAM=true
 
+#set correct timezone (EST)
+RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
+
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
 WORKDIR /root/Euplotid

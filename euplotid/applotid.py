@@ -576,7 +576,8 @@ app.layout = html.Div([
     ]
 )
 def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
-    results = add_to_cron(minute, hour, day, month, day_week, cron_job)
+	if (cron_submit):
+    	results = add_to_cron(minute, hour, day, month, day_week, cron_job)
     return 
 
 # Erase CRON jobs
@@ -587,7 +588,8 @@ def update_cron_jobs(cron_submit, minute, hour, day, month, day_week, cron_job):
     ]
 )
 def erase_cron_jobs(n_clicks):
-    clear_cron()
+	if (n_clicks):
+    	clear_cron()
     return
     
 # Refresh CRON table
@@ -600,7 +602,8 @@ def erase_cron_jobs(n_clicks):
     ]
 )
 def refresh_cron_table(cron_refresh_clicks, cron_submit_clicks, cron_erase_clicks):
-    results = get_cron_table()
+	if (cron_refresh_clicks) and (cron_submit_clicks) and (cron_erase_clicks):
+    	results = get_cron_table()
     return generate_table(results, max_rows=50)
     
 # Update environmental graphs
