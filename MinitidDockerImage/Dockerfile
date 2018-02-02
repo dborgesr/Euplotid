@@ -173,7 +173,7 @@ RUN jupyter notebook --generate-config --allow-root && \
 
 #Get stuff for interacting in real lifef
 RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
-RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
+RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet && chmod 755 /var/www/rfoutlet/codesend
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install wifi connect
