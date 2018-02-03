@@ -341,9 +341,9 @@ dat_opts.append(dict(label=str('*'), value=str('*')))
 
 rf_code_button = ['RF1','RF2','RF3','RF4','RF5','NA','NA','NA','NA','NA']
 rf_code_on = [5264691,5264835,5265155,5266691,5272835,267571,267715,268035,269571,275715]
-rf_code_on_time = [192,192,192,192,192,185,187,186,186,186]
+rf_code_on_time = [184,184,184,184,184,185,187,186,186,186]
 rf_code_off = [5264700,5264844,5265164,5266700,5272844,267580,267724,268044,269580,275724]
-rf_code_off_time = [192,192,192,192,192,185,187,186,186,186]
+rf_code_off_time = [184,184,184,184,184,185,187,186,186,186]
 columns_rf = { "RF Button":rf_code_button, "RF code ON":rf_code_on, "RF code ON timing":rf_code_on_time, "RF code OFF":rf_code_off, "RF code OFF timing":rf_code_off_time }
 rf_df = pd.DataFrame(data=columns_rf)
 
@@ -762,35 +762,35 @@ def load_humidity_graph(date_enviro_submit, start_date, end_date):
     [Input(component_id='rf_on_button1', component_property='n_clicks')])
 def rf1_on(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5264691 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264691 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder2', component_property='children'),
     [Input(component_id='rf_on_button2', component_property='n_clicks')])
 def rf2_on(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5264835 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264835 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder3', component_property='children'),
     [Input(component_id='rf_on_button3', component_property='n_clicks')])
 def rf3_on(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5265155 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5265155 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder4', component_property='children'),
     [Input(component_id='rf_on_button4', component_property='n_clicks')])
 def rf4_on(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5266691 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5266691 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder5', component_property='children'),
     [Input(component_id='rf_on_button5', component_property='n_clicks')])
 def rf5_on(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5272835 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5272835 -l 184 -p 0", shell=True)  
     return
 #OFF
 @app.callback(
@@ -798,42 +798,42 @@ def rf5_on(n_clicks):
     [Input(component_id='rf_off_button1', component_property='n_clicks')])
 def rf1_off(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5264700 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264700 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder7', component_property='children'),
     [Input(component_id='rf_off_button2', component_property='n_clicks')])
 def rf2_off(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5264844 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5264844 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder8', component_property='children'),
     [Input(component_id='rf_off_button3', component_property='n_clicks')])
 def rf3_off(n_clicks):
     if (n_clicks):
-        (n_clicks) and subprocess.check_output("/var/www/rfoutlet/codesend 5265164 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5265164 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder9', component_property='children'),
     [Input(component_id='rf_off_button4', component_property='n_clicks')])
 def rf4_off(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5266700 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5266700 -l 184 -p 0", shell=True)  
     return
 @app.callback(
     Output(component_id='placeholder10', component_property='children'),
     [Input(component_id='rf_off_button5', component_property='n_clicks')])
 def rf5_off(n_clicks):
     if (n_clicks):
-        subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 192 -p 0", shell=True)  
+        subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 184 -p 0", shell=True)  
     return
-    
+
+#Update time
 @app.callback(Output('date_now', 'children'),
               [Input('interval-component', 'n_intervals')])
 def update_time(n): 
     now = time.strftime("%c")
-    ## date and time representation
     return("Current date & time " + time.strftime("%c"))
 
 if __name__ == '__main__':
