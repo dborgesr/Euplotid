@@ -138,7 +138,7 @@ ENV APT_PACKAGES=" \
 		iw \
 		libdbus-1-dev \
 		libexpat-dev \
-		rfkill \
+#		rfkill \
 		cmake \
 		libxslt1-dev"
 
