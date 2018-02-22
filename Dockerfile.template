@@ -182,7 +182,7 @@ RUN pip install \
  #   scipy \
  #   numpy \
     nbpresent \
-    networkx 
+    networkx \
  #   python-louvain \
     ipywidgets \
     jupyter_contrib_nbextensions 
