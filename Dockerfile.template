@@ -2,7 +2,8 @@
 
 #ARM
 #FROM resin/aarch64-alpine:latest
-FROM aarch64/ubuntu
+#FROM aarch64/ubuntu
+FROM arm64v8/ubuntu:18.04
 
 #FROM resin/aarch64-debian:stretch
 
