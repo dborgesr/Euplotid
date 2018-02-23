@@ -226,6 +226,9 @@ RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/
 
 WORKDIR /root/Euplotid
 
+## Clean up (don't remove cuda libs... used by child containers)
+RUN apt-get -y autoremove && apt-get -y autoclean
+RUN rm -rf /var/cache/apt
 
 EXPOSE 80
 CMD ["bash", "./start.sh"]
