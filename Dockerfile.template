@@ -147,6 +147,7 @@ ENV APT_PACKAGES=" \
 
 RUN apt-get update
 ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get install software-properties-common python-software-properties
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt update
 RUN apt install gcc-6
