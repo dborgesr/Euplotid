@@ -3,7 +3,7 @@
 #ARM
 #FROM resin/aarch64-alpine:latest
 #FROM aarch64/ubuntu
-FROM arm64v8/ubuntu:18.04
+FROM arm64v8/ubuntu:latest
 
 #FROM resin/aarch64-debian:stretch
 
@@ -141,7 +141,9 @@ ENV APT_PACKAGES=" \
 		libexpat-dev \
 #		rfkill \
 		cmake \
-		libxslt1-dev"
+		libxslt1-dev \
+		gcc-6 \
+		g++-6"
 
 RUN apt-get update
 ARG DEBIAN_FRONTEND=noninteractive
