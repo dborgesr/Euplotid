@@ -150,7 +150,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y software-properties-common python-software-properties
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN apt update
-RUN apt install gcc-6
+RUN apt install -y gcc-6
 
 RUN	apt-get install -y --no-install-recommends $APT_PACKAGES && \
  	rm -rf "/var/lib/apt/lists/*"
