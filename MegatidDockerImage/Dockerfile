@@ -4,6 +4,7 @@ MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
 # Install few tools using apt-get required to get conda package manager up and running 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
   software-properties-common \
   wget \
@@ -23,7 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
 #Download, install, and update Anaconda3
-ENV CONDA_VERSION="5.0.1"  
+ENV CONDA_VERSION="5.1.0"  
 RUN wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
     export PATH=/root/anaconda3/bin:$PATH  && \
     conda config --set show_channel_urls True && \
@@ -91,26 +92,27 @@ RUN pip install --no-cache-dir \
 		numpy-stl \
 		solidpython \
 		jupyter_contrib_nbextensions \
-		jupyter-c-kernel 
+		jupyter-c-kernel \
+		jupyterlab 
 #		&& pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 	
 #install r kernel stuff	
 RUN conda install -y -c r \
-    'r-base=3.3.2' \
-    'r-irkernel=0.7*' \
-    'r-plyr=1.8*' \
-    'r-devtools=1.12*' \
-    'r-tidyverse=1.0*' \
-    'r-shiny=0.14*' \
-    'r-rmarkdown=1.2*' \
-    'r-forecast=7.3*' \
-    'r-rsqlite=1.1*' \
-    'r-reshape2=1.4*' \
-    'r-nycflights13=0.2*' \
-    'r-caret=6.0*' \
-    'r-rcurl=1.95*' \
-    'r-crayon=1.3*' \
-	'r-randomforest=4.6*' \
+    'r-base' \
+    'r-irkernel' \
+    'r-plyr' \
+    'r-devtools' \
+    'r-tidyverse' \
+    'r-shiny' \
+    'r-rmarkdown' \
+    'r-forecast' \
+    'r-rsqlite' \
+    'r-reshape2' \
+    'r-nycflights13' \
+    'r-caret' \
+    'r-rcurl' \
+    'r-crayon' \
+	'r-randomforest' \
 	&& conda clean -y -t -i -l -a
 
 #install bash kernel
@@ -163,7 +165,7 @@ RUN cd /root && mkdir Homer && wget http://homer.ucsd.edu/homer/configureHomer.p
 ENV PATH=~/Homer/bin/:$PATH
 
 #Get Chrom3D
-RUN cd /root && git clone https://github.com/CollasLab/Chrom3D.git && cd ./Chrom3D && make
+#RUN cd /root && git clone https://github.com/CollasLab/Chrom3D.git && cd ./Chrom3D && make
 
 #Get ChiAPet2
 RUN cd /root && git clone https://github.com/GuipengLi/ChIA-PET2.git && cd ./ChIA-PET2  && chmod 755 ./bin/ChIA-PET2 && make
@@ -196,4 +198,4 @@ RUN conda update -y --all \
 WORKDIR /root/Euplotid
 
 EXPOSE 8891
-CMD ["jupyter", "notebook", "--port=8891", "--no-browser", "--allow-root", "--ip=0.0.0.0"]
+CMD ["jupyter", "lab", "--port=8891", "--no-browser", "--allow-root", "--ip=0.0.0.0"]
