@@ -159,6 +159,9 @@ RUN jupyter notebook --generate-config --allow-root && \
         && jupyter nbextension install nbpresent --py --overwrite --system \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system
+
+#Install Jupyterlab google drive extension
+RUN conda install -y nodejs && jupyter labextension install @jupyterlab/google-drive 
 		
 #Get Homer
 RUN cd /root && mkdir Homer && wget http://homer.ucsd.edu/homer/configureHomer.pl && perl configureHomer.pl -install homer
