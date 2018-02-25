@@ -178,8 +178,8 @@ RUN pip install \
 	gnureadline \
 	jupyter \
 	plotly \
-#	myvariant \
-#	mygene \
+	myvariant \
+	mygene \
 #	pysam \
 	cffi \
     pandas \
@@ -193,7 +193,8 @@ RUN pip install \
     networkx \
  #   python-louvain \
     ipywidgets \
-    jupyter_contrib_nbextensions 
+    jupyter_contrib_nbextensions \
+	jupyterlab 
  #   pyyaml && \
 #	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
