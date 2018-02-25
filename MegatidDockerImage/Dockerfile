@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   unzip \
 #  libzmq3-dev #iperl \
 #  libcairo2-dev #iperl \
-#	texlive-xetex #for printing pdf SUPER heavy (over 1Gb) for PDFs \
+	texlive-full #for printing pdf SUPER heavy (over 1Gb) for PDFs \
   && apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
