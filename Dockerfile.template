@@ -163,7 +163,7 @@ RUN pip install jupyterlab
 
 #Enable google drive in jupyterlab
 RUN jupyter serverextension enable --py jupyterlab --sys-prefix	&& \
-	jupyter labextension install @jupyterlab/google-drive &&
+	jupyter labextension install @jupyterlab/google-drive && \
 	jupyter labextension install @jupyterlab/plotly-extension
 	
 #set bash as default shell
