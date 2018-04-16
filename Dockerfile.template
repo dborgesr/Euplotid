@@ -126,7 +126,8 @@ RUN pip install \
     pandas \
     cffi \
     python-crontab \
-    dwf && \
+    dwf \
+    jupyterlab && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 # Install packages for microscope camera
@@ -157,9 +158,6 @@ RUN mkdir -p /usr/src/app && \
 #	sed -i "s/nginx/apache/g" config.txt && \
 	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
 	./install.sh q 
-
-#Install jupyterlab
-RUN pip install jupyterlab
 
 #Enable google drive in jupyterlab
 RUN jupyter serverextension enable --py jupyterlab --sys-prefix	&& \
