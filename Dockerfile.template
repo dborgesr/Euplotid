@@ -1,85 +1,33 @@
-#Euplotid ARM image
-
-#ARM
-#FROM resin/aarch64-alpine:latest
-#FROM aarch64/ubuntu
-FROM arm64v8/ubuntu:latest
-
-#FROM resin/aarch64-debian:stretch
-
-#ARM on x86
-#FROM resin/armv7hf-debian-qemu
-#FROM amtypaldos/armv7hf-alpine-qemu
-#RUN [ "cross-build-start" ]
+#Minitid image for microscope and viewing
+FROM resin/rpi-raspbian:stretch
 
 USER root
 
 WORKDIR /root
 
-ENV APK_PACKAGES=" \
-	tk-dev \
-	libpng-dev \
-	gfortran \
-	wget \
-	git \
-	vim \
-	libxml2-dev \
-	ca-certificates \
-	build-base \
-	bzip2-dev \
-	libc6-compat \
-	gdbm-dev \
-#	hdf5-dev \
-	jpeg-dev \
-	lapack-dev \
-	ncurses-dev \
-	sqlite-dev \
-	openssl-dev \
-	zlib-dev \
-	xz-dev \
-	linux-headers \
-	curl \
-	readline-dev \
-	patch \
-	bash \
-	cmake \
-	python3 \
-	python3-dev \
-	libffi-dev \
-	libffi \
-	libxslt-dev \
-	openssl-dev \
-	openssl"
-	
-# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
-#RUN apk update  \ 
-#  # replacing default repositories with edge ones
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
-#  && apk add --no-cache $APK_PACKAGES  \
-#  && python3 -m ensurepip \
-#  && rm -r /usr/lib/python*/ensurepip \
-#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
-#  && pip3 install --upgrade pip setuptools \
-#  && rm -r /root/.cache \
-#  && ln -s /usr/include/locale.h /usr/include/xlocale.h \
-#  && apk update \
-#  && apk upgrade
-
 ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
-		apache2-utils \
+		nginx \
+		php7.0-fpm \
+		php7.0-cli \
+		php7.0-common \
+#		php-apc \
+#		apache2-utils \
 		gpac \
 		motion \
 		zip \
 		libav-tools \
 		gstreamer1.0-tools \
 		git \
+		libraspberrypi-bin \
+		libraspberrypi-dev \
+		libraspberrypi-doc \
+		libraspberrypi0 \
 		vim \
 		tk-dev \
     	libpng-dev \
+		gfortran \
 		wget \
 		libncurses-dev \
 		libxml2-dev \
@@ -92,9 +40,10 @@ ENV APT_PACKAGES=" \
 #	liblapack-dev \
 		libncurses-dev \
 		libsqlite3-dev \
-		libssl-dev \
+#		libssl-dev \
 		zlib1g-dev \
 		curl \
+		i2c-tools \
 		liblzma-dev \
 		xz-utils \
 		dnsmasq \
@@ -103,115 +52,111 @@ ENV APT_PACKAGES=" \
 		iw \
 		libdbus-1-dev \
 		libexpat-dev \
-#		rfkill \
-		cmake \
-		libxslt1-dev \
-		gcc-6 \
-		g++-6 \
-		bzip2 \
-		curl \
-		sudo \
-		unp"
+		rfkill \
+		nodejs \
+		npm \
+		cron \
+#		openscad \
+		sqlite3 \
+		libsqlite3-dev \
+		libxslt-dev \
+		libffi-dev \
+		libffi6 \
+		node-gyp \
+		nodejs-dev \
+		libssl1.0-dev \
+		"
 
-#Install GCC6 for pytorch
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-	apt-get install -y software-properties-common python-software-properties && \
-	add-apt-repository ppa:ubuntu-toolchain-r/test && \
-	apt update && \
-	apt install -y gcc-6
-
-RUN	apt-get install -y --no-install-recommends $APT_PACKAGES && \
- 	rm -rf "/var/lib/apt/lists/*" && \
-	apt-get clean && \
-	rm -rf /var/cache/apt
-
-# base URL for NVIDIA libs
-ARG URL=http://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2/pwv346/JetPackL4T_32_b157
-
-# Update packages, install some useful packages
-#RUN apt-get update && apt-get install -y apt-utils bzip2 curl sudo unp && apt-get clean && rm -rf /var/cache/apt
-WORKDIR /tmp
-
-# Install drivers first
-RUN curl -sL http://developer.nvidia.com/embedded/dlc/l4t-jetson-tx2-driver-package-28-2 | tar xvfj - && \
-	chown root /etc/passwd /etc/sudoers /usr/lib/sudo/sudoers.so /etc/sudoers.d/README && \
-	/tmp/Linux_for_Tegra/apply_binaries.sh -r / && rm -fr /tmp/*
-
-## Pull the rest of the jetpack libs for cuda/cudnn and install
-RUN curl $URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo-l4t_arm64.deb && \
-	curl $URL/libcudnn7_7.0.5.13-1+cuda9.0_arm64.deb -so /tmp/libcudnn_arm64.deb && \
-	curl $URL/libcudnn7-dev_7.0.5.13-1+cuda9.0_arm64.deb -so /tmp/libcudnn-dev_arm64.deb
-
-## Install libs: L4T, CUDA, cuDNN
-RUN dpkg -i /tmp/cuda-repo-l4t_arm64.deb && \ 
-	apt-key add /var/cuda-repo-9-0-local/7fa2af80.pub && \
-	apt-get update && apt-get install -y cuda-toolkit-9.0 && \
-	dpkg -i /tmp/libcudnn_arm64.deb && \
-	dpkg -i /tmp/libcudnn-dev_arm64.deb
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/aarch64-linux-gnu/tegra
-
-
-## Re-link libs in /usr/lib/<arch>/tegra
-RUN ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so && \
-	ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.1 && \
-	ln -sf /usr/lib/aarch64-linux-gnu/tegra/libGL.so /usr/lib/aarch64-linux-gnu/libGL.so && \
-	ln -s /usr/lib/aarch64-linux-gnu/libcuda.so /usr/lib/aarch64-linux-gnu/libcuda.so.1 # D.R. -- need to do this for some strange reason (for jetson tx2)
-	
-	
-RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /root/conda && \
+RUN apt-get -q update && \ 
+	apt-get dist-upgrade && \
+	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+  	rm -rf "/var/lib/apt/lists/*"
+  
+  
+#Install php7
+#RUN cd /root && git clone https://github.com/kasparsd/php-7-debian.git && \
+#	cd php-7-debian/  && \
+#	./build.sh && \
+#	./install.sh
+  
+RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
+    bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
-    export PATH=/root/conda/bin:$PATH && \
-	conda config --set show_channel_urls True && \
-    conda config --add channels jetson-tx2 && \
+    export PATH=/opt/conda/bin:$PATH  && \
+    conda config --set show_channel_urls True && \
+    conda config --add channels rpi && \
+#    conda config --add channels conda-forge && \
     conda update conda && \
     conda update --all --yes && \
+#    conda install conda-build && \
+#    conda install anaconda-client && \
     conda install -y pip \
-	    setuptools \
-		pandas \
-		numpy && \
+	    setuptools && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/root/conda/bin:$PATH
-
-RUN conda install numpy scipy
+	
+ENV PATH=/opt/conda/bin:$PATH	
 
 RUN pip install \
 	setuptools \
 	gnureadline \
 	jupyter \
 	plotly \
-	myvariant \
-	mygene \
+#	myvariant \
+#	mygene \
 #	pysam \
-	cffi \
-    pandas \
-	lxml \
+#    pandas \
     joblib \
- #   biopython \
+#    biopython \
 #    pyliftover \
- #   scipy \
- #   numpy \
+#    scipy \
+    numpy \
     nbpresent \
     networkx \
- #   python-louvain \
-    ipywidgets \
+    python-louvain \
     jupyter_contrib_nbextensions \
-	jupyterlab 
- #   pyyaml && \
-#	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+    ipywidgets \
+    solidpython \
+    dash \
+    dash-html-components \
+    dash-core-components \
+    dash-renderer \
+    flask \
+    flask_sqlalchemy \
+    pandas \
+    cffi \
+    python-crontab \
+    dwf && \
+	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-#Get pytorch machine learning
-ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
-	cd pytorch && \
-	git submodule update --init && \
-	pip install -r requirements.txt && \
-	python3 setup.py build develop && \
-	python3 setup.py install
-	
-#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
+# Install packages for microscope camera
+RUN mkdir -p /usr/src/app && \
+	cd /usr/src/app && \
+	git clone https://github.com/silvanmelchior/RPi_Cam_Web_Interface.git && \
+	cd RPi_Cam_Web_Interface && \
+    chmod u+x *.sh && \
+    mkdir -p /run/shm/mjpeg && \
+    sed -i 's/sudo //g' install.sh && \
+    sed -i 's/sudo //g' start.sh && \
+    sed -i 's/sudo //g' stop.sh && \
+    sed -i 's/sudo //g' remove.sh && \
+    sed -i 's/sudo //g' update.sh && \
+    sed -i 's/sudo //g' RPi_Cam_Web_Interface_Installer.sh && \
+    sed -i 's/sudo shutdown -r now//g' www/macros/error_hard.sh && \
+    sed -i 's/80/8080/g' install.sh && \  
+    sed -i '/raspizip/d' install.sh && \
+    rm www/macros/error_hard.sh && \
+    mkdir -p /opt/vc/bin && \
+	cp bin/raspimjpeg /opt/vc/bin/ && \
+	chmod 755 /opt/vc/bin/raspimjpeg && \
+	echo /opt/vc/lib > /etc/ld.so.conf	 && \
+	if [ ! -e /usr/bin/raspimjpeg ]; then ln -s /opt/vc/bin/raspimjpeg /usr/bin/raspimjpeg; fi && \
+	ldconfig && \
+	wget https://raw.githubusercontent.com/droogmic/rpi-cam-web-docker/master/install/config.txt && \
+	sed -i "s/80/8080/g" config.txt && \
+#	sed -i "s/nginx/apache/g" config.txt && \
+	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
+	./install.sh q 
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -226,11 +171,51 @@ RUN jupyter notebook --generate-config --allow-root && \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system 
 
+#Get stuff for interacting in real lifef
+RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
+RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet && chmod 755 /var/www/rfoutlet/codesend
+RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
+
+# Install wifi connect
+ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
+
+# Install node
+ENV NODE_VERSION 9.4.0
+RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+    tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
+    rm "node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+    npm config set unsafe-perm true -g --unsafe-perm && \
+    rm -rf /tmp/*
+
+RUN mkdir -p /usr/src/app
+# Install resin-wifi-connect
+RUN cd /usr/src/app && curl https://raw.githubusercontent.com/resin-io/resin-wifi-connect/master/scripts/raspbian-install.sh -sSf | bash
+
+#Install openscad
+RUN cd /root && \
+	wget https://download.opensuse.org/repositories/home:/t-paul/AppImage.arm/OpenSCAD-latest-armv7l.AppImage 
+#	chmod a+x OpenSCAD-latest-armv7l.AppImage
+	
+#RUN cd /root && \
+#	git clone https://github.com/openscad/openscad.git && \
+#	cd openscad && ./scripts/uni-get-dependencies.sh && \
+#	qmake openscad.pro && make && make install 
+
+# Install Waveforms SDK for Digilent
+RUN mkdir /root/digilent_software/ && cd /root/digilent_software && \
+	apt-get install xdg-utils && \
+	wget -O digilent.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=275b28&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2BRuntime%2F2.16.6%2Fdigilent.adept.runtime_2.16.6-armhf.deb" && \
+	wget -O digilent.utilities.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=efa267&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2Fdigilent.adept.utilities_2.2.1-armhf.deb" && \
+	wget -O digilent.waveforms_3.7.5_armhf.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=08c5c9&media=https%3A%2F%2Ffiles.digilent.com%2FSoftware%2FWaveforms2015%2F3.7.5%2Fdigilent.waveforms_3.7.5_armhf.deb" && \
+	wget -O digilent.sdk.tar.gz "http://files.digilent.com/Software/Adept2+SDK/2.4.2/digilent.adept.sdk_2.4.2.tar.gz" 
+#	dpkg -i digilent.utilities.adept.deb && \
+#	dpkg -i digilent.adept.deb && \
+#	dpkg -i digilent.waveforms_3.7.5_armhf.deb
+
 #Get Euplotid and define variables
-ENV EUPLO_IMAGE=armtid
+ENV EUPLO_IMAGE=minitid
 ENV EUPLO_ARDUINO=false
-ENV EUPLO_RPICAM=false
-ENV JUPYTER_PORT=80
+ENV EUPLO_RPICAM=true
 
 #set correct timezone (EST)
 RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
@@ -239,9 +224,7 @@ RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/
 
 WORKDIR /root/Euplotid
 
-## Clean up (don't remove cuda libs... used by child containers)
-RUN apt-get -y autoremove && apt-get -y autoclean
-RUN rm -rf /var/cache/apt
 
 EXPOSE 80
+EXPOSE 8888
 CMD ["bash", "./start.sh"]
