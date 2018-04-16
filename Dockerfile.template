@@ -190,8 +190,8 @@ RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-a
 
 RUN mkdir -p /usr/src/app
 # Install resin-wifi-connect
-RUN bash <(curl -L https://github.com/resin-io/resin-wifi-connect/raw/master/scripts/raspbian-install.sh)
-#RUN cd /usr/src/app && curl https://raw.githubusercontent.com/resin-io/resin-wifi-connect/master/scripts/raspbian-install.sh -sSf | bash
+#RUN bash <(curl -L https://github.com/resin-io/resin-wifi-connect/raw/master/scripts/raspbian-install.sh)
+RUN cd /usr/src/app && curl https://github.com/resin-io/resin-wifi-connect/raw/master/scripts/raspbian-install.sh -sSf | bash
 
 #Install openscad
 RUN cd /root && \
