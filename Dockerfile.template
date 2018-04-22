@@ -98,7 +98,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 ENV PATH=/opt/conda/bin:$PATH	
 
 #Install RPI channell specific packages
-RUN conda install -y -c rpi pandas # jupyter plotly numpy flask
+RUN conda install -y -c rpi jupyterlab
 
 RUN pip install \
 	setuptools \
