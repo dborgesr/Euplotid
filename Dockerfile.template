@@ -98,7 +98,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 ENV PATH=/opt/conda/bin:$PATH	
 
 #Install RPI channell specific packages
-RUN conda install -y -c rpi jupyterlab
+#RUN conda install -y -c rpi jupyterlab
 
 RUN pip install \
 	setuptools \
@@ -113,13 +113,13 @@ RUN pip install \
 #    biopython \
 #    pyliftover \
 #    scipy \
-    numpy \
+#    numpy \
     nbpresent \
-    networkx \
+#    networkx \
     python-louvain \
     jupyter_contrib_nbextensions \
     ipywidgets \
-    solidpython \
+#    solidpython \
     dash \
     dash-html-components \
     dash-core-components \
