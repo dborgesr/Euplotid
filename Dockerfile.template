@@ -133,9 +133,8 @@ RUN pip install \
 
 
 #Install RPI channell specific packages
-RUN pip install -U pip setuptools --ignore-installed
-RUN pip install jupyterlab
-RUN conda install -y -c rpi jupyterlab
+RUN pip install -U pip setuptools --ignore-installed \
+	&& pip install jupyterlab
 
 # Install packages for microscope camera
 RUN mkdir -p /usr/src/app && \
