@@ -1,6 +1,6 @@
 #Minitid image for microscope and viewing
-#FROM resin/rpi-raspbian:stretch
-FROM resin/rpi-raspbian:latest
+FROM resin/rpi-raspbian:stretch
+#FROM resin/rpi-raspbian:latest
 USER root
 
 WORKDIR /root
