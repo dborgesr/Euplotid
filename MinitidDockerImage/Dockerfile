@@ -1,6 +1,6 @@
 #Minitid image for microscope and viewing
 FROM resin/rpi-raspbian:stretch
-
+#FROM resin/rpi-raspbian:latest
 USER root
 
 WORKDIR /root
@@ -84,7 +84,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH  && \
     conda config --set show_channel_urls True && \
-    conda config --add channels rpi && \
+    conda config --system --add channels rpi && \
 #    conda config --add channels conda-forge && \
     conda update conda && \
     conda update --all --yes && \
@@ -92,6 +92,7 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 #    conda install anaconda-client && \
     conda install -y pip \
 	    setuptools && \
+	    python=3.6.3 && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 	
@@ -110,24 +111,30 @@ RUN pip install \
 #    biopython \
 #    pyliftover \
 #    scipy \
-    numpy \
+#    numpy \
     nbpresent \
-    networkx \
+#    networkx \
     python-louvain \
     jupyter_contrib_nbextensions \
     ipywidgets \
-    solidpython \
+#    solidpython \
     dash \
     dash-html-components \
     dash-core-components \
     dash-renderer \
     flask \
     flask_sqlalchemy \
-    pandas \
     cffi \
     python-crontab \
-    dwf && \
+    dwf \
+#    jupyterlab \
+    && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+
+
+#Install RPI channell specific packages
+RUN pip install -U pip setuptools --ignore-installed \
+	&& pip install jupyterlab
 
 # Install packages for microscope camera
 RUN mkdir -p /usr/src/app && \
@@ -158,6 +165,15 @@ RUN mkdir -p /usr/src/app && \
 	sed -i "s/rpicamdir=\"\"/rpicamdir=\"microscope\"/g" config.txt && \
 	./install.sh q 
 
+#Enable google drive in jupyterlab
+RUN pip install jupyterlab --no-cache-dir
+RUN jupyter serverextension enable --py jupyterlab --sys-prefix	
+#	jupyter labextension install @jupyterlab/google-drive && \
+#	jupyter labextension install @jupyterlab/plotly-extension
+	
+#set bash as default shell
+ENV SHELL=/bin/bash
+
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
 	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
@@ -171,8 +187,9 @@ RUN jupyter notebook --generate-config --allow-root && \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system 
 
-#Get stuff for interacting in real lifef
-RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
+#Get stuff for interacting in real life
+#RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
+RUN cd /root && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi && ./build
 RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet && chmod 755 /var/www/rfoutlet/codesend
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
@@ -189,11 +206,14 @@ RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-a
 
 RUN mkdir -p /usr/src/app
 # Install resin-wifi-connect
-RUN cd /usr/src/app && curl https://raw.githubusercontent.com/resin-io/resin-wifi-connect/master/scripts/raspbian-install.sh -sSf | bash
+RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/latest -s \
+    | grep -hoP 'browser_download_url": "\K.*%%RESIN_ARCH%%\.tar\.gz' \
+    | xargs -n1 curl -Ls \
+    | tar -xvz -C /usr/src/app/
 
 #Install openscad
-RUN cd /root && \
-	wget https://download.opensuse.org/repositories/home:/t-paul/AppImage.arm/OpenSCAD-latest-armv7l.AppImage 
+#RUN cd /root && \
+#	wget https://download.opensuse.org/repositories/home:/t-paul/AppImage.arm/OpenSCAD-latest-armv7l.AppImage 
 #	chmod a+x OpenSCAD-latest-armv7l.AppImage
 	
 #RUN cd /root && \
@@ -202,20 +222,23 @@ RUN cd /root && \
 #	qmake openscad.pro && make && make install 
 
 # Install Waveforms SDK for Digilent
-RUN mkdir /root/digilent_software/ && cd /root/digilent_software && \
-	apt-get install xdg-utils && \
-	wget -O digilent.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=275b28&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2BRuntime%2F2.16.6%2Fdigilent.adept.runtime_2.16.6-armhf.deb" && \
-	wget -O digilent.utilities.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=efa267&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2Fdigilent.adept.utilities_2.2.1-armhf.deb" && \
-	wget -O digilent.waveforms_3.7.5_armhf.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=08c5c9&media=https%3A%2F%2Ffiles.digilent.com%2FSoftware%2FWaveforms2015%2F3.7.5%2Fdigilent.waveforms_3.7.5_armhf.deb" && \
-	wget -O digilent.sdk.tar.gz "http://files.digilent.com/Software/Adept2+SDK/2.4.2/digilent.adept.sdk_2.4.2.tar.gz" 
+#RUN mkdir /root/digilent_software/ && cd /root/digilent_software && \
+#	apt-get install xdg-utils && \
+#	wget -O digilent.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=275b28&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2BRuntime%2F2.16.6%2Fdigilent.adept.runtime_2.16.6-armhf.deb" && \
+#	wget -O digilent.utilities.adept.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=efa267&media=http%3A%2F%2Ffiles.digilent.com%2FSoftware%2FAdept2%2Fdigilent.adept.utilities_2.2.1-armhf.deb" && \
+#	wget -O digilent.waveforms_3.7.5_armhf.deb "https://reference.digilentinc.com/lib/exe/fetch.php?tok=08c5c9&media=https%3A%2F%2Ffiles.digilent.com%2FSoftware%2FWaveforms2015%2F3.7.5%2Fdigilent.waveforms_3.7.5_armhf.deb" && \
+#	wget -O digilent.sdk.tar.gz "http://files.digilent.com/Software/Adept2+SDK/2.4.2/digilent.adept.sdk_2.4.2.tar.gz" 
 #	dpkg -i digilent.utilities.adept.deb && \
 #	dpkg -i digilent.adept.deb && \
 #	dpkg -i digilent.waveforms_3.7.5_armhf.deb
 
+
+
 #Get Euplotid and define variables
 ENV EUPLO_IMAGE=minitid
+ENV JUPYTER_PORT=8888
 ENV EUPLO_ARDUINO=false
-ENV EUPLO_RPICAM=true
+ENV EUPLO_RPICAM=false
 
 #set correct timezone (EST)
 RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
@@ -226,5 +249,5 @@ WORKDIR /root/Euplotid
 
 
 EXPOSE 80
-EXPOSE 8888
+EXPOSE $JUPYTER_PORT
 CMD ["bash", "./start.sh"]
