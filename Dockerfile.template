@@ -163,6 +163,7 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
     | tar -xvz -C /usr/src/app/
 
 #Get Euplotid, define variable and define timezone
+ENV JUPYTER_PORT=888
 ENV EUPLO_IMAGE=nanotid
 ENV EUPLO_ARDUINO=true
 ENV EUPLO_RPICAM=false
@@ -180,5 +181,6 @@ WORKDIR /root/Euplotid
 
 
 EXPOSE 80
-EXPOSE 8888
+EXPOSE $JUPYTER_PORT
 CMD ["bash", "./start.sh"]
+
