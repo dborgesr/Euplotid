@@ -98,8 +98,8 @@ RUN pip install \
 	sense-hat \
 #    biopython \
     nbpresent \
-    networkx \
-    python-louvain \ 
+#    networkx \
+#    python-louvain \ 
     ipywidgets \
     jupyter_contrib_nbextensions \
     dash \
@@ -108,11 +108,23 @@ RUN pip install \
     dash-renderer \
     flask \
     flask_sqlalchemy \
-    pandas \
-    cffi && \
+#    pandas \
+    cffi \
+    python-crontab \
+    && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-RUN pip install python-crontab
+RUN pip install -U pip setuptools --ignore-installed \
+	&& pip install jupyterlab
+
+#Enable google drive in jupyterlab
+RUN pip install jupyterlab --no-cache-dir && \
+	jupyter serverextension enable --py jupyterlab --sys-prefix	
+#	jupyter labextension install @jupyterlab/google-drive && \
+#	jupyter labextension install @jupyterlab/plotly-extension
+	
+#set bash as default shell
+ENV SHELL=/bin/bash
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -127,9 +139,9 @@ RUN jupyter notebook --generate-config --allow-root && \
 		&& jupyter nbextension enable nbpresent --py --system \
 		&& jupyter serverextension enable nbpresent --py --system 
 
-#Get stuff for interacting in real lifef
-RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
-RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet
+#Get stuff for interacting in real life
+RUN cd /root && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi && ./build
+RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet && chmod 755 /var/www/rfoutlet/codesend
 RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install wifi connect
@@ -148,9 +160,10 @@ RUN mkdir -p /usr/src/app
 RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/latest -s \
     | grep -hoP 'browser_download_url": "\K.*%%RESIN_ARCH%%\.tar\.gz' \
     | xargs -n1 curl -Ls \
-| tar -xvz -C /usr/src/app/
+    | tar -xvz -C /usr/src/app/
 
 #Get Euplotid, define variable and define timezone
+ENV JUPYTER_PORT=8888
 ENV EUPLO_IMAGE=nanotid
 ENV EUPLO_ARDUINO=true
 ENV EUPLO_RPICAM=false
@@ -168,5 +181,6 @@ WORKDIR /root/Euplotid
 
 
 EXPOSE 80
-EXPOSE 8888
+EXPOSE $JUPYTER_PORT
 CMD ["bash", "./start.sh"]
+
