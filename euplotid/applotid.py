@@ -18,6 +18,7 @@ from sqlalchemy import create_engine, Date, cast
 from datetime import datetime as dt
 import time
 from crontab import CronTab
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # Set up Dash app and database
 server = Flask('applotid')
@@ -25,6 +26,10 @@ server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////root/Euplotid/euploDB.db'
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(server)
 
+#Start scheduler in backgound
+scheduler = BackgroundScheduler()
+scheduler.start()
+cur_jobs = list()
 
 #start webcam
 #camera = PiCamera()
@@ -36,7 +41,7 @@ db = SQLAlchemy(server)
 #rawCapture = PiRGBArray(camera)
 
 #create tables, may need to make sure to not create if they exist already
-db.create_all()
+#db.create_all()
 #start Dash app
 app = dash.Dash('applotid-front', server=server,csrf_protect=False)
 
@@ -266,38 +271,75 @@ def draw_humidity_graph(results):
     
     return fig
         
+def light_switch(switch_num, on_off):
+	if on_off.lower() in ["true","on","turnon"]:
+		on_off = True
+	else:
+		on_off = False
+	switch_num = int(switch_num)
+	if (switch_num == 1) and on_off:
+		rf1_on(1)
+	elif (switch_num == 1) and not on_off:
+		rf1_off(1)
+	elif (switch_num == 2) and on_off:
+		rf2_on(1)
+	elif (switch_num == 2) and not on_off:
+		rf2_off(1)
+	elif (switch_num == 3) and on_off:
+		rf3_on(1)
+	elif (switch_num == 3) and not on_off:
+		rf3_off(1)
+	elif (switch_num == 4) and on_off:
+		rf4_on(1)
+	elif (switch_num == 4) and not on_off:
+		rf4_off(1)
+	elif (switch_num == 5) and on_off:
+		rf5_on(1)
+	elif (switch_num == 5) and not on_off:
+		rf5_off(1)
+	else:
+		print("ERROR switch not found")
+									        
 def add_to_cron(minute, hour, day, month, day_week, cron_job):
     if cron_job:
-        cron_euplo = CronTab(user='root')
-        job  = cron_euplo.new(command=cron_job)
-        job.setall(minute, hour, day, month, day_week)
-        if not job.is_valid():
-            job.clear()
-#        else:
-#            with open("/var/spool/cron/crontabs/root", "rw") as cron_file:
-#                cron_file.write(str(job))
-#                cron_file.write("\n")
-#                cron_file.close()
-#                job.clear()
-        cron_euplo.write()
+    	args = cron_job.split(" ")
+        added_job = scheduler.add_job(light_switch,args=args,
+        									trigger='cron',
+                                           month=month, 
+                                           day=day, 
+                                           day_of_week=day_week, 
+                                           hour=hour, 
+                                           minute=minute)
+        cur_jobs.append(added_job)        
     return
     
 def clear_cron():
-    cron_euplo = CronTab(user='root')
-    cron_euplo.remove_all()
-    cron_euplo.write()
+    for job in cur_jobs:
+        job.remove()
+        cur_jobs.remove(job)
     return
 
 def get_cron_table():
-    cron_euplo = CronTab(user='root')
-    df = pd.DataFrame(columns=["minute", "hour", "day", "month", "day of week", "command"])
-    job_arr = np.empty((0,6), str)
-    for saved_job in cron_euplo:
-        a = str(saved_job).split(" ")
-        job_row = np.reshape(np.array([a[0],a[1],a[2],a[3],a[4]," ".join(a[5:(len(a))])]),(1,6))
-        job_arr = np.vstack((job_arr,job_row))
-    job_df = pd.DataFrame(job_arr, columns=["minute", "hour", "day", "month", "day of week", "command"])
-    
+    df = pd.DataFrame(columns=["minute", "hour", "day", "month", "day of week", "function", "function_arguments"])
+    job_arr = np.empty((0,7), str)
+    if len(cur_jobs) > 0:
+    	for saved_job in cur_jobs:
+        	cron_trig = saved_job.trigger
+        	arr = str(cron_trig).replace("cron","").strip("[]").split(",")
+        	for param in arr:
+        		if "month" in param:
+        			month = param.replace("month=", "").strip("'")
+        		elif "hour" in param:
+        			hour = param.replace(" hour=", "").strip("'")
+        		elif "day_of_week" in param:
+        			day_of_week = param.replace(" day_of_week=", "").strip("'")
+        		elif "minute" in param:
+        			minute = param.replace(" minute=", "").strip("'")
+        		elif "day" in param:
+        			day = param.replace(" day=", "").strip("'")
+        	job_row = np.reshape(np.array([minute, hour, day, month, day_of_week, str(saved_job.func), str(saved_job.args)]),(1,7))
+        	job_arr = np.vstack((job_arr,job_row))
+    job_df = pd.DataFrame(job_arr, columns=["minute", "hour", "day", "month", "day of week", "function","function_arguments"])
     return job_df
 
 def get_tentacle_readings(start_date, end_date):
@@ -840,5 +882,5 @@ if __name__ == '__main__':
     app.run_server(
         debug=True,
         host='0.0.0.0',
-        port=80
+        port=8895
     )
