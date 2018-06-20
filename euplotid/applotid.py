@@ -8,7 +8,6 @@ import plotly.graph_objs as go
 import pandas as pd
 import numpy as np
 import subprocess
-from tzlocal import get_localzone
 #from picamera.array import PiRGBArray
 #from picamera import PiCamera
 import time
@@ -20,6 +19,8 @@ from datetime import datetime as dt
 import time
 from crontab import CronTab
 from apscheduler.schedulers.background import BackgroundScheduler
+from pytz import timezone
+
 
 # Set up Dash app and database
 server = Flask('applotid')
@@ -28,9 +29,8 @@ server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(server)
 
 #Start scheduler in backgound
-#Get timezone
-tz = get_localzone()
-scheduler = BackgroundScheduler(timezone=tz)
+eastern = timezone('US/Eastern')
+scheduler = BackgroundScheduler(timezone=eastern)
 scheduler.start()
 cur_jobs = list()
 
