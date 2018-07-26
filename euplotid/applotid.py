@@ -20,7 +20,10 @@ import time
 from crontab import CronTab
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
-
+import rpi_rf
+from rpi_rf import RFDevice
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
 
 # Set up Dash app and database
 server = Flask('applotid')
@@ -810,35 +813,55 @@ def load_humidity_graph(date_enviro_submit, start_date, end_date):
         [Input(component_id='rf_on_button1', component_property='n_clicks')])
 def rf1_on(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5264691 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5264691, tx_pulselength=184)
+                rfdevice.cleanup()
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5264691 -l 184 -p 0", shell=True)  
         return
 @app.callback(
         Output(component_id='placeholder2', component_property='children'),
         [Input(component_id='rf_on_button2', component_property='n_clicks')])
 def rf2_on(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5264835 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5264835, tx_pulselength=184)
+                rfdevice.cleanup()
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5264835 -l 184 -p 0", shell=True)  
         return
 @app.callback(
         Output(component_id='placeholder3', component_property='children'),
         [Input(component_id='rf_on_button3', component_property='n_clicks')])
 def rf3_on(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5265155 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5265155, tx_pulselength=184)
+                rfdevice.cleanup()            
+#               subprocess.check_output("/var/www/rfoutlet/codesend 5265155 -l 184 -p 0", shell=True)  
         return
 @app.callback(
         Output(component_id='placeholder4', component_property='children'),
         [Input(component_id='rf_on_button4', component_property='n_clicks')])
 def rf4_on(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5266691 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5266691, tx_pulselength=184)
+                rfdevice.cleanup()            
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5266691 -l 184 -p 0", shell=True)  
         return
 @app.callback(
         Output(component_id='placeholder5', component_property='children'),
         [Input(component_id='rf_on_button5', component_property='n_clicks')])
 def rf5_on(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5272835 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5272835, tx_pulselength=184)
+                rfdevice.cleanup()
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5272835 -l 184 -p 0", shell=True)  
         return
 #OFF
 @app.callback(
@@ -853,28 +876,44 @@ def rf1_off(n_clicks):
         [Input(component_id='rf_off_button2', component_property='n_clicks')])
 def rf2_off(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5264844 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5264844, tx_pulselength=184)
+                rfdevice.cleanup()
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5264844 -l 184 -p 0", shell=True)  
         return
 @app.callback(
         Output(component_id='placeholder8', component_property='children'),
         [Input(component_id='rf_off_button3', component_property='n_clicks')])
 def rf3_off(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5265164 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5265164, tx_pulselength=184)
+                rfdevice.cleanup()
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5265164 -l 184 -p 0", shell=True)  
         return
 @app.callback(
         Output(component_id='placeholder9', component_property='children'),
         [Input(component_id='rf_off_button4', component_property='n_clicks')])
 def rf4_off(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5266700 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5266700, tx_pulselength=184)
+                rfdevice.cleanup()
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5266700 -l 184 -p 0", shell=True)  
         return
 @app.callback(
         Output(component_id='placeholder10', component_property='children'),
         [Input(component_id='rf_off_button5', component_property='n_clicks')])
 def rf5_off(n_clicks):
         if (n_clicks):
-                subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 184 -p 0", shell=True)  
+                rfdevice = RFDevice(17)
+                rfdevice.enable_tx()
+                rfdevice.tx_code(code=5272844, tx_pulselength=184)
+                rfdevice.cleanup()
+                #subprocess.check_output("/var/www/rfoutlet/codesend 5272844 -l 184 -p 0", shell=True)  
         return
 
 #Update time
