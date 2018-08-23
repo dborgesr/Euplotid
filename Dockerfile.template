@@ -63,8 +63,8 @@ ENV APT_PACKAGES=" \
 		libffi-dev \
 		libffi6 \
 		node-gyp \
-		nodejs-dev \
-		libssl1.0-dev \
+#		nodejs-dev \
+#		libssl1.0-dev \
 		"
 
 RUN apt-get -q update && \ 
@@ -127,14 +127,9 @@ RUN pip install \
     cffi \
     python-crontab \
     dwf \
-#    jupyterlab \
+    jupyterlab \
     && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
-
-
-#Install RPI channell specific packages
-RUN pip install -U pip setuptools --ignore-installed \
-	&& pip install jupyterlab
 
 # Install packages for microscope camera
 
