@@ -34,9 +34,9 @@ ENV APT_PACKAGES=" \
 		ca-certificates \
 		build-essential \
 		libbz2-dev \
-#		libc6-dev \
-#		libgdbm-dev \
-#		libjpeg-dev \
+		libc6-dev \
+		libgdbm-dev \
+		libjpeg-dev \
 #	liblapack-dev \
 #		libncurses-dev \
 #		libsqlite3-dev \
@@ -60,8 +60,8 @@ ENV APT_PACKAGES=" \
 #		sqlite3 \
 #		libsqlite3-dev \
 #		libxslt-dev \
-#		libffi-dev \
-#		libffi6 \
+		libffi-dev \
+		libffi6 \
 #		node-gyp \
 #		nodejs-dev \
 #		libssl1.0-dev \
