@@ -30,7 +30,7 @@ ENV APT_PACKAGES=" \
 		gfortran \
 		wget \
 		libncurses-dev \
-#		libxml2-dev \
+		libxml2-dev \
 		ca-certificates \
 		build-essential \
 		libbz2-dev \
