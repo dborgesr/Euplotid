@@ -1,5 +1,5 @@
 #Nanotid image for arduinos, environmental monitoring, controlling X10
-FROM resin/rpi-raspbian:jessie
+FROM resin/rpi-raspbian
 
 USER root
 
@@ -20,10 +20,10 @@ ENV APT_PACKAGES=" \
 #		libav-tools \
 #		gstreamer1.0-tools \
 		git \
-		libraspberrypi-bin \
-		libraspberrypi-dev \
-		libraspberrypi-doc \
-		libraspberrypi0 \
+#		libraspberrypi-bin \
+#		libraspberrypi-dev \
+#		libraspberrypi-doc \
+#		libraspberrypi0 \
 		vim \
 		tk-dev \
     	libpng-dev \
@@ -56,8 +56,8 @@ ENV APT_PACKAGES=" \
 #		npm \
 #		cron \
 #        arduino \
-        g++ \
-        gcc \
+#        g++ \
+#        gcc \
 #        usbutils \
 #        make \
 	sqlite \
@@ -77,11 +77,11 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH  && \
-    conda config --set show_channel_urls True && \
-    conda config --add channels rpi && \
+#    conda config --set show_channel_urls True && \
+#    conda config --add channels rpi && \
 #    conda config --add channels conda-forge && \
-    conda update conda && \
-    conda update --all --yes && \
+#    conda update conda && \
+#    conda update --all --yes && \
 #    conda install conda-build && \
 #    conda install anaconda-client && \
     conda install -y pip \
