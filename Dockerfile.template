@@ -176,7 +176,7 @@ ENV EUPLO_RPICAM=false
 #set correct timezone (EST)
 RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
 
-#RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
 #Define arduino board attached to RpiOw and setup
 ENV ARDUINODIR /usr/share/arduino
