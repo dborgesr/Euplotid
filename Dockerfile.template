@@ -20,10 +20,10 @@ ENV APT_PACKAGES=" \
 #		libav-tools \
 #		gstreamer1.0-tools \
 		git \
-		libraspberrypi-bin \
-		libraspberrypi-dev \
-		libraspberrypi-doc \
-		libraspberrypi0 \
+#		libraspberrypi-bin \
+#		libraspberrypi-dev \
+#		libraspberrypi-doc \
+#		libraspberrypi0 \
 		vim \
 		tk-dev \
     	libpng-dev \
@@ -32,7 +32,7 @@ ENV APT_PACKAGES=" \
 		libncurses-dev \
 		libxml2-dev \
 		ca-certificates \
-#		build-essential \
+		build-essential \
 		libbz2-dev \
 		libc6-dev \
 		libgdbm-dev \
@@ -56,8 +56,8 @@ ENV APT_PACKAGES=" \
 #		npm \
 #		cron \
 #        arduino \
-#        g++ \
-#        gcc \
+        g++ \
+        gcc \
 #        usbutils \
 #        make \
 	sqlite \
