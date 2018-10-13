@@ -98,6 +98,7 @@ RUN pip install \
 	gnureadline \
 	jupyter \
 	plotly \
+	pyzmq \
 #	sense-hat \
 #    biopython \
 #    nbpresent \
