@@ -90,6 +90,8 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
 
+RUN conda install -c rpi pandas numpy 
+
 RUN pip install \
 	setuptools \
 	gnureadline \
@@ -108,7 +110,7 @@ RUN pip install \
     dash-renderer \
     flask \
     flask_sqlalchemy \
-    pandas \
+#    pandas \
     cffi \
     apscheduler \ 
     rpi-rf \
