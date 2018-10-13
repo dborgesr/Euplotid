@@ -1,5 +1,5 @@
 #Nanotid image for arduinos, environmental monitoring, controlling X10
-FROM resin/rpi-raspbian
+FROM resin/rpi-raspbian:latest
 
 USER root
 
@@ -90,7 +90,8 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/opt/conda/bin:$PATH	
 
-RUN conda install -c rpi numpy 
+#Doesn't work for whatever reason? can't find r
+#RUN conda install -c rpi numpy 
 
 RUN pip install \
 	setuptools \
@@ -149,12 +150,12 @@ RUN jupyter notebook --generate-config --allow-root && \
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
 
 # Install node
-ENV NODE_VERSION 9.4.0
-RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
-    tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
-    rm "node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
-    npm config set unsafe-perm true -g --unsafe-perm && \
-    rm -rf /tmp/*
+#ENV NODE_VERSION 9.4.0
+#RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+#    tar -xzf "node-v$NODE_VERSION-linux-armv6l.tar.gz" -C /usr/local --strip-components=1 && \
+#    rm "node-v$NODE_VERSION-linux-armv6l.tar.gz" && \
+#    npm config set unsafe-perm true -g --unsafe-perm && \
+#    rm -rf /tmp/*
 
 RUN mkdir -p /usr/src/app
 # Install resin-wifi-connect
