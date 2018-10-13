@@ -67,7 +67,7 @@ ENV APT_PACKAGES=" \
 	python3-lxml \
 	libffi-dev \
 	libffi6 \
-	libzmq-dev \
+#	libzmq-dev \
 	libzmq3 libzmq3-dev python3-zmq "
 
 RUN apt-get -q update && \ 
