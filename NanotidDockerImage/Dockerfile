@@ -32,7 +32,7 @@ ENV APT_PACKAGES=" \
 		libncurses-dev \
 		libxml2-dev \
 		ca-certificates \
-		build-essential \
+#		build-essential \
 		libbz2-dev \
 		libc6-dev \
 		libgdbm-dev \
@@ -54,12 +54,12 @@ ENV APT_PACKAGES=" \
 		rfkill \
 #		nodejs \
 #		npm \
-		cron \
-        arduino \
-        g++ \
-        gcc \
-        usbutils \
-        make \
+#		cron \
+#        arduino \
+#        g++ \
+#        gcc \
+#        usbutils \
+#        make \
 	sqlite \
 	sqlite3 \
 	libsqlite3-dev \
@@ -95,30 +95,29 @@ RUN pip install \
 	gnureadline \
 	jupyter \
 	plotly \
-	sense-hat \
+#	sense-hat \
 #    biopython \
-    nbpresent \
+#    nbpresent \
 #    networkx \
 #    python-louvain \ 
-    ipywidgets \
-    jupyter_contrib_nbextensions \
+#    ipywidgets \
+#    jupyter_contrib_nbextensions \
     dash \
     dash-html-components \
     dash-core-components \
     dash-renderer \
     flask \
     flask_sqlalchemy \
-#    pandas \
+    pandas \
     cffi \
-    python-crontab \
+    apscheduler \ 
+    rpi-rf \
     && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-RUN pip install -U pip setuptools --ignore-installed \
-	&& pip install jupyterlab
-
 #Enable google drive in jupyterlab
-RUN pip install jupyterlab --no-cache-dir && \
+RUN pip install -U pip setuptools --ignore-installed && \
+	pip install jupyterlab --no-cache-dir && \
 	jupyter serverextension enable --py jupyterlab --sys-prefix	
 #	jupyter labextension install @jupyterlab/google-drive && \
 #	jupyter labextension install @jupyterlab/plotly-extension
@@ -132,17 +131,17 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
-        && jupyter nbextension enable --py widgetsnbextension \
-        && jupyter contrib nbextension install --system \
-        && jupyter nbextension install nbpresent --py --overwrite --system \
-		&& jupyter nbextension enable nbpresent --py --system \
-		&& jupyter serverextension enable nbpresent --py --system 
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py 
+#        && jupyter nbextension enable --py widgetsnbextension \
+#        && jupyter contrib nbextension install --system \
+#        && jupyter nbextension install nbpresent --py --overwrite --system \
+#		&& jupyter nbextension enable nbpresent --py --system \
+#		&& jupyter serverextension enable nbpresent --py --system 
 
 #Get stuff for interacting in real life
-RUN cd /root && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi && ./build
-RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet && chmod 755 /var/www/rfoutlet/codesend
-RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
+#RUN cd /root && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi && ./build
+#RUN cd /root && git clone https://github.com/timleland/rfoutlet.git /var/www/rfoutlet && chmod 755 /var/www/rfoutlet/codesend
+#RUN cd /root && git clone https://github.com/RTIMULib/RTIMULib2.git && cd RTIMULib2/Linux/python && python3 setup.py build && python3 setup.py install
 
 # Install wifi connect
 ENV DEVICE_TYPE=%%RESIN_MACHINE_NAME%%
@@ -165,13 +164,13 @@ RUN curl https://api.github.com/repos/resin-io/resin-wifi-connect/releases/lates
 #Get Euplotid, define variable and define timezone
 ENV JUPYTER_PORT=8888
 ENV EUPLO_IMAGE=nanotid
-ENV EUPLO_ARDUINO=true
+ENV EUPLO_ARDUINO=false
 ENV EUPLO_RPICAM=false
 
 #set correct timezone (EST)
 RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
 
-RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+#RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
 #Define arduino board attached to RpiOw and setup
 ENV ARDUINODIR /usr/share/arduino
