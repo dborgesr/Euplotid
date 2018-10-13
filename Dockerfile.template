@@ -179,9 +179,9 @@ RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
 
 #Define arduino board attached to RpiOw and setup
-ENV ARDUINODIR /usr/share/arduino
-ENV BOARD mega2560
-RUN cd /root/Euplotid/arduino_code && make
+#ENV ARDUINODIR /usr/share/arduino
+#ENV BOARD mega2560
+#RUN cd /root/Euplotid/arduino_code && make
 WORKDIR /root/Euplotid
 
 
