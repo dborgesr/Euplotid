@@ -73,27 +73,30 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 		numpy  \
 		zeromq \
 		pyzmq \
-		scipy && \
+		scipy \ 
+		lxml2 && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
 #RUN apt-get install -yq libzmq-dev
 
+RUN pip install pyzmq==17.0.0
+
 RUN pip install \
 	setuptools \
 	gnureadline \
-#	jupyter \
+	jupyter \
 	plotly \
 	myvariant \
 	mygene \
-	pysam \
-	cffi \
-    pandas \
-	lxml \
+#	pysam \
+#	cffi \
+#    pandas \
+#	lxml \
     joblib \
     biopython \
     pyliftover \
-    scipy \
+#    scipy \
 #    numpy \
 #    nbpresent \
     networkx \
