@@ -30,8 +30,8 @@ ENV APT_PACKAGES=" \
 		wget \
 #		libncurses-dev \
 		libxml2-dev \
-#		ca-certificates \
-#		build-essential \
+		ca-certificates \
+		build-essential \
 		libbz2-dev \
 #		libc6-dev \
 #		libgdbm-dev \
@@ -52,7 +52,7 @@ ENV APT_PACKAGES=" \
 #		libexpat-dev \
 #		rfkill \
 #		cmake \
-#		libxslt1-dev
+		libxslt1-dev
 		"
 
 RUN apt-get -q update && \ 
@@ -70,16 +70,19 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
     conda install -y pip \
 	    setuptools \
 		pandas \
-		numpy && \
+		numpy  \
+		pyzmq \
+		scipy \
+		jupyter && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
-RUN apt-get install -yq libzmq-dev
+#RUN apt-get install -yq libzmq-dev
 
 RUN pip install \
 	setuptools \
 	gnureadline \
-	jupyter \
+#	jupyter \
 	plotly \
 	myvariant \
 	mygene \
@@ -91,7 +94,7 @@ RUN pip install \
     biopython \
     pyliftover \
     scipy \
-    numpy \
+#    numpy \
 #    nbpresent \
     networkx \
     python-louvain \
