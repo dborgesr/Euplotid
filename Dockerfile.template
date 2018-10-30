@@ -27,7 +27,7 @@ ENV APT_PACKAGES=" \
 		vim \
 #		tk-dev \
  #   	libpng-dev \
-#		wget \
+		wget \
 #		libncurses-dev \
 #		libxml2-dev \
 #		ca-certificates \
@@ -56,7 +56,8 @@ ENV APT_PACKAGES=" \
 		"
 
 RUN apt-get -q update && \ 
-	apt-get install -y git
+	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+ 	rm -rf "/var/lib/apt/lists/*"
 
 RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
     bash miniconda.sh -b -p /root/conda && \
@@ -95,19 +96,25 @@ RUN pip install \
     python-louvain \
     ipywidgets \
     jupyter_contrib_nbextensions \
+    jupyterlab \
     pyyaml && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
-	cd pytorch && \
-	git submodule update --init && \
-	pip install -r requirements.txt && \
-	python3 setup.py build develop && \
-	python3 setup.py install
+RUN conda install pytorch torchvision -c pytorch
+
+#Jupyterlab
+RUN pip install -U pip setuptools --ignore-installed \
+	&& pip install jupyterlab
+
+#RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
+#	cd pytorch && \
+#	git submodule update --init && \
+#	pip install -r requirements.txt && \
+#	python3 setup.py build develop && \
+#	python3 setup.py install
 	
-#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
