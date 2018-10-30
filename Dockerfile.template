@@ -52,7 +52,7 @@ ENV APT_PACKAGES=" \
 #		libexpat-dev \
 #		rfkill \
 #		cmake \
-		libxslt1-dev
+		libxslt1-dev \
 		"
 
 RUN apt-get -q update && \ 
