@@ -1,7 +1,7 @@
 #Euplotid ARM image
 
 #ARM
-FROM openhorizon/aarch64-txd-cudabase
+FROM openhorizon/aarch64-tx2-cudabase
 #FROM resin/aarch64-alpine:latest
 #FROM resin/aarch64-debian:stretch
 
