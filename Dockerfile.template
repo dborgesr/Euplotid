@@ -55,7 +55,8 @@ ENV APT_PACKAGES=" \
 #		libxslt1-dev
 		"
 
-RUN	apt-get install -y git
+RUN apt-get -q update && \ 
+	apt-get install -y git
 
 RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
     bash miniconda.sh -b -p /root/conda && \
