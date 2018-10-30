@@ -15,48 +15,49 @@ USER root
 WORKDIR /root
 
 ENV APT_PACKAGES=" \
-		psmisc \
-		dialog \
-		apache2-utils \
-		gpac \
-		motion \
+#		psmisc \
+#		dialog \
+#		apache2-utils \
+#		gpac \
+#		motion \
 		zip \
-		libav-tools \
-		gstreamer1.0-tools \
+#		libav-tools \
+#		gstreamer1.0-tools \
 		git \
 		vim \
-		tk-dev \
-    	libpng-dev \
-		wget \
-		libncurses-dev \
-		libxml2-dev \
-		ca-certificates \
-		build-essential \
-		libbz2-dev \
-		libc6-dev \
-		libgdbm-dev \
-		libjpeg-dev \
+#		tk-dev \
+ #   	libpng-dev \
+#		wget \
+#		libncurses-dev \
+#		libxml2-dev \
+#		ca-certificates \
+#		build-essential \
+#		libbz2-dev \
+#		libc6-dev \
+#		libgdbm-dev \
+#		libjpeg-dev \
 #	liblapack-dev \
-		libncurses-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		zlib1g-dev \
-		curl \
-		liblzma-dev \
-		xz-utils \
-		dnsmasq \
-		hostapd \
-		iproute2 \
-		iw \
-		libdbus-1-dev \
-		libexpat-dev \
-		rfkill \
-		cmake \
-		libxslt1-dev"
+#		libncurses-dev \
+#		libsqlite3-dev \
+#		libssl-dev \
+#		zlib1g-dev \
+#		curl \
+#		liblzma-dev \
+#		xz-utils \
+#		dnsmasq \
+#		hostapd \
+#		iproute2 \
+#		iw \
+#		libdbus-1-dev \
+#		libexpat-dev \
+#		rfkill \
+#		cmake \
+#		libxslt1-dev
+		"
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
-	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+	apt-get install -y --no-install-recommends $APT_PACKAGES && \
  	rm -rf "/var/lib/apt/lists/*"
 
 RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
