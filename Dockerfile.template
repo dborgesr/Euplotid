@@ -118,6 +118,13 @@ RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && 
 	python3 setup.py build develop && \
 	python3 setup.py install
 	
+#Cleanup
+
+RUN apt clean && \
+	apt autoremove --purge && \
+	rm /usr/src/*.tbz2 && \
+	rm /var/cuda-repo-8.0-local/*.deb && \
+	rm ~/temp 
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
