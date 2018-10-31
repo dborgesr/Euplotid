@@ -57,6 +57,7 @@ ENV APT_PACKAGES=" \
 
 RUN apt-get -q update && \ 
 	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+	apt-get clean && \
  	rm -rf "/var/lib/apt/lists/*"
 
 RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
@@ -72,12 +73,10 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 		pandas \
 		numpy  \
 		zeromq \
-		pyzmq \
 		scipy && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
-#RUN apt-get install -yq libzmq-dev
 
 RUN pip install pyzmq==17.0.0
 
@@ -123,7 +122,7 @@ RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && 
 RUN apt clean && \
 	apt autoremove --purge && \
 	rm /usr/src/*.tbz2 && \
-	rm /var/cuda-repo-8.0-local/*.deb && \
+	rm /var/cuda-repo-9.0-local/*.deb && \
 	rm ~/temp 
 
 #Configure jupyter
