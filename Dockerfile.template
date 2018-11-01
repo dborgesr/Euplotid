@@ -110,16 +110,14 @@ RUN pip install \
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
 #RUN conda install pytorch torchvision -c pytorch
 
+#Install pytorch from source and cleanup
 RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
 	cd pytorch && \
 	git submodule update --init && \
 	pip install -r requirements.txt && \
 	python3 setup.py build develop && \
-	python3 setup.py install
-	
-#Cleanup
-
-RUN apt clean && \
+	python3 setup.py install && \
+	apt clean && \
 	apt autoremove --purge && \
 	rm /usr/src/*.tbz2 && \
 	rm /var/cuda-repo-9.0-local/*.deb && \
