@@ -116,8 +116,11 @@ RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && 
 	git submodule update --init && \
 	pip install -r requirements.txt && \
 	python3 setup.py build develop && \
-	python3 setup.py install && \
-	apt clean && \
+	python3 setup.py install 
+
+RUN ls /usr/src/
+
+RUN apt clean && \
 	apt autoremove --purge && \
 	rm /usr/src/*.tbz2 && \
 	rm /var/cuda-repo-9.0-local/*.deb && \
