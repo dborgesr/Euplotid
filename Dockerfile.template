@@ -70,12 +70,12 @@ ENV APK_PACKAGES=" \
 ENV APT_PACKAGES=" \
 		psmisc \
 		dialog \
-		apache2-utils \
+#		apache2-utils \
 		gpac \
-		motion \
+#		motion \
 		zip \
-		libav-tools \
-		gstreamer1.0-tools \
+#		libav-tools \
+#		gstreamer1.0-tools \
 		git \
 		vim \
 		tk-dev \
