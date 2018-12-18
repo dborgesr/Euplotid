@@ -1,8 +1,10 @@
 #Euplotid ARM image
 
 #ARM
-FROM openhorizon/aarch64-tx2-cudabase
 #FROM resin/aarch64-alpine:latest
+#FROM aarch64/ubuntu
+FROM arm64v8/ubuntu:latest
+
 #FROM resin/aarch64-debian:stretch
 
 #ARM on x86
@@ -14,52 +16,149 @@ USER root
 
 WORKDIR /root
 
+ENV APK_PACKAGES=" \
+	tk-dev \
+	libpng-dev \
+	gfortran \
+	wget \
+	git \
+	vim \
+	libxml2-dev \
+	ca-certificates \
+	build-base \
+	bzip2-dev \
+	libc6-compat \
+	gdbm-dev \
+#	hdf5-dev \
+	jpeg-dev \
+	lapack-dev \
+	ncurses-dev \
+	sqlite-dev \
+	openssl-dev \
+	zlib-dev \
+	xz-dev \
+	linux-headers \
+	curl \
+	readline-dev \
+	patch \
+	bash \
+	cmake \
+	python3 \
+	python3-dev \
+	libffi-dev \
+	libffi \
+	libxslt-dev \
+	openssl-dev \
+	openssl"
+	
+# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
+#RUN apk update  \ 
+#  # replacing default repositories with edge ones
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+#  && apk add --no-cache $APK_PACKAGES  \
+#  && python3 -m ensurepip \
+#  && rm -r /usr/lib/python*/ensurepip \
+#  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+#  && pip3 install --upgrade pip setuptools \
+#  && rm -r /root/.cache \
+#  && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+#  && apk update \
+#  && apk upgrade
+
 ENV APT_PACKAGES=" \
-#		psmisc \
-#		dialog \
-#		apache2-utils \
-#		gpac \
-#		motion \
+		psmisc \
+		dialog \
+		apache2-utils \
+		gpac \
+		motion \
 		zip \
-#		libav-tools \
-#		gstreamer1.0-tools \
+		libav-tools \
+		gstreamer1.0-tools \
 		git \
 		vim \
-#		tk-dev \
+		tk-dev \
     	libpng-dev \
 		wget \
-#		libncurses-dev \
+		libncurses-dev \
 		libxml2-dev \
 		ca-certificates \
 		build-essential \
 		libbz2-dev \
-#		libc6-dev \
-#		libgdbm-dev \
-#		libjpeg-dev \
+		libc6-dev \
+		libgdbm-dev \
+		libjpeg-dev \
 #	liblapack-dev \
-#		libncurses-dev \
+		libncurses-dev \
 		libsqlite3-dev \
-#		libssl-dev \
+		libssl-dev \
 		zlib1g-dev \
 		curl \
 		liblzma-dev \
-#		xz-utils \
-#		dnsmasq \
-#		hostapd \
-#		iproute2 \
-#		iw \
-#		libdbus-1-dev \
-#		libexpat-dev \
+		xz-utils \
+		dnsmasq \
+		hostapd \
+		iproute2 \
+		iw \
+		libdbus-1-dev \
+		libexpat-dev \
 #		rfkill \
 		cmake \
 		libxslt1-dev \
-		"
+		gcc-6 \
+		g++-6 \
+		bzip2 \
+		curl \
+		sudo \
+		unp"
 
-RUN apt-get -q update && \ 
-	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+#Install GCC6 for pytorch
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+	apt-get install -y software-properties-common python-software-properties && \
+	add-apt-repository ppa:ubuntu-toolchain-r/test && \
+	apt update && \
+	apt install -y gcc-6
+
+RUN	apt-get install -y --no-install-recommends $APT_PACKAGES && \
+ 	rm -rf "/var/lib/apt/lists/*" && \
 	apt-get clean && \
- 	rm -rf "/var/lib/apt/lists/*"
+	rm -rf /var/cache/apt
 
+# base URL for NVIDIA libs
+ARG URL=http://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2/pwv346/JetPackL4T_32_b157
+
+# Update packages, install some useful packages
+#RUN apt-get update && apt-get install -y apt-utils bzip2 curl sudo unp && apt-get clean && rm -rf /var/cache/apt
+WORKDIR /tmp
+
+# Install drivers first
+RUN curl -sL http://developer.nvidia.com/embedded/dlc/l4t-jetson-tx2-driver-package-28-2 | tar xvfj - && \
+	chown root /etc/passwd /etc/sudoers /usr/lib/sudo/sudoers.so /etc/sudoers.d/README && \
+	/tmp/Linux_for_Tegra/apply_binaries.sh -r / && rm -fr /tmp/*
+
+## Pull the rest of the jetpack libs for cuda/cudnn and install
+RUN curl $URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo-l4t_arm64.deb && \
+	curl $URL/libcudnn7_7.0.5.13-1+cuda9.0_arm64.deb -so /tmp/libcudnn_arm64.deb && \
+	curl $URL/libcudnn7-dev_7.0.5.13-1+cuda9.0_arm64.deb -so /tmp/libcudnn-dev_arm64.deb
+
+## Install libs: L4T, CUDA, cuDNN
+RUN dpkg -i /tmp/cuda-repo-l4t_arm64.deb && \ 
+	apt-key add /var/cuda-repo-9-0-local/7fa2af80.pub && \
+	apt-get update && apt-get install -y cuda-toolkit-9.0 && \
+	dpkg -i /tmp/libcudnn_arm64.deb && \
+	dpkg -i /tmp/libcudnn-dev_arm64.deb
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/aarch64-linux-gnu/tegra
+
+
+## Re-link libs in /usr/lib/<arch>/tegra
+RUN ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so && \
+	ln -s /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.28.2.0 /usr/lib/aarch64-linux-gnu/tegra/libnvidia-ptxjitcompiler.so.1 && \
+	ln -sf /usr/lib/aarch64-linux-gnu/tegra/libGL.so /usr/lib/aarch64-linux-gnu/libGL.so && \
+	ln -s /usr/lib/aarch64-linux-gnu/libcuda.so /usr/lib/aarch64-linux-gnu/libcuda.so.1 # D.R. -- need to do this for some strange reason (for jetson tx2)
+	
+	
 RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
     bash miniconda.sh -b -p /root/conda && \
     rm miniconda.sh && \
@@ -71,14 +170,12 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
     conda install -y pip \
 	    setuptools \
 		pandas \
-		numpy  \
-		zeromq \
-		scipy && \
+		numpy && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
 
-RUN pip install pyzmq==17.0.0
+#RUN conda install numpy scipy
 
 RUN pip install \
 	setuptools \
@@ -88,43 +185,33 @@ RUN pip install \
 	myvariant \
 	mygene \
 #	pysam \
-#	cffi \
-#    pandas \
+	cffi \
+    pandas \
 	lxml \
     joblib \
-    biopython \
-    pyliftover \
-#    scipy \
-#    numpy \
-#    nbpresent \
+ #   biopython \
+#    pyliftover \
+ #   scipy \
+ #   numpy \
+    nbpresent \
     networkx \
-    python-louvain \
-#    ipywidgets \
-#    jupyter_contrib_nbextensions \
-    jupyterlab \
-    pyyaml 
-    # && \
+ #   python-louvain \
+    ipywidgets \
+    jupyter_contrib_nbextensions \
+	jupyterlab 
+ #   pyyaml && \
 #	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get pytorch machine learning
-ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-#RUN conda install pytorch torchvision -c pytorch
-
-#Install pytorch from source and cleanup
+#ENV CMAKE_PREFIX_PATH=$CONDA_DIR
 #RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
 #	cd pytorch && \
 #	git submodule update --init && \
 #	pip install -r requirements.txt && \
 #	python3 setup.py build develop && \
-#	python3 setup.py install 
-
-#RUN ls /usr/src/
-
-#RUN apt clean && \
-#	apt autoremove --purge && \
-#	rm /usr/src/*.tbz2 && \
-#	rm /var/cuda-repo-9.0-local/*.deb && \
-#	rm ~/temp 
+#	python3 setup.py install
+	
+#RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
@@ -132,16 +219,29 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py 
-#        && jupyter nbextension enable --py widgetsnbextension \
-#        && jupyter contrib nbextension install --system \
-#        && jupyter nbextension install nbpresent --py --overwrite --system \
-#		&& jupyter nbextension enable nbpresent --py --system \
-#		&& jupyter serverextension enable nbpresent --py --system 
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
+        && jupyter nbextension enable --py widgetsnbextension \
+        && jupyter contrib nbextension install --system \
+        && jupyter nbextension install nbpresent --py --overwrite --system \
+		&& jupyter nbextension enable nbpresent --py --system \
+		&& jupyter serverextension enable nbpresent --py --system 
 
-#Get Euplotid 
+#Get Euplotid and define variables
+ENV EUPLO_IMAGE=armtid
+ENV EUPLO_ARDUINO=false
+ENV EUPLO_RPICAM=false
+ENV JUPYTER_PORT=80
+
+#set correct timezone (EST)
+RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
+
 RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+
 WORKDIR /root/Euplotid
+
+## Clean up (don't remove cuda libs... used by child containers)
+RUN apt-get -y autoremove && apt-get -y autoclean
+RUN rm -rf /var/cache/apt
 
 EXPOSE 80
 CMD ["bash", "./start.sh"]
