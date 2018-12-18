@@ -138,8 +138,8 @@ RUN curl -sL http://developer.nvidia.com/embedded/dlc/l4t-jetson-tx2-driver-pack
 	chown root /etc/passwd /etc/sudoers /usr/lib/sudo/sudoers.so /etc/sudoers.d/README && \
 	/tmp/Linux_for_Tegra/apply_binaries.sh -r / && rm -fr /tmp/*
 
-## Pull the rest of the jetpack libs for cuda/cudnn and install
-RUN curl $URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so cuda-repo-l4t_arm64.deb && \
+## Pull the rest of the jetpack libs for cuda/cudnn and install 
+RUN curl $URL/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -so /tmp/cuda-repo-l4t_arm64.deb && \
 	curl $URL/libcudnn7_7.0.5.13-1+cuda9.0_arm64.deb -so /tmp/libcudnn_arm64.deb && \
 	curl $URL/libcudnn7-dev_7.0.5.13-1+cuda9.0_arm64.deb -so /tmp/libcudnn-dev_arm64.deb
 
