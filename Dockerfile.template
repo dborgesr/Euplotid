@@ -116,7 +116,7 @@ ENV APT_PACKAGES=" \
 #Install GCC6 for pytorch
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-	apt-get install -y software-properties-common python-software-properties && \
+	apt-get install -y software-properties-common && \
 	add-apt-repository ppa:ubuntu-toolchain-r/test && \
 	apt update && \
 	apt install -y gcc-6
