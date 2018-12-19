@@ -3,7 +3,10 @@
 #ARM
 #FROM resin/aarch64-alpine:latest
 #FROM aarch64/ubuntu
-FROM arm64v8/ubuntu:xenial-20180123
+#FROM arm64v8/ubuntu:latest
+FROM openhorizon/aarch64-tx2-cudabase
+#FROM arm64v8/ubuntu:xenial-20180123
+
 
 #FROM resin/aarch64-debian:stretch
 
@@ -127,6 +130,7 @@ RUN	apt-get install -y --no-install-recommends $APT_PACKAGES && \
 	rm -rf /var/cache/apt
 
 # base URL for NVIDIA libs
+
 ARG URL=http://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2/pwv346/JetPackL4T_32_b157
 
 # Update packages, install some useful packages
