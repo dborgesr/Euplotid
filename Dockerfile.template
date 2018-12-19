@@ -102,17 +102,18 @@ ENV APT_PACKAGES=" \
 		dnsmasq \
 		hostapd \
 		iproute2 \
-		iw \
-		libdbus-1-dev \
-		libexpat-dev \
-		rfkill \
-		cmake \
-		libxslt1-dev \
+#		iw \
+#		libdbus-1-dev \
+#		libexpat-dev \
+#		rfkill \
+#		cmake \
+#		libxslt1-dev \
 #		gcc-6 \
 #		g++-6 \
+		libzmq-dev \
 		bzip2 \
 		curl \
-		sudo \
+#		sudo \
 #		unp \
 		"
 
