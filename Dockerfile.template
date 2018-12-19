@@ -108,7 +108,7 @@ ENV APT_PACKAGES=" \
 		rfkill \
 		cmake \
 		libxslt1-dev \
-		gcc-6 \
+#		gcc-6 \
 #		g++-6 \
 		bzip2 \
 		curl \
