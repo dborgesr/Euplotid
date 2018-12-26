@@ -131,7 +131,7 @@ ENV APT_PACKAGES=" \
  #   	libpng-dev \
 		wget \
 #		libncurses-dev \
-#		libxml2-dev \
+		libxml2-dev \
 #		ca-certificates \
 #		build-essential \
 #		libbz2-dev \
@@ -154,7 +154,7 @@ ENV APT_PACKAGES=" \
 #		libexpat-dev \
 #		rfkill \
 #		cmake \
-#		libxslt1-dev \
+		libxslt1-dev \
 		libzmq3-dev"
 
 
