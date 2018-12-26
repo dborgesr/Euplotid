@@ -48,7 +48,8 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
 
-RUN pip install \
+RUN pip install scikit-build && \
+	pip install \
 	setuptools \
 	gnureadline \
 	jupyter \
