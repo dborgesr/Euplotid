@@ -116,6 +116,46 @@ ENV APT_PACKAGES=" \
 #		sudo \
 #		unp \
 		"
+ENV APT_PACKAGES=" \
+		psmisc \
+		dialog \
+		apache2-utils \
+		gpac \
+		motion \
+		zip \
+		libav-tools \
+		gstreamer1.0-tools \
+		git \
+		vim \
+		tk-dev \
+    	libpng-dev \
+		wget \
+		libncurses-dev \
+		libxml2-dev \
+		ca-certificates \
+		build-essential \
+		libbz2-dev \
+		libc6-dev \
+		libgdbm-dev \
+		libjpeg-dev \
+#	liblapack-dev \
+		libncurses-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		zlib1g-dev \
+		curl \
+		liblzma-dev \
+		xz-utils \
+		dnsmasq \
+		hostapd \
+		iproute2 \
+		iw \
+		libdbus-1-dev \
+		libexpat-dev \
+		rfkill \
+		cmake \
+		libxslt1-dev"
+
 
 #Install GCC6 for pytorch
 #ARG DEBIAN_FRONTEND=noninteractive
