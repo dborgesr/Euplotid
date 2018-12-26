@@ -18,7 +18,8 @@ ENV APT_PACKAGES=" \
 		libxml2-dev \
 		curl \
 		libxslt1-dev \
-		libzmq3-dev"
+		libzmq3-dev \
+		gfortran"
 
 RUN	apt-get update && \
 	apt-get install -y --no-install-recommends $APT_PACKAGES && \
@@ -36,8 +37,12 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
     conda update --all --yes && \
     conda install -y pip \
 	    setuptools \
+		&& \
+	conda install -y -c jetson-tx2 \
+		cmake \
+		numpy \
 		pandas \
-		numpy && \
+		&& \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
@@ -47,34 +52,37 @@ RUN pip install \
 	gnureadline \
 	jupyter \
 	plotly \
-#	myvariant \
-#	mygene \
-#	pysam \
 	cffi \
-    pandas \
 	lxml \
     joblib \
- #   biopython \
-#    pyliftover \
- #   scipy \
- #   numpy \
+    scikit-build \
+    ninja \
     nbpresent \
     networkx \
- #   python-louvain \
     ipywidgets \
     jupyter_contrib_nbextensions \
 	jupyterlab 
- #   pyyaml && \
+#   biopython \
+#    pyliftover \
+#   scipy \
+#   numpy \
+#    pandas \
+#  python-louvain \
+#	pyyaml
+#	myvariant \
+#	mygene \
+#	pysam \
+ #  && \
 #	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
 #Get pytorch machine learning
-#ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-#RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
-#	cd pytorch && \
-#	git submodule update --init && \
-#	pip install -r requirements.txt && \
-#	python3 setup.py build develop && \
-#	python3 setup.py install
+ENV CMAKE_PREFIX_PATH=$CONDA_DIR
+RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
+	cd pytorch && \
+	git submodule update --init && \
+	pip install -r requirements.txt && \
+	python3 setup.py build develop && \
+	python3 setup.py install
 	
 #RUN conda install -c soumith magma-cuda80 # or magma-cuda75 if CUDA 7.5
 
