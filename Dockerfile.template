@@ -65,7 +65,7 @@ RUN pip install scikit-learn scikit-build && \
     networkx \
     ipywidgets \
     jupyter_contrib_nbextensions \
-	jupyterlab 
+	jupyterlab \
 #   biopython \
 #    pyliftover \
 	scipy \
