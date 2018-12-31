@@ -20,7 +20,7 @@ ENV APT_PACKAGES=" \
 		libxslt1-dev \
 		libzmq3-dev \
 		gfortran \
-		libjpeg-de \
+		libjpeg-dev \
 		libgfortran3"
 
 RUN	apt-get update && \
