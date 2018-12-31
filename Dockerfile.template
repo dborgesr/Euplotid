@@ -53,8 +53,8 @@ ENV PATH=/root/conda/bin:$PATH
 RUN apt-get update && apt-get install -y liblapack-dev
 
 RUN pip install --upgrade pip && \
-	pip install scikit-learn scikit-build && \
-	pip install \
+	pip install --no-cache-dir scikit-learn scikit-build && \
+	pip install --no-cache-dir \
 	setuptools \
 	gnureadline \
 	jupyter \
@@ -89,7 +89,8 @@ RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && 
 	git submodule update --init && \
 	pip install -r requirements.txt && \
 	python3 setup.py build develop && \
-	python3 setup.py install
+	python3 setup.py install && \
+	python setup.py clean --all
 
 #Install leftover stuff for pytorch
 RUN pip install \
