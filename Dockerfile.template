@@ -93,7 +93,7 @@ RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && 
 	python setup.py clean --all
 
 #Install leftover stuff for pytorch
-RUN pip install \
+RUN pip install --no-cache-dir \
     visdom \
     tqdm \
     torchnet \
