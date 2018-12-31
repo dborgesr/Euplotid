@@ -73,12 +73,7 @@ RUN pip install --upgrade pip && \
 #    pyliftover \
 	scipy \
 	numpy \
-    pandas \
-    visdom \
-    tqdm \
-    torchnet \
-    torchvision \
-    tensorboardx 
+    pandas 
 #  python-louvain \
 #	pyyaml
 #	myvariant \
@@ -89,12 +84,20 @@ RUN pip install --upgrade pip && \
 
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-#RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
-#	cd pytorch && \
-#	git submodule update --init && \
-#	pip install -r requirements.txt && \
-#	python3 setup.py build develop && \
-#	python3 setup.py install
+RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
+	cd pytorch && \
+	git submodule update --init && \
+	pip install -r requirements.txt && \
+	python3 setup.py build develop && \
+	python3 setup.py install
+
+#Install leftover stuff for pytorch
+RUN pip install \
+    visdom \
+    tqdm \
+    torchnet \
+    torchvision \
+    tensorboardx 
 	
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
