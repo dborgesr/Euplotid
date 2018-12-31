@@ -19,7 +19,9 @@ ENV APT_PACKAGES=" \
 		curl \
 		libxslt1-dev \
 		libzmq3-dev \
-		gfortran"
+		gfortran \
+		libjpeg-de \
+		libgfortran3"
 
 RUN	apt-get update && \
 	apt-get install -y --no-install-recommends $APT_PACKAGES && \
@@ -40,15 +42,15 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 		&& \
 	conda install -y -c jetson-tx2 \
 		cmake \
-		numpy \
-		pandas \
-		scikit-learn \
+#		numpy \
+#		pandas \
+#		scikit-learn \
 		&& \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
 
-RUN pip install scikit-build && \
+RUN pip install scikit-learn scikit-build && \
 	pip install \
 	setuptools \
 	gnureadline \
@@ -66,9 +68,14 @@ RUN pip install scikit-build && \
 	jupyterlab 
 #   biopython \
 #    pyliftover \
-#   scipy \
-#   numpy \
-#    pandas \
+	scipy \
+	numpy \
+    pandas \
+    visdom \
+    tqdm \
+    torchnet \
+    torchvision \
+    tensorboardx 
 #  python-louvain \
 #	pyyaml
 #	myvariant \
