@@ -19,7 +19,9 @@ ENV APT_PACKAGES=" \
 		curl \
 		libxslt1-dev \
 		libzmq3-dev \
-		gfortran"
+		gfortran \
+		libjpeg-dev \
+		libgfortran3"
 
 RUN	apt-get update && \
 	apt-get install -y --no-install-recommends $APT_PACKAGES && \
@@ -40,16 +42,19 @@ RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installer
 		&& \
 	conda install -y -c jetson-tx2 \
 		cmake \
-		numpy \
-		pandas \
-		scikit-learn \
+#		numpy \
+#		pandas \
+#		scikit-learn \
 		&& \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
 ENV PATH=/root/conda/bin:$PATH
 
-RUN pip install scikit-build && \
-	pip install \
+RUN apt-get update && apt-get install -y liblapack-dev
+
+RUN pip install --upgrade pip && \
+	pip install --no-cache-dir scikit-learn scikit-build && \
+	pip install --no-cache-dir \
 	setuptools \
 	gnureadline \
 	jupyter \
@@ -63,12 +68,12 @@ RUN pip install scikit-build && \
     networkx \
     ipywidgets \
     jupyter_contrib_nbextensions \
-	jupyterlab 
+	jupyterlab \
 #   biopython \
 #    pyliftover \
-#   scipy \
-#   numpy \
-#    pandas \
+	scipy \
+	numpy \
+    pandas 
 #  python-louvain \
 #	pyyaml
 #	myvariant \
@@ -79,12 +84,21 @@ RUN pip install scikit-build && \
 
 #Get pytorch machine learning
 ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-#RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
-#	cd pytorch && \
-#	git submodule update --init && \
-#	pip install -r requirements.txt && \
-#	python3 setup.py build develop && \
-#	python3 setup.py install
+RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
+	cd pytorch && \
+	git submodule update --init && \
+	pip install -r requirements.txt && \
+	python3 setup.py build develop && \
+	python3 setup.py install && \
+	python setup.py clean --all
+
+#Install leftover stuff for pytorch + capsules + tensor monitoring
+RUN pip install --no-cache-dir \
+    visdom \
+    tqdm \
+    torchnet \
+    torchvision \
+    tensorboardx 
 	
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
