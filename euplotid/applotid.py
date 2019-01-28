@@ -17,7 +17,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Date, cast
 from datetime import datetime as dt
 import time
-from crontab import CronTab
+#from crontab import CronTab
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
 import rpi_rf
