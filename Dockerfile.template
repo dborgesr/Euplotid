@@ -60,27 +60,35 @@ RUN apk update  \
   && rm -rf /var/cache/apk/*
 
 RUN pip install \
-#	setuptools \
-#	gnureadline \
+	setuptools \
+	gnureadline \
 #	jupyter \
-#	plotly \
+	plotly \
 #	myvariant \
 #	mygene \
 #	pysam \
-#	cffi \
     pandas \
-#	lxml \
 #    joblib \
 #    biopython \
 #    pyliftover \
 #    scipy \
-#    numpy \
+    numpy \
 #    nbpresent \
 #    networkx \
 #    python-louvain \
-#    ipywidgets \
 #    jupyter_contrib_nbextensions \
-#    pyyaml \
+#    ipywidgets \
+#    solidpython \
+    dash \
+    dash-html-components \
+    dash-core-components \
+    dash-renderer \
+    flask \
+    flask_sqlalchemy \
+#    cffi \
+    APScheduler \
+#    dwf \
+#    jupyterlab \
     && \
 	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
