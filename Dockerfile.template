@@ -1,137 +1,101 @@
-#Euplotid ARM image
+#Euplotid alpine minimal deploy image
 
-FROM openhorizon/aarch64-tx2-cudabase
+FROM resin/%%RESIN_MACHINE_NAME%%-alpine:latest
 
 USER root
+
 WORKDIR /root
 
-ENV APT_PACKAGES=" \
-		psmisc \
-		dialog \
-		apache2-utils \
-		gpac \
-		zip \
-		git \
-		vim \
-		tk-dev \
-		wget \
-		libxml2-dev \
-		curl \
-		libxslt1-dev \
-		libzmq3-dev \
-		gfortran \
-		libjpeg-dev \
-		libgfortran3"
-
-RUN	apt-get update && \
-	apt-get install -y --no-install-recommends $APT_PACKAGES && \
- 	rm -rf "/var/lib/apt/lists/*" && \
-	apt-get clean && \
-	rm -rf /var/cache/apt
+ENV APK_PACKAGES=" \
+#	tk-dev \
+#	libpng-dev \
+#	gfortran \
+#	wget \
+#	git \
+#	vim \
+#	libxml2-dev \
+#	ca-certificates \
+#	build-base \
+#	bzip2-dev \
+#	libc6-compat \
+#	gdbm-dev \
+#	hdf5-dev \
+#	jpeg-dev \
+#	lapack-dev \
+#	ncurses-dev \
+#	sqlite-dev \
+#	openssl-dev \
+#	zlib-dev \
+#	xz-dev \
+#	linux-headers \
+	curl \
+#	readline-dev \
+#	patch \
+	bash \
+#	cmake \
+	python3 \
+	python3-dev \
+#	libffi-dev \
+#	libffi \
+#	libxslt-dev \
+#	openssl-dev \
+#	openssl"
 	
-RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /root/conda && \
-    rm miniconda.sh && \
-    export PATH=/root/conda/bin:$PATH && \
-	conda config --set show_channel_urls True && \
-    conda config --add channels jetson-tx2 && \
-    conda update conda && \
-    conda update --all --yes && \
-    conda install -y pip \
-	    setuptools \
-		&& \
-	conda install -y -c jetson-tx2 \
-		cmake \
-#		numpy \
-#		pandas \
-#		scikit-learn \
-		&& \
-	conda clean -tipy && \
-	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/root/conda/bin:$PATH
+# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
+RUN apk update  \ 
+  # replacing default repositories with edge ones
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+  && apk add --no-cache $APK_PACKAGES  \
+  && python3 -m ensurepip \
+  && rm -r /usr/lib/python*/ensurepip \
+  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+  && pip3 install --upgrade pip setuptools \
+  && rm -r /root/.cache \
+  && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+  && apk update \
+  && apk upgrade \
+  && rm -rf /var/cache/apk/*
 
-RUN apt-get update && apt-get install -y liblapack-dev
-
-RUN pip install --upgrade pip && \
-	pip install --no-cache-dir scikit-learn scikit-build && \
-	pip install --no-cache-dir \
-	setuptools \
-	gnureadline \
-	jupyter \
-	plotly \
-	cffi \
-	lxml \
-    joblib \
-    scikit-build \
-    ninja \
-    nbpresent \
-    networkx \
-    ipywidgets \
-    jupyter_contrib_nbextensions \
-	jupyterlab \
-#   biopython \
-#    pyliftover \
-	scipy \
-	numpy \
-    pandas 
-#  python-louvain \
-#	pyyaml
+RUN pip install \
+#	setuptools \
+#	gnureadline \
+#	jupyter \
+#	plotly \
 #	myvariant \
 #	mygene \
 #	pysam \
- #  && \
-#	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+#	cffi \
+    pandas \
+#	lxml \
+#    joblib \
+#    biopython \
+#    pyliftover \
+#    scipy \
+#    numpy \
+#    nbpresent \
+#    networkx \
+#    python-louvain \
+#    ipywidgets \
+#    jupyter_contrib_nbextensions \
+#    pyyaml \
+    && \
+	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-#Get pytorch machine learning
-ENV CMAKE_PREFIX_PATH=$CONDA_DIR
-RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
-	cd pytorch && \
-	git submodule update --init && \
-	pip install -r requirements.txt && \
-	python3 setup.py build develop && \
-	python3 setup.py install && \
-	python setup.py clean --all
-
-#Install leftover stuff for pytorch
-RUN pip install --no-cache-dir \
-    visdom \
-    tqdm \
-    torchnet \
-    torchvision \
-    tensorboardx 
-	
 #Configure jupyter
-RUN jupyter notebook --generate-config --allow-root && \
-	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
-        && jupyter nbextension enable --py widgetsnbextension \
-        && jupyter contrib nbextension install --system \
-        && jupyter nbextension install nbpresent --py --overwrite --system \
-		&& jupyter nbextension enable nbpresent --py --system \
-		&& jupyter serverextension enable nbpresent --py --system 
+#RUN jupyter notebook --generate-config --allow-root && \
+#	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+#        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
+#        && jupyter nbextension enable --py widgetsnbextension 
 
-#Get Euplotid and define variables
-ENV EUPLO_IMAGE=armtid
-ENV EUPLO_ARDUINO=false
-ENV EUPLO_RPICAM=false
-ENV JUPYTER_PORT=80
-
-#set correct timezone (EST)
-RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
-
-RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
-
-WORKDIR /root/Euplotid
-#set bash as default shell
-ENV SHELL=/bin/bash
-
-## Clean up (don't remove cuda libs... used by child containers)
-RUN apt-get -y autoremove && apt-get -y autoclean && \
-	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-	rm -rf /var/cache/apt
+COPY ./start.sh /root
+RUN chmod 755 /root/start.sh
+COPY ./euplotid/applotid.py /root
+RUN chmod 755 /root/applotid.py
 
 EXPOSE 80
-CMD ["bash", "./start.sh"]
+CMD ["bash", "/root/start.sh"]
