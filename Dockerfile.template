@@ -47,7 +47,7 @@ RUN mkdir /app
 WORKDIR /app
 USER root
 
-COPY ./euplotid/applotid.py ./start.sh /app
+COPY ./euplotid/applotid.py ./start.sh /app/
 RUN chmod 755 /app/applotid.py /app/start.sh
 
 EXPOSE 80
