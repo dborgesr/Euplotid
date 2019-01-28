@@ -59,7 +59,7 @@ RUN apk update  \
   && apk upgrade \
   && rm -rf /var/cache/apk/*
 
-RUN pip install numpy && \
+RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org numpy && \
 	pip install \
 	setuptools \
 	gnureadline \
