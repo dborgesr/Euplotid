@@ -51,7 +51,6 @@ RUN apk update  \
   && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
   && apk add --no-cache $APK_PACKAGES  \
   && python3 -m ensurepip \
-  && rm -r /usr/lib/python*/ensurepip \
   && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
   && pip3 install --upgrade pip setuptools \
   && rm -r /root/.cache \
