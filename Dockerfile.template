@@ -32,7 +32,7 @@ RUN apk update  \
   && apk upgrade \
   && rm -rf /var/cache/apk/*
 
-COPY requirements.txt /requirements.txt
+COPY NanotidDockerImage/requirements.txt /requirements.txt
 
 RUN pip install --install-option="--prefix=/install" -r /requirements.txt 
 #    && \
