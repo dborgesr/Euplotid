@@ -1,48 +1,20 @@
 #Euplotid alpine minimal deploy image
 
-#FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6:latest-run
-FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine:latest-build 
-#FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-latest-build 
+FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine:latest-build as builder
 
-USER root
-
-WORKDIR /root
+RUN mkdir /install
+WORKDIR /install
 
 ENV APK_PACKAGES=" \
-#	tk-dev \
-#	libpng-dev \
-#	gfortran \
-#	wget \
-#	git \
-#	vim \
-#	libxml2-dev \
-#	ca-certificates \
-#	build-base \
-#	bzip2-dev \
-#	libc6-compat \
-#	gdbm-dev \
-#	hdf5-dev \
-#	jpeg-dev \
-#	lapack-dev \
 	ncurses-dev \
-#	sqlite-dev \
-#	openssl-dev \
-#	zlib-dev \
-#	xz-dev \
-#	linux-headers \
 	curl \
 	readline-dev \
-#	patch \
 	bash \
-#	cmake \
 	musl \
 	musl-dev \
 	python3 \
-	python3-dev 
-#	libffi-dev \
-#	libffi \
-#	libxslt-dev \
-#	openssl"
+	python3-dev \
+	"
 	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 RUN apk update  \ 
@@ -60,53 +32,24 @@ RUN apk update  \
   && apk upgrade \
   && rm -rf /var/cache/apk/*
 
-RUN pip install numpy && \
-	pip install \
-	setuptools \
-	gnureadline \
-#	jupyter \
-	plotly \
-#	myvariant \
-#	mygene \
-#	pysam \
-    numpy \
-    pandas \
-#    joblib \
-#    biopython \
-#    pyliftover \
-#    scipy \
-#    nbpresent \
-#    networkx \
-#    python-louvain \
-#    jupyter_contrib_nbextensions \
-#    ipywidgets \
-#    solidpython \
-    dash \
-    dash-html-components \
-    dash-core-components \
-    dash-renderer \
-    flask \
-    flask_sqlalchemy \
-#    cffi \
-    APScheduler \
-#    dwf \
-#    jupyterlab \
-    && \
-	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+COPY requirements.txt /requirements.txt
 
-#Configure jupyter
-#RUN jupyter notebook --generate-config --allow-root && \
-#	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
-#        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
-#        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-#        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-#        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
-#        && jupyter nbextension enable --py widgetsnbextension 
+RUN pip install --install-option="--prefix=/install" -r /requirements.txt 
+#    && \
+#	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 
-COPY ./start.sh /root
-RUN chmod 755 /root/start.sh
-COPY ./euplotid/applotid.py /root
-RUN chmod 755 /root/applotid.py
+
+FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
+
+COPY --from=builder /install /usr/local
+COPY src /app
+WORKDIR /app
+USER root
+
+COPY ./start.sh /app
+RUN chmod 755 /app/start.sh
+COPY ./euplotid/applotid.py /app
+RUN chmod 755 /app/applotid.py
 
 EXPOSE 80
-CMD ["bash", "/root/start.sh"]
+CMD ["/bin/ash", "/app/start.sh"]
