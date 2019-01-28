@@ -15,10 +15,13 @@ fi
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
 sleep 1
-cd /usr/src/app/ && ./wifi-connect --clear=false
+#cd /usr/src/app/ && ./wifi-connect --clear=false
 
-#Start app for Euplotid
-#cd /root/Euplotid/euplotid && python applotid.py &
-#Start jupyter
-cd /root/Euplotid
-jupyter lab --allow-root --port=$JUPYTER_PORT --no-browser --ip=0.0.0.0
+if [ "${EUPLO_DEPLOY:-}" == "true" ]; 
+	then python /app/applotid.py &
+fi
+
+if [ "${EUPLO_DEPLOY:-}" == "false" ] && [ "${EUPLO_IMAGE:-}" != "nanotid" ]; 
+	then jupyter lab --allow-root --port=$JUPYTER_PORT --no-browser --ip=0.0.0.0
+	else /bin/ash
+fi
