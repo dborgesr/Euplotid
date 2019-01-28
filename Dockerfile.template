@@ -35,7 +35,8 @@ ENV APK_PACKAGES=" \
 #	patch \
 	bash \
 #	cmake \
-#	musl \
+	musl \
+	musl-dev \
 	python3 \
 	python3-dev 
 #	libffi-dev \
