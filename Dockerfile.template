@@ -1,6 +1,6 @@
 #Euplotid alpine minimal deploy image
 
-FROM resin/%%RESIN_MACHINE_NAME%%-alpine:latest
+FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:latest-run
 
 USER root
 
@@ -33,9 +33,9 @@ ENV APK_PACKAGES=" \
 #	patch \
 	bash \
 #	cmake \
-	musl \
-	python3 \
-	python3-dev "
+#	musl \
+#	python3 \
+#	python3-dev "
 #	libffi-dev \
 #	libffi \
 #	libxslt-dev \
