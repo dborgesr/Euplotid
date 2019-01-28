@@ -60,7 +60,8 @@ RUN apk update  \
   && apk upgrade \
   && rm -rf /var/cache/apk/*
 
-RUN pip install \
+RUN pip install numpy && \
+	pip install \
 	setuptools \
 	gnureadline \
 #	jupyter \
