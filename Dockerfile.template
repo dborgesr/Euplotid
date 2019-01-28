@@ -41,7 +41,7 @@ ENV APK_PACKAGES=" \
 #	libffi-dev \
 #	libffi \
 #	libxslt-dev \
-	openssl"
+#	openssl"
 	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 RUN apk update  \ 
