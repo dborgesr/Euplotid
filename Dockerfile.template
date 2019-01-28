@@ -32,11 +32,11 @@ ENV APK_PACKAGES=" \
 	curl \
 #	readline-dev \
 #	patch \
-	bash \
+	bash \"
 #	cmake \
-	musl \
-	python3 \
-	python3-dev "
+#	musl \
+#	python3 \
+#	python3-dev "
 #	libffi-dev \
 #	libffi \
 #	libxslt-dev \
