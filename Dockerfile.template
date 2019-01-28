@@ -43,7 +43,7 @@ RUN pip install numpy && \
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
 
 COPY --from=builder /install /usr/local
-COPY src /app
+COPY /src /app
 WORKDIR /app
 USER root
 
