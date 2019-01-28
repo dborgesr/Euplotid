@@ -25,7 +25,7 @@ ENV APK_PACKAGES=" \
 #	lapack-dev \
 #	ncurses-dev \
 #	sqlite-dev \
-#	openssl-dev \
+	openssl-dev \
 #	zlib-dev \
 #	xz-dev \
 #	linux-headers \
@@ -40,7 +40,6 @@ ENV APK_PACKAGES=" \
 #	libffi-dev \
 #	libffi \
 #	libxslt-dev \
-#	openssl-dev \
 #	openssl"
 	
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
