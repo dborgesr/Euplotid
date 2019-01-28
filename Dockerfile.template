@@ -24,7 +24,7 @@ ENV APK_PACKAGES=" \
 #	hdf5-dev \
 #	jpeg-dev \
 #	lapack-dev \
-#	ncurses-dev \
+	ncurses-dev \
 #	sqlite-dev \
 #	openssl-dev \
 #	zlib-dev \
