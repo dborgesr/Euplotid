@@ -45,5 +45,9 @@ USER root
 COPY ./euplotid/applotid.py ./start.sh /app/
 RUN chmod 755 /app/applotid.py /app/start.sh
 
+#Define startup behavior
+ENV EUPLO_IMAGE=nanotid
+ENV EUPLO_DEPLOY=true
+
 EXPOSE 80
 CMD ["/bin/ash", "/app/start.sh"]
