@@ -1,7 +1,7 @@
 #Euplotid alpine minimal deploy image
 
 #FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6:latest-run
-FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-latest-run 
+FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-latest-build 
 
 USER root
 
