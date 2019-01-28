@@ -43,14 +43,12 @@ RUN pip install numpy && \
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
 
 COPY --from=builder /install /usr/local
-COPY /src /app
+RUN mkdir /app
 WORKDIR /app
 USER root
 
-COPY ./start.sh /app
-RUN chmod 755 /app/start.sh
-COPY ./euplotid/applotid.py /app
-RUN chmod 755 /app/applotid.py
+COPY ./euplotid/applotid.py ./start.sh /app
+RUN chmod 755 /app/applotid.py /app/start.sh
 
 EXPOSE 80
 CMD ["/bin/ash", "/app/start.sh"]
