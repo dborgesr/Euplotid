@@ -2,6 +2,10 @@
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine:latest-build as builder
 
+RUN python3 -m venv /venv
+
+RUN /venv/bin/pip install -r /project/requirements/$REQS.txt
+
 RUN mkdir /install
 WORKDIR /install
 
@@ -34,14 +38,13 @@ RUN apk update  \
 COPY NanotidDockerImage/requirements.txt /requirements.txt
 ENV PIP_NO_BUILD_ISOLATION=false
 ENV PYTHONPATH=$PYTHONPATH:/install/
-RUN pip install -U pip && \
-	pip install --install-option="--prefix=/install" numpy && \
-	pip install --no-cache-dir --install-option="--prefix=/install" -r /requirements.txt  && \
-	rm -rf /root/.cache
+RUN /venv/bin/pip install -U pip && \
+	/venv/bin/pip install --no-cache-dir --install-option="--prefix=/install" numpy && \
+	/venv/bin/pip install --no-cache-dir --install-option="--prefix=/install" -r /requirements.txt
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
 
-COPY --from=builder /install /usr/local
+COPY --from=builder /venv /venv
 RUN mkdir /app
 WORKDIR /app
 USER root
