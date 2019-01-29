@@ -18,9 +18,9 @@ ENV APK_PACKAGES=" \
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 RUN apk update  \ 
   # replacing default repositories with edge ones
-  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
   && apk add --no-cache $APK_PACKAGES  \
   && python3 -m ensurepip \
   && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
