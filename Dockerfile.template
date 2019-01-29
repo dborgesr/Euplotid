@@ -8,6 +8,7 @@ ENV APK_PACKAGES=" \
 	readline-dev \
 	musl \
 	musl-dev \
+	libstdc++ \
 #	python3 \
 #	python3-dev \
 	"

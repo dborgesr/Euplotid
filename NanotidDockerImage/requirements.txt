@@ -11,3 +11,4 @@ flask
 flask_sqlalchemy
 APScheduler
 rpi_rf
+pandas-compat
