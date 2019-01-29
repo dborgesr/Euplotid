@@ -35,8 +35,9 @@ COPY NanotidDockerImage/requirements.txt /requirements.txt
 ENV PIP_NO_BUILD_ISOLATION=false
 ENV PYTHONPATH=$PYTHONPATH:/install/
 RUN pip install -U pip && \
-	pip install --no-cache-dir --install-option="--prefix=/install" numpy && \
-	pip install --no-cache-dir --install-option="--prefix=/install" -r /requirements.txt 
+	pip install --install-option="--prefix=/install" numpy && \
+	pip install --no-cache-dir --install-option="--prefix=/install" -r /requirements.txt  && \
+	rm -rf /root/.cache
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
 
