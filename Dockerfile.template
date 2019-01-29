@@ -38,10 +38,14 @@ RUN /venv/bin/pip install -U pip && \
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
 
+#Copy over virtual environment from build box
 COPY --from=builder /venv /venv
 RUN mkdir /app
 WORKDIR /app
 USER root
+
+RUN apk add --no-cache libstdc++ \
+	&& rm -rf /var/cache/apk/*
 
 COPY ./euplotid/applotid.py ./start.sh /app/
 RUN chmod 755 /app/applotid.py /app/start.sh
