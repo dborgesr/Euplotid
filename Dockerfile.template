@@ -32,7 +32,10 @@ RUN apk update  \
   && rm -rf /var/cache/apk/*
 
 COPY NanotidDockerImage/requirements.txt /requirements.txt
-RUN pip install --no-cache-dir --install-option="--prefix=/install" numpy==1.14.3 && \
+ENV PIP_NO_BUILD_ISOLATION=false
+ENV PYTHONPATH=$PYTHONPATH:/install/
+RUN pip install -U pip && \
+	pip install --no-cache-dir --install-option="--prefix=/install" numpy && \
 	pip install --no-cache-dir --install-option="--prefix=/install" -r /requirements.txt 
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
