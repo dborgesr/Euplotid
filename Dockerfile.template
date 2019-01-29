@@ -2,13 +2,6 @@
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine:latest-build as builder
 
-RUN python3 -m venv /venv
-
-RUN /venv/bin/pip install -r /project/requirements/$REQS.txt
-
-RUN mkdir /install
-WORKDIR /install
-
 ENV APK_PACKAGES=" \
 	ncurses-dev \
 	curl \
@@ -35,12 +28,12 @@ RUN apk update  \
   && apk upgrade \
   && rm -rf /var/cache/apk/*
 
+RUN python3 -m venv /venv
+
 COPY NanotidDockerImage/requirements.txt /requirements.txt
-ENV PIP_NO_BUILD_ISOLATION=false
-ENV PYTHONPATH=$PYTHONPATH:/install/
 RUN /venv/bin/pip install -U pip && \
-	/venv/bin/pip install --no-cache-dir --install-option="--prefix=/install" numpy && \
-	/venv/bin/pip install --no-cache-dir --install-option="--prefix=/install" -r /requirements.txt
+	/venv/bin/pip install --no-cache-dir numpy && \
+	/venv/bin/pip install --no-cache-dir -r /requirements.txt
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
 
