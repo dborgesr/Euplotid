@@ -18,7 +18,7 @@ sleep 1
 #cd /usr/src/app/ && ./wifi-connect --clear=false
 
 if [ "${EUPLO_DEPLOY:-}" == "true" ]; 
-	then python /app/applotid.py &
+	then /venv/bin/python3 /app/applotid.py &
 fi
 
 if [ "${EUPLO_DEPLOY:-}" == "false" ] && [ "${EUPLO_IMAGE:-}" != "nanotid" ]; 
