@@ -32,7 +32,7 @@ RUN apk update  \
   && rm -rf /var/cache/apk/*
 
 COPY NanotidDockerImage/requirements.txt /requirements.txt
-RUN pip install numpy && \
+RUN pip install --install-option="--prefix=/install" numpy && \
 	pip install --install-option="--prefix=/install" -r /requirements.txt 
 
 FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
