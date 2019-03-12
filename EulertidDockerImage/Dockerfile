@@ -34,7 +34,7 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x
     conda install -y pip \
 	    setuptools \
 		nb_conda \
-		libgcc \
+#		libgcc \
 		conda-build \
 		git \
 		plotly \
