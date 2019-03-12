@@ -1,5 +1,5 @@
 # Eulertid Anaconda3 image to get started w/ programming
-FROM debian:jessie
+FROM debian:stretch-slim
 MAINTAINER Diego Borges <dborgesr@mit.edu>
 USER root
 
@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #  libcairo2-dev \
   curl \
   zip \
+  gnupg2 \
   unzip \
   apt-transport-https \
   ca-certificates \
@@ -21,13 +22,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 	
-#Download, install, and update Anaconda3
-ENV CONDA_VERSION="5.1.0"  
-RUN wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Anaconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
-    export PATH=/root/anaconda3/bin:$PATH  && \
+#Download, install, and update Miniconda3
+ENV CONDA_VERSION="4.5.12"  
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
+    export PATH=/root/miniconda3/bin:$PATH  && \
     conda config --set show_channel_urls True && \
 	conda config --add channels bioconda && \
-#    conda config --add channels conda-forge && \
+    conda config --add channels conda-forge && \
     conda update conda && \
     conda update --all --yes && \
     conda install -y pip \
@@ -43,8 +44,8 @@ RUN wget https://repo.continuum.io/archive/Anaconda3-${CONDA_VERSION}-Linux-x86_
 #	conda update -y --all && \
 	conda clean -tipy && \
 	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
-ENV PATH=/root/anaconda3/bin:$PATH
-
+ENV PATH=/root/miniconda3/bin:$PATH	
+	
 #install docker
 RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
 	&& add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
@@ -60,17 +61,13 @@ RUN pip install --ignore-installed --no-cache-dir \
 		h5py \
 		argparse \
 		jupyter_contrib_nbextensions \
-		jupyter-c-kernel \ 
+#		jupyter-c-kernel \ 
 		jupyterlab \
 		google-cloud-storage
 #		&& pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 	
-#install bash kernel
-RUN pip install bash_kernel && \
-	python -m bash_kernel.install
-
 #Enable C kernel after installed using pip above (jupyter-c-kernel)
-RUN install_c_kernel	
+#RUN install_c_kernel	
 
 #Configure jupyter
 RUN jupyter notebook --generate-config --allow-root && \
