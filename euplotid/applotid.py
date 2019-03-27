@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import dash
 from dash.dependencies import Input, Output, State
@@ -17,7 +19,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Date, cast
 from datetime import datetime as dt
 import time
-#from crontab import CronTab
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import timezone
 import rpi_rf

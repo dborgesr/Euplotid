@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 #diff /root/Euplotid/arduino_code/euplouino.ino /data/euplouino.ino || PROGRAMMER=1
 if [ "${EUPLO_ARDUINO:-}" == "true" ] ; then
