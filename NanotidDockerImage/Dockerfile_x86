@@ -43,15 +43,15 @@ RUN mkdir /app
 WORKDIR /app
 USER root
 
-COPY ./euplotid/applotid.py ./start.sh /app/
-RUN chmod 755 /app/applotid.py /app/start.sh
-
 # Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
 RUN apk update  \ 
   && apk add --no-cache libstdc++  \
   && apk update \
   && apk upgrade \
   && rm -rf /var/cache/apk/*
+
+COPY ./euplotid/applotid.py ./start.sh /app/
+RUN chmod 755 /app/applotid.py /app/start.sh
 
 #Define startup behavior
 ENV EUPLO_IMAGE=nanotid
