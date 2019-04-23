@@ -15,7 +15,8 @@ fi
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
 sleep 1
-#cd /usr/src/app/ && ./wifi-connect --clear=false
+if [ "${EUPLO_WIFI:-}" == "true" ];
+	cd /usr/src/app/ && ./wifi-connect --clear=false
 
 if [ "${EUPLO_DEPLOY:-}" == "true" ]; 
 	then python3 /app/applotid.py &

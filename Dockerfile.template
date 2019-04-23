@@ -30,7 +30,6 @@ RUN pip install -r /requirements.txt
 
 FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.6.6-jessie-run 
 
-#COPY --from=builder /install /usr/local
 COPY --from=builder /usr/local /usr/local
 
 RUN mkdir /app
@@ -51,6 +50,7 @@ RUN chmod 755 /app/applotid.py /app/start.sh
 #Define startup behavior
 ENV EUPLO_IMAGE=nanotid
 ENV EUPLO_DEPLOY=true
+ENV EUPLO_WIFI=true
 
 EXPOSE 80
 CMD ["/bin/bash", "/app/start.sh"]
