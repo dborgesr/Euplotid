@@ -17,6 +17,9 @@ ENV APT_PACKAGES=" \
 	apt-transport-https \
 	ca-certificates \
 	"
+
+COPY NanotidDockerImage/requirements.txt /requirements.txt
+RUN pip3 install -r /requirements.txt 
 	
 # Install few tools using apt-get required to get conda package manager up and running 
 RUN apt-get update && apt-get install -y --no-install-recommends \
