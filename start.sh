@@ -33,7 +33,7 @@ fi
 # Deploy: [true, false]
 
 if [ "${EUPLO_DEPLOY:-}" == "true" ] ; then 
-	python3 /app/applotid.py &
+	python3 /app/applotid.py 
 fi
 
 #Dont deploy just run terminal for nanotid
