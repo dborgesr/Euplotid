@@ -12,3 +12,4 @@ flask_sqlalchemy
 APScheduler
 rpi_rf
 pandas-compat
+gunicorn
