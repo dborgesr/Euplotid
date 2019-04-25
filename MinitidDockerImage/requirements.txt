@@ -15,18 +15,18 @@ pandas-compat
 gunicorn
 
 # Minitid packages
-jupyter \
-#myvariant \
-#mygene \
-#pysam \
-#joblib \
-biopython \
-pyliftover \
-scipy \
-networkx \
-#jupyter_contrib_nbextensions \
-#ipywidgets \
-#solidpython \
-#cffi \
-#dwf \
-jupyterlab \
+jupyter
+jupyterlab
+biopython
+pyliftover
+scipy
+networkx
+#myvariant
+#mygene
+#pysam
+#joblib
+#jupyter_contrib_nbextensions
+#ipywidgets
+#solidpython
+#cffi
+#dwf
