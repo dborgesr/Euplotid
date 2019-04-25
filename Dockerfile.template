@@ -249,4 +249,4 @@ WORKDIR /root/Euplotid
 
 EXPOSE 80
 EXPOSE $JUPYTER_PORT
-CMD ["bash", "./start.sh"]
+CMD ["bash", "/app/start.sh"]
