@@ -84,7 +84,7 @@ RUN apt-get -q update && \
 #	./build.sh && \
 #	./install.sh
   
-RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
+RUN curl --silent -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh > miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH  && \
@@ -104,12 +104,11 @@ RUN curl -s -L https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/B
 ENV PATH=/opt/conda/bin:$PATH	
 
 #Install python packages defined in the requirements file
-RUN pip3 install -r /requirements.txt 
-
+RUN pip install -r /requirements.txt 
 
 #Install RPI channell specific packages
-RUN pip install -U pip setuptools --ignore-installed \
-	&& pip install jupyterlab
+#RUN pip install -U pip setuptools --ignore-installed \
+#	&& pip install jupyterlab
 
 # Install packages for microscope camera -- Either UV4l or RPI Cam inteface based
 
