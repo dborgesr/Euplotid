@@ -7,7 +7,7 @@ WORKDIR /root
 #Get python, conda, and apt-get/apk package dependencies 
 COPY MinitidDockerImage/requirements.txt /requirements.txt
 COPY MinitidDockerImage/apt_requirements.txt /apt_requirements.txt
-ENV APT_PACKAGES=$( -F: '/^[^#]/ { print $2 }'} package.list)
+ENV APT_PACKAGES=$( awk -F: '/^[^#]/ { print $2 }'} package.list)
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
