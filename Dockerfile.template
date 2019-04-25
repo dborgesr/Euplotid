@@ -13,7 +13,7 @@ ENV APT_PACKAGES=" \
 	wget \
 	dnsmasq \
 	wireless-tools \
-	libsqlite3-0-dev \
+	libsqlite3-0 \
 	build-essential \
 	i2c-tools \
 	ca-certificates \
