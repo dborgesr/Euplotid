@@ -178,12 +178,12 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
-        && jupyter nbextension enable --py widgetsnbextension \
-        && jupyter contrib nbextension install --system \
-        && jupyter nbextension install nbpresent --py --overwrite --system \
-		&& jupyter nbextension enable nbpresent --py --system \
-		&& jupyter serverextension enable nbpresent --py --system 
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py 
+#        && jupyter nbextension enable --py widgetsnbextension \
+#        && jupyter contrib nbextension install --system \
+#        && jupyter nbextension install nbpresent --py --overwrite --system \
+#		&& jupyter nbextension enable nbpresent --py --system \
+#		&& jupyter serverextension enable nbpresent --py --system 
 
 #Get stuff for interacting in real life
 #RUN cd /root && git clone git://git.drogon.net/wiringPi && cd wiringPi && ./build
@@ -213,7 +213,6 @@ RUN mkdir -p /usr/src/app && \
 #RUN cd /root && \
 #	wget https://download.opensuse.org/repositories/home:/t-paul/AppImage.arm/OpenSCAD-latest-armv7l.AppImage 
 #	chmod a+x OpenSCAD-latest-armv7l.AppImage
-	
 #RUN cd /root && \
 #	git clone https://github.com/openscad/openscad.git && \
 #	cd openscad && ./scripts/uni-get-dependencies.sh && \
@@ -231,9 +230,9 @@ RUN mkdir -p /usr/src/app && \
 #	dpkg -i digilent.waveforms_3.7.5_armhf.deb
 
 
-
 #Get Euplotid and define variables
 ENV EUPLO_IMAGE=minitid
+ENV EUPLO_DEPLOY=false
 ENV JUPYTER_PORT=8888
 ENV EUPLO_ARDUINO=false
 ENV EUPLO_RPICAM=false
