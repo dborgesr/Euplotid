@@ -76,10 +76,11 @@ ENV APT_PACKAGES="	\
 	"
 #Get python, conda, and apt-get/apk package dependencies 
 COPY MinitidDockerImage/requirements.txt /requirements.txt
+COPY MinitidDockerImage/apt_requirements.txt /apt_requirements.txt
 
 RUN apt-get -q update && \ 
 	apt-get dist-upgrade && \
-	apt-get install -yq --no-install-recommends $APT_PACKAGES && \
+	apt-get install -yq --no-install-recommends $(awk '{print $1'} package.list) && \
   && apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*   
