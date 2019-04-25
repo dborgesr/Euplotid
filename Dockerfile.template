@@ -124,7 +124,7 @@ RUN apt-get update -q &&\
     uv4l-dummy \
     uv4l-mjpegstream \
     uv4l-raspicam \
-    uv4l-raspicam-extras \
+#    uv4l-raspicam-extras \
     uv4l-raspidisp \
     uv4l-server \
     uv4l-uvc \
