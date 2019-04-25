@@ -48,7 +48,7 @@ ENV APT_PACKAGES=" \
 	#libc6-dev \
 	#libgdbm-dev \
 	#libjpeg-dev \
-	#liblapack-dev \
+	liblapack-dev \
 	#libncurses-dev \
 	#libssl-dev \
 	#zlib1g-dev \
