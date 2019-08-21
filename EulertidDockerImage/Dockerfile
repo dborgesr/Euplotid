@@ -23,8 +23,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 	
 #Download, install, and update Miniconda3
-ENV CONDA_VERSION="4.5.12"  
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
+ENV CONDA_VERSION="4.7.10"  
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && bash Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && rm Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
     export PATH=/root/miniconda3/bin:$PATH  && \
     conda config --set show_channel_urls True && \
 	conda config --add channels bioconda && \
@@ -47,23 +47,23 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x
 ENV PATH=/root/miniconda3/bin:$PATH	
 	
 #install docker
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
-	&& add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
-	&& apt-get update \
-	&& apt-get install -y docker-ce
+#RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+#	&& add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
+#	&& apt-get update \
+#	&& apt-get install -y docker-ce
 
 #Get jupyter notebooks from yamaton for Euler problems
 RUN cd /root && git clone https://github.com/yamaton/project-euler-jupyter.git
 
-RUN pip install --ignore-installed --no-cache-dir \
+RUN pip install  --no-cache-dir \
 		setuptools \
 		ipywidgets \
 		h5py \
 		argparse \
 		jupyter_contrib_nbextensions \
 #		jupyter-c-kernel \ 
-		jupyterlab \
-		google-cloud-storage
+		jupyterlab 
+#		google-cloud-storage
 #		&& pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
 	
 #Enable C kernel after installed using pip above (jupyter-c-kernel)
@@ -75,13 +75,13 @@ RUN jupyter notebook --generate-config --allow-root && \
         && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/project-euler-jupyter'" /root/.jupyter/jupyter_notebook_config.py \
         && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
-        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
-        && jupyter nbextension enable --py widgetsnbextension \
-        && jupyter contrib nbextension install --system 
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py 
+ #       && jupyter nbextension enable --py widgetsnbextension \
+ #       && jupyter contrib nbextension install --system 
 		
 #Enable google drive in jupyterlab
-RUN jupyter serverextension enable --py jupyterlab --sys-prefix	&& \
-	jupyter labextension install @jupyterlab/google-drive
+#RUN jupyter serverextension enable --py jupyterlab --sys-prefix	&& \
+#	jupyter labextension install @jupyterlab/google-drive
 	
 #set bash as default shell
 ENV SHELL=/bin/bash
