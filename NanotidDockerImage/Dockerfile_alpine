@@ -1,0 +1,53 @@
+#Euplotid alpine minimal deploy image
+
+FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine:latest-build as builder
+
+RUN mkdir /install
+WORKDIR /install
+
+ENV APK_PACKAGES=" \
+	ncurses-dev \
+	curl \
+	readline-dev \
+	musl \
+	musl-dev \
+	python3 \
+	python3-dev \
+	"
+	
+# Install packages necessary for compiling python using Alpine package manager, few extra commands for linking libraries
+RUN apk update  \ 
+  # replacing default repositories with edge ones
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+#  && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \ 
+  && apk add --no-cache $APK_PACKAGES  \
+  && python3 -m ensurepip \
+  && if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi \
+  && pip3 install --upgrade pip setuptools \
+  && rm -r /root/.cache \
+  && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+  && apk update \
+  && apk upgrade \
+  && rm -rf /var/cache/apk/*
+
+COPY NanotidDockerImage/requirements.txt /requirements.txt
+RUN pip install numpy && \
+	pip install --install-option="--prefix=/install" -r /requirements.txt 
+
+FROM balenalib/%%RESIN_MACHINE_NAME%%-alpine-python:3.6.6-run
+
+COPY --from=builder /install /usr/local
+RUN mkdir /app
+WORKDIR /app
+USER root
+
+COPY ./euplotid/applotid.py ./start.sh /app/
+RUN chmod 755 /app/applotid.py /app/start.sh
+
+#Define startup behavior
+ENV EUPLO_IMAGE=nanotid
+ENV EUPLO_DEPLOY=false
+
+EXPOSE 80
+CMD ["/bin/ash", "/app/start.sh"]

@@ -1,0 +1,137 @@
+#Euplotid ARM image
+
+FROM openhorizon/aarch64-tx2-cudabase
+
+USER root
+WORKDIR /root
+
+ENV APT_PACKAGES=" \
+		psmisc \
+		dialog \
+		apache2-utils \
+		gpac \
+		zip \
+		git \
+		vim \
+		tk-dev \
+		wget \
+		libxml2-dev \
+		curl \
+		libxslt1-dev \
+		libzmq3-dev \
+		gfortran \
+		libjpeg-dev \
+		libgfortran3"
+
+RUN	apt-get update && \
+	apt-get install -y --no-install-recommends $APT_PACKAGES && \
+ 	rm -rf "/var/lib/apt/lists/*" && \
+	apt-get clean && \
+	rm -rf /var/cache/apt
+	
+RUN curl -s -L https://github.com/dborgesr/Euplotid/raw/gh-pages/conda_installers/JetsonConda-0.1-Linux-aarch64.sh > miniconda.sh && \
+    bash miniconda.sh -b -p /root/conda && \
+    rm miniconda.sh && \
+    export PATH=/root/conda/bin:$PATH && \
+	conda config --set show_channel_urls True && \
+    conda config --add channels jetson-tx2 && \
+    conda update conda && \
+    conda update --all --yes && \
+    conda install -y pip \
+	    setuptools \
+		&& \
+	conda install -y -c jetson-tx2 \
+		cmake \
+#		numpy \
+#		pandas \
+#		scikit-learn \
+		&& \
+	conda clean -tipy && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+ENV PATH=/root/conda/bin:$PATH
+
+RUN apt-get update && apt-get install -y liblapack-dev
+
+RUN pip install --upgrade pip && \
+	pip install --no-cache-dir scikit-learn scikit-build && \
+	pip install --no-cache-dir \
+	setuptools \
+	gnureadline \
+	jupyter \
+	plotly \
+	cffi \
+	lxml \
+    joblib \
+    scikit-build \
+    ninja \
+    nbpresent \
+    networkx \
+    ipywidgets \
+    jupyter_contrib_nbextensions \
+	jupyterlab \
+#   biopython \
+#    pyliftover \
+	scipy \
+	numpy \
+    pandas 
+#  python-louvain \
+#	pyyaml
+#	myvariant \
+#	mygene \
+#	pysam \
+ #  && \
+#	pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+
+#Get pytorch machine learning
+ENV CMAKE_PREFIX_PATH=$CONDA_DIR
+RUN cd /root && git clone --recursive https://github.com/pytorch/pytorch.git && \
+	cd pytorch && \
+	git submodule update --init && \
+	pip install -r requirements.txt && \
+	python3 setup.py build develop && \
+	python3 setup.py install && \
+	python setup.py clean --all
+
+#Install leftover stuff for pytorch + capsules + tensor monitoring
+RUN pip install --no-cache-dir \
+    visdom \
+    tqdm \
+    torchnet \
+    torchvision \
+    tensorboardx 
+	
+#Configure jupyter
+RUN jupyter notebook --generate-config --allow-root && \
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
+        && jupyter nbextension enable --py widgetsnbextension \
+        && jupyter contrib nbextension install --system \
+        && jupyter nbextension install nbpresent --py --overwrite --system \
+		&& jupyter nbextension enable nbpresent --py --system \
+		&& jupyter serverextension enable nbpresent --py --system 
+
+#Get Euplotid and define variables
+ENV EUPLO_IMAGE=armtid
+ENV EUPLO_ARDUINO=false
+ENV EUPLO_RPICAM=false
+ENV JUPYTER_PORT=80
+
+#set correct timezone (EST)
+RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
+
+RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+
+WORKDIR /root/Euplotid
+#set bash as default shell
+ENV SHELL=/bin/bash
+
+## Clean up (don't remove cuda libs... used by child containers)
+RUN apt-get -y autoremove && apt-get -y autoclean && \
+	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+	rm -rf /var/cache/apt
+
+EXPOSE 80
+CMD ["bash", "./start.sh"]

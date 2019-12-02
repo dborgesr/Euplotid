@@ -1,0 +1,118 @@
+#Minitid image for visualizing genomic annotations
+
+FROM debian:stretch-slim
+MAINTAINER Diego Borges <dborgesrmit@gmail.com>
+USER root
+
+# Install few tools using apt-get required to get conda package manager up and running 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  software-properties-common \
+  wget \
+  bzip2 \
+#  build-essential \
+  vim \
+  libboost-all-dev \
+  zlib1g-dev \
+  libgsl0-dev \
+#  libcairo2-dev \
+  curl \
+  locales \
+  fonts-liberation \
+  zip \
+  unzip \
+  apt-transport-https \
+  ca-certificates \
+  && apt-get update \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+	
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen	
+
+#Download, install, and update Miniconda3
+ENV CONDA_VERSION="4.5.12"  
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
+	bash Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -b && \
+	rm Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
+    export PATH=/root/miniconda3/bin:$PATH  && \
+    conda config --set show_channel_urls True && \
+	conda config --add channels bioconda && \
+    conda config --add channels conda-forge && \
+    conda update conda && \
+    conda update --all --yes && \
+    conda install -y pip \
+		python=3.6 \
+	    setuptools \
+		nb_conda \
+		libgcc \
+		conda-build \
+		git \
+		plotly \
+		intervaltree=2.1.0 \
+		ipywidgets \
+		nodejs \
+		deeptools \
+		pygenometracks \
+		hicexplorer  \
+		jupyter \
+		jupyterlab \ 
+		ipywidgets \
+		ipykernel \
+		bedops \
+	&& \
+#	conda update -y --all && \
+	conda clean -tipy && \
+	if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi
+ENV PATH=/root/miniconda3/bin:$PATH	
+	
+RUN pip install --ignore-installed --no-cache-dir \
+		setuptools \
+#		ipywidgets \
+		h5py \
+		tornado==4.5.3 \
+		argparse \
+		intervaltree==2.1.0 \
+		jupyter_contrib_nbextensions \
+		pyliftover \
+		numpydoc \
+		pytest \
+		pyensembl
+#		ipykernel
+#		&& pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+	
+#Configure jupyter
+RUN jupyter notebook --generate-config --allow-root && \
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/root/Euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" /root/.jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" /root/.jupyter/jupyter_notebook_config.py \
+        && jupyter nbextension enable --py widgetsnbextension \
+        && jupyter contrib nbextension install --system 
+
+#set bash as default shell
+ENV SHELL=/bin/bash
+
+#run a closing update and clean
+#RUN conda update -y --all \
+#	&& conda clean -y -t -i -l -a
+RUN apt-get clean \
+ && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Set Euplotid as working directory
+RUN mkdir /root/Euplotid
+WORKDIR /root/Euplotid
+
+#Get Euplotid and define variables
+ENV EUPLO_IMAGE=minitid
+ENV JUPYTER_PORT=8897
+
+#set correct timezone (EST)
+RUN cp /usr/share/zoneinfo/America/New_York /etc/localtime
+
+#RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+
+WORKDIR /root/Euplotid
+
+EXPOSE 8897
+CMD ["jupyter", "lab", "--port=8897", "--no-browser", "--allow-root", "--ip=0.0.0.0"]

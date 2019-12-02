@@ -1,0 +1,52 @@
+#ChimeraX commands to pull in histone PDB and spit out pretty obj files and images
+open 5Y0C
+~hbonds
+hide #!1.2 models
+hide atoms
+
+#############################################
+#A E	Histone H3.1
+surface enclose /A
+surface enclose /E
+color /A,E springgreen
+save D:/Euplotid/raw_models/H3_1.obj format obj
+hide /A,E surface
+#############################################
+#A E	Histone H4
+surface enclose /B
+surface enclose /F
+color /B,F firebrick 
+save D:/Euplotid/raw_models/H4.obj format obj
+hide /B,F surface
+#############################################
+#A E	Histone H2A
+surface enclose /C
+surface enclose /G
+color /C,G deepskyblue 
+save D:/Euplotid/raw_models/H2A.obj format obj
+hide /C,G surface
+#############################################
+#A E	Histone H2B
+surface enclose /D
+surface enclose /H
+color /D,H blueviolet 
+save D:/Euplotid/raw_models/H2B.obj format obj
+hide /D,H surface
+#############################################
+#A E	DNA (146-mer)
+#surface enclose /I
+#surface enclose /J
+color /I,J bynucleotide
+nucleotides /I,J fill
+style /I,J ball
+hide /I,J surface
+show /I,J atoms
+save D:/Euplotid/raw_models/DNA_histone_146.obj format obj
+hide /I,J atoms
+#############################################
+#Show surfaces and nucleotides for pictures
+
+show /I,J atoms
+show /A-H surface
+#Take picture
+save image D:\Euplotid\Figures_v2\5Y0C_histone.png supersample 5 width 3840 heigh 2160 transparentBackground  true

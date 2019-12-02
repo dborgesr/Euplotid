@@ -1,0 +1,58 @@
+#ChimeraX commands to pull in Ribosome PDB and spit out pretty obj files
+open 6qzp
+~hbonds
+hide #!1.2 models
+hide atoms
+
+#############################################
+#Esite tRNA : chain S6
+nucleotides /S6 fill
+style /S6 ball
+show /S6 atoms
+color /S6 fuchsia
+save D:/Euplotid/raw_models/EtRNA.obj format obj
+hide /S6
+
+#############################################
+
+#Color, style, and save 40S proteins/nucleotides
+#18S (40S) rRNA : chain S2
+#nucleotides /S2 ladder
+#style /S2 sphere
+#show /S2 atoms
+surface enclose /S2
+color /S2 chartreuse
+
+#40S proteins - small subunit
+surface enclose /SA-Sg
+color /SA-Sg green
+save D:/Euplotid/raw_models/40S.obj format obj
+
+#############################################
+
+#Color, style, and save 60S proteins/nucleotides
+#28S (60S) rRNA : chain L5
+#nucleotides /L5 ladder
+#style /L5 sphere
+#show /L5 atoms
+surface enclose /L5
+color /L5 lightsalmon
+
+#5S (60S) rRNA : chain L7
+#nucleotides /L5 ladder
+#style /L8 sphere
+#show /L8 atoms
+surface enclose /L8
+color /L8 darkorange
+
+#5.8S (60S) rRNA : chain L8
+#nucleotides /L7 ladder
+#style /L7 sphere
+show /L7 atoms
+color /L7 orange
+surface enclose /L7
+
+#60S proteins - large subunit
+surface enclose /LA-Lz
+color /LA-Lz red
+save D:/Euplotid/raw_models/60s.obj format obj
