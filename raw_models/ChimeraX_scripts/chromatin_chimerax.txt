@@ -1,0 +1,47 @@
+#ChimeraX commands to pull in Chromatin PDB and spit out pretty obj files
+open 6HKT
+~hbonds
+hide #!1.2 models
+hide atoms
+#############################################
+surface enclose /0,2,C,G,M,Q,W,c,g,m,q,w
+#0 2 C G M Q W c g m q w	Histone H2A
+color /0,2,C,G,M,Q,W,c,g,m,q,w deepskyblue 
+save D:/Euplotid_old/raw_models/Chromatin_H2A.obj format obj
+hide /0,2,C,G,M,Q,W,c,g,m,q,w surfaces
+#############################################
+#1 3 D H N R X d h n r x	Histone H2B
+surface enclose /1,3,D,H,N,R,X,d,h,n,r,x
+color /1,3,D,H,N,R,X,d,h,n,r,x blueviolet 
+save D:/Euplotid_old/raw_models/Chromatin_H2B.obj format obj
+hide /1,3,D,H,N,R,X,d,h,n,r,x surfaces
+#############################################
+#A E K O U Y a e k o u y	Histone H3.1
+surface enclose /A,E,K,O,U,Y,a,e,k,o,u,y
+color /A,E,K,O,U,Y,a,e,k,o,u,y springgreen
+save D:/Euplotid_old/raw_models/Chromatin_H3_1.obj format obj
+hide /A,E,K,O,U,Y,a,e,k,o,u,y surfaces
+#############################################
+#B F L P V Z b f l p v z	Histone H4
+surface enclose /B,F,L,P,V,Z,b,f,l,p,v,z
+color /B,F,L,P,V,Z,b,f,l,p,v,z firebrick 
+save D:/Euplotid_old/raw_models/Chromatin_H4.obj format obj
+hide /B,F,L,P,V,Z,b,f,l,p,v,z surfaces
+#############################################
+#I J	DNA (1122-mer)
+#surface enclose /I
+#surface enclose /J
+color /I,J bynucleotide
+nucleotides /I,J fill
+style /I,J ball
+hide /I,J surfaces
+show /I,J atoms
+save D:/Euplotid_old/raw_models/Chromatin_DNA_histone_146.obj format obj
+hide /I,J atoms
+#############################################
+#Show surfaces and nucleotides for pictures
+show /I,J atoms
+show all surfaces
+hide /I,J surfaces
+#Take picture
+save image D:\Euplotid_old\Figures_v2\6HKT_chromatin.png supersample 5 width 3840 heigh 2160 transparentBackground  true
