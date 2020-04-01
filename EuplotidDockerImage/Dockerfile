@@ -88,6 +88,12 @@ RUN cd /root && git clone https://github.com/davek44/Basset.git /root/Basset --r
 # Set Euplotid as working directory
 WORKDIR /root/Euplotid
 
+#set bash as default shell and add activation of environment to bash start
+ENV SHELL=/bin/bash
+#Set bash up to start and activate env environment
+RUN echo "export PATH=/opt/conda/envs/env/bin/:$PATH" > ~/.bashrc && \
+	echo "source activate base" >> ~/.bashrc
+
 #Define default startup behavior
 ENV EUPLO_IMAGE=euplotid
 ENV EUPLO_DEPLOY=false

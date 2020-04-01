@@ -1,7 +1,8 @@
+#!/bin/bash
 # Logic on container startup depends on a few pre-defined image variables
 
 #Activate default environment
-source activate env
+source activate base
 
 # Deploy euplotid app, few scenarios depending on:
 # OS: [debian, alpine, ubuntu]
