@@ -1,7 +1,7 @@
 
 <div style="text-align:center"><img src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/Title_slide.png" style="width: 1000px;"></div>
 
-[![Introduction video](https://www.youtube.com/embed/wNuoL09rqtc)](https://www.youtube.com/embed/wNuoL09rqtc)
+[![Introduction video](https://img.youtube.com/vi/wNuoL09rqtc/0.jpg)](https://www.youtube.com/watch?v=wNuoL09rqtc)
 
 <div style="text-align:center"><img src="https://raw.githubusercontent.com/dborgesr/Euplotid/gh-pages/web_euplotid/graphical_abstract.png" style="width: 5=800px;"></div>
 
