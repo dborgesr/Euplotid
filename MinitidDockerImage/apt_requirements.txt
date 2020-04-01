@@ -1,7 +1,0 @@
-bash \
-curl \
-wget \
-dnsmasq \
-wireless-tools \
-libsqlite3-0 \
-build-essential \
