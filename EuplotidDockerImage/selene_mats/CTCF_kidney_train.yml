@@ -1,0 +1,45 @@
+---
+ops: [train, evaluate]
+model: {
+    path: /input_dir/ml_testing/kidney_test/deeperdeepsea.py,
+    class: DeeperDeepSEA,
+    class_args: {
+        sequence_length: 1000,
+        n_targets: 1,
+    },
+    non_strand_specific: mean
+}
+sampler: !obj:selene_sdk.samplers.IntervalsSampler {
+    reference_sequence: !obj:selene_sdk.sequences.Genome {
+        input_path: /input_dir/ml_testing/genomic_annotations/hg38.fa
+    },
+    features: !obj:selene_sdk.utils.load_features_list {
+        input_path: /input_dir/ml_testing/kidney_test/distinct_features.txt
+    },
+    target_path: /input_dir/ml_testing/kidney_test/ENCFF192UQS_cut_sorted.bed.gz,
+    intervals_path: /input_dir/ml_testing/genomic_annotations/deepsea_TF_intervals.txt,
+    seed: 127,
+    sample_negative: True,
+    sequence_length: 1000,
+    center_bin_to_predict: 200,
+    test_holdout: [chr8, chr9],
+    validation_holdout: [chr6, chr7],
+    feature_thresholds: 0.5,
+    mode: train,
+    save_datasets: [validate, test]
+}
+train_model: !obj:selene_sdk.TrainModel {
+    batch_size: 64,
+    max_steps: 8000,  # update this value for longer training
+    report_stats_every_n_steps: 1000,
+    n_validation_samples: 32000,
+    n_test_samples: 120000,
+    cpu_n_threads: 32,
+    use_cuda: True,  
+    data_parallel: False
+}
+random_seed: 1447
+output_dir: /input_dir/ml_testing/kidney_test/training_outputs
+create_subdirectory: False
+load_test_set: False
+...

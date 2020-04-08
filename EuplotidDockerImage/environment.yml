@@ -5,16 +5,17 @@ channels:
 dependencies:
   - conda-build
   - pip
-  - python
+  - python=3.6.9
   - setuptools
-  - numpy
   - bedtools
   - bedops
   - samtools
   - cmake
+  - numpy
   - pip:
     - setuptools
     - gnureadline
+    - numpy
     - plotly
     - pandas
     - dash
@@ -31,20 +32,21 @@ dependencies:
     - networkx
     - ipywidgets
     - Cython
-    - seaborn
+#    - seaborn
     - pysam
     - myvariant
     - mygene
-    - weblogo
-    - h5py
+#    - weblogo
+#    - h5py
 #    - wand
 #    - mechanize
 #    - rst2pdf
     - argparse
     - python-louvain
-    - uuid
+#    - uuid
     - joblib
     - biopython
     - pyliftover
     - bx-python
     - MACS2
+    - selene-sdk

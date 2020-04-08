@@ -1,0 +1,48 @@
+#Legacy file containing old Dockerfile commands
+
+#FROM debian:jessie-slim
+#FROM rocm/pytorch:rocm3.1.1_pytorch-linux-xenial-rocm-py3.6-clang7_pytorch
+
+USER jenkins
+#RUN conda env update -n base -f /tmp/environment.yml
+
+
+# Run Torch7 installation scripts
+#RUN apt-get install sudo
+#RUN cd /root && git clone https://github.com/torch/distro.git /root/torch --recursive && cd /root/torch && \
+#  bash ./install-deps && \
+#  ./install.sh
+
+# Export environment variables manually
+#ARG LUA_PATH='/root/.luarocks/share/lua/5.1/?.lua;/root/.luarocks/share/lua/5.1/?/init.lua;/root/torch/install/share/lua/5.1/?.lua;/root/torch/install/share/lua/5.1/?/init.lua;./?.lua;/root/torch/install/share/luajit-2.1.0-beta1/?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua'
+#ENV LUA_PATH $LUA_PATH
+#ENV LUA_CPATH "/root/.luarocks/lib/lua/5.1/?.so;/root/torch/install/lib/lua/5.1/?.so;./?.so;/usr/local/lib/lua/5.1/?.so;/usr/local/lib/lua/5.1/loadall.so"
+#ENV PATH /root/torch/install/bin:$PATH
+#ENV LD_LIBRARY_PATH /root/torch/install/lib:$LD_LIBRARY_PATH
+#ENV DYLD_LIBRARY_PATH /root/torch/install/lib:$DYLD_LIBRARY_PATH
+#ENV LUA_CPATH /root/torch/install/lib/?.so:$LUA_CPATH
+#ENV JOBLIB_TEMP_FOLDER /output_data
+
+# Install lua packages
+#RUN luarocks install luafilesystem
+#RUN luarocks install dpnn
+#RUN luarocks install dp
+#RUN luarocks install torch
+#RUN luarocks install nn
+#RUN luarocks install inn
+
+# clone Basset
+#RUN cd /root && git clone https://github.com/davek44/Basset.git /root/Basset --recursive
+# Run torch-hdf5 installation scripts
+#RUN cd /root/Basset/src && git clone https://github.com/davek44/torch-hdf5.git && cd torch-hdf5 && \
+#  luarocks make
+
+#Get Deepbind
+#RUN cd /root && git clone https://github.com/kundajelab/deepbind.git
+
+#Get Euplotid
+#RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+
+
+#ENV JUPYTER_PREFIX="/var/lib/jenkins/"
+#USER jenkins

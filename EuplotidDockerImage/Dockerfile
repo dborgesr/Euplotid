@@ -1,11 +1,14 @@
 # Euplotid image to take in FPKM, DNA-DNA interactions, ChiP-Seq, Chromatin Accessibility and calls and annotate/visualize INs
-FROM debian:jessie-slim
+FROM rocm/pytorch:rocm3.0_ubuntu16.04_py3.6_pytorch
 MAINTAINER Diego Borges <dborgesrmit@gmail.com>
 USER root
 
 ENV APT_PACKAGES=" \
 		git \
 		software-properties-common \
+		apt-transport-https \
+		ca-certificates \
+		apt-utils \
 #		libssl-dev \
 #		libzmq3-dev \
 #		libhdf5-7 \
@@ -28,71 +31,60 @@ ENV APT_PACKAGES=" \
 		"
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN	apt-get update && \
+#Add ROCm 3.0 GPG key and fix broken apt-get
+RUN wget -q -O - http://repo.radeon.com/rocm/apt/3.0/rocm.gpg.key | sudo apt-key add - && \
+	add-apt-repository 'deb [arch=amd64] http://repo.radeon.com/rocm/apt/3.0/ xenial main' && \
+	apt-get install -y apt-utils apt-transport-https
+
+#Get apt packages
+RUN apt-get update && \
 	apt-get install -y --no-install-recommends $APT_PACKAGES && \
  	rm -rf "/var/lib/apt/lists/*" && \
 	apt-get clean && \
 	rm -rf /var/cache/apt
-	
-#Get conda dependencies 
+
+#Get conda dependencies
 COPY environment.yml /tmp/environment.yml
 #Get Anaconda and install needed packages
 ENV CONDA_VERSION="4.7.12.1"
 RUN curl -s -L https://repo.anaconda.com/miniconda/Miniconda3-$CONDA_VERSION-Linux-x86_64.sh > miniconda.sh && \
-    bash miniconda.sh -b -p /opt/conda && \
+    bash miniconda.sh -u -b -p /opt/conda && \
     rm miniconda.sh && \
     export PATH=/opt/conda/bin:$PATH && \
-	conda env create -f /tmp/environment.yml && \
+    conda env create -f /tmp/environment.yml && \
 #    conda update conda && \
 #    conda update --all --yes && \
-	conda clean -tipy 
-ENV PATH=/opt/conda/envs/env/bin/:$PATH	
+	conda clean -tipy
+ENV PATH=/opt/conda/envs/env/bin/:/opt/conda/bin:$PATH
 
-# Run Torch7 installation scripts
-#RUN apt-get install sudo
-#RUN cd /root && git clone https://github.com/torch/distro.git /root/torch --recursive && cd /root/torch && \
-#  bash ./install-deps && \
-#  ./install.sh
-  
-# Export environment variables manually
-ARG LUA_PATH='/root/.luarocks/share/lua/5.1/?.lua;/root/.luarocks/share/lua/5.1/?/init.lua;/root/torch/install/share/lua/5.1/?.lua;/root/torch/install/share/lua/5.1/?/init.lua;./?.lua;/root/torch/install/share/luajit-2.1.0-beta1/?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua'
-ENV LUA_PATH $LUA_PATH
-ENV LUA_CPATH "/root/.luarocks/lib/lua/5.1/?.so;/root/torch/install/lib/lua/5.1/?.so;./?.so;/usr/local/lib/lua/5.1/?.so;/usr/local/lib/lua/5.1/loadall.so"
-ENV PATH /root/torch/install/bin:$PATH
-ENV LD_LIBRARY_PATH /root/torch/install/lib:$LD_LIBRARY_PATH
-ENV DYLD_LIBRARY_PATH /root/torch/install/lib:$DYLD_LIBRARY_PATH
-ENV LUA_CPATH /root/torch/install/lib/?.so:$LUA_CPATH
-ENV JOBLIB_TEMP_FOLDER /output_data
-
-
-# Install lua packages
-#RUN luarocks install luafilesystem
-#RUN luarocks install dpnn
-#RUN luarocks install dp
-#RUN luarocks install torch
-#RUN luarocks install nn
-#RUN luarocks install inn
-
-# clone Basset
-RUN cd /root && git clone https://github.com/davek44/Basset.git /root/Basset --recursive
-# Run torch-hdf5 installation scripts
-#RUN cd /root/Basset/src && git clone https://github.com/davek44/torch-hdf5.git && cd torch-hdf5 && \
-#  luarocks make 
-
-#Get Deepbind
-#RUN cd /root && git clone https://github.com/kundajelab/deepbind.git 
-
-#Get Euplotid
-#RUN cd /root && git clone -b master --single-branch https://github.com/dborgesr/Euplotid.git
+#Move over built pytorch into conda envs and install selene-sdk using pip from installed environment
+RUN cp -r /root/.local/lib/python3.6/site-packages /opt/conda/envs/env/lib/python3.6/ && \
+	/opt/conda/envs/env/bin/pip install --no-cache-dir selene-sdk && \
+	rm -rf /root/.local/lib/python3.6
 
 # Set Euplotid as working directory
-WORKDIR /root/Euplotid
+USER root
+RUN mkdir /data && \
+ 		mkdir /data/Euplotid && \
+		chmod -R 0777 /data/Euplotid
+WORKDIR /data/Euplotid
+COPY ./applotid.py ./start.sh /app/
+RUN chmod 755 /app/applotid.py /app/start.sh
 
 #set bash as default shell and add activation of environment to bash start
 ENV SHELL=/bin/bash
 #Set bash up to start and activate env environment
-RUN echo "export PATH=/opt/conda/envs/env/bin/:$PATH" > ~/.bashrc && \
+RUN echo "export PATH=/opt/conda/envs/env/bin/:/opt/conda/bin/:$PATH" > ~/.bashrc && \
 	echo "source activate base" >> ~/.bashrc
+
+#Configure jupyter
+ENV JUPYTER_PREFIX="/root/"
+RUN jupyter notebook --generate-config && \
+	sed -i "/c.NotebookApp.open_browser/c c.NotebookApp.open_browser = False" "$JUPYTER_PREFIX".jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.ip/c c.NotebookApp.ip = '*'" "$JUPYTER_PREFIX".jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.notebook_dir/c c.NotebookApp.notebook_dir = '/data/Euplotid'" "$JUPYTER_PREFIX".jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.token/c c.NotebookApp.token = 'euplotid'" "$JUPYTER_PREFIX".jupyter/jupyter_notebook_config.py \
+        && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" "$JUPYTER_PREFIX".jupyter/jupyter_notebook_config.py
 
 #Define default startup behavior
 ENV EUPLO_IMAGE=euplotid
@@ -101,9 +93,6 @@ ENV EUPLO_ARCH=x86
 ENV EUPLO_OS=debian
 ENV JUPYTER_PORT=8894
 
-COPY ./applotid.py ./start.sh /app/
-RUN chmod 755 /app/applotid.py /app/start.sh
 EXPOSE $JUPYTER_PORT
 EXPOSE 80
 CMD ["bash", "/app/start.sh"]
-

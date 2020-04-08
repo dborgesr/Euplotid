@@ -1,0 +1,32 @@
+ops: [analyze]
+model: {
+    path: /input_dir/ml_testing/kidney_test/deeperdeepsea.py,
+    class: DeeperDeepSEA,
+    class_args: {
+        sequence_length: 1000,
+        n_targets: 1,
+    },
+    non_strand_specific: mean
+}
+analyze_sequences: !obj:selene_sdk.predict.AnalyzeSequences {
+    trained_model_path: /input_dir/ml_testing/kidney_test/training_outputs/best_model.pth.tar,
+    sequence_length: 1000,
+    features: !obj:selene_sdk.utils.load_features_list {
+        input_path: /input_dir/ml_testing/kidney_test/distinct_features.txt
+    },
+    batch_size: 64,
+    use_cuda: True,
+    reference_sequence: !obj:selene_sdk.sequences.Genome {
+        input_path: /input_dir/ml_testing/genomic_annotations/hg38.fa
+    },
+    write_mem_limit: 75000
+}
+variant_effect_prediction: {
+    vcf_files: [
+        /input_dir/ml_testing/kidney_test/gwas_out/Wuttke_eGFR_1e-08_hg38.vcf
+    ],
+    save_data: [predictions, logits, abs_diffs],
+    output_dir: /input_dir/ml_testing/kidney_test/prediction_outputs,
+    output_format: tsv,
+}
+random_seed: 123

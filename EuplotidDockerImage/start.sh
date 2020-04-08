@@ -1,6 +1,4 @@
 #!/bin/bash
-# Logic on container startup depends on a few pre-defined image variables
-
 #Activate default environment
 source activate base
 
@@ -10,12 +8,11 @@ source activate base
 # Deploy: [true, false]
 
 #If deploying w/ frontend or not
-if [ "${EUPLO_DEPLOY:-}" == "true" ] ; then 
-	python3 /app/applotid.py 
+if [ "${EUPLO_DEPLOY:-}" == "true" ] ; then
+	python3 /app/applotid.py
 fi
 
 #Run jupyter as IDE
 if [ "${EUPLO_DEPLOY:-}" == "false" ] ; then
 	jupyter lab --allow-root --port=$JUPYTER_PORT --no-browser --ip=0.0.0.0
 fi
-
