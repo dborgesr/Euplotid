@@ -1,0 +1,26 @@
+name: env
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - conda-build
+  - pip
+  - python
+  - setuptools
+  - ipywidgets
+  - nodejs
+  - ipypublish
+  - latexmk
+  - tornado
+  - rb-jekyll
+  - ruby
+  - git
+  - pip:
+    - setuptools
+    - ipywidgets
+    - h5py
+    - argparse
+    - jupyter_contrib_nbextensions
+    - jupyterlab
+    - tornado
+    - jupytext
