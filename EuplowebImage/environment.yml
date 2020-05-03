@@ -7,17 +7,12 @@ dependencies:
   - pip
   - python
   - setuptools
-  - ipywidgets
-  - nodejs
-  - ipypublish
   - latexmk
   - tornado
+  - git
   - pip:
     - setuptools
-    - ipywidgets
     - h5py
     - argparse
-    - jupyter_contrib_nbextensions
     - jupyterlab
     - tornado
-    - jupytext

@@ -1,5 +1,5 @@
 # Eupublish image to write and publish ipynb into pdf
-FROM debian:stretch-slim
+FROM ubuntu:bionic
 MAINTAINER Diego Borges <dborgesrmit@gmail.com>
 USER root
 
@@ -15,12 +15,14 @@ ENV APT_PACKAGES=" \
   unzip \
   apt-transport-https \
   ca-certificates \
-  texlive-latex-base \
-  texlive-fonts-recommended \
-  texlive-fonts-extra \
-  texlive-latex-extra \
-  texlive-generic-recommended \
+  ruby \
+  ruby-dev \
+  make \
   build-essential \
+  libxml2 \
+  patch \
+  zlib1g-dev \
+  liblzma-dev \
   "
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -44,6 +46,16 @@ RUN curl -s -L https://repo.anaconda.com/miniconda/Miniconda3-$CONDA_VERSION-Lin
 #    conda update --all --yes && \
 	conda clean -tipy
 ENV PATH=/opt/conda/envs/env/bin/:/opt/conda/bin:$PATH
+
+#get jekyll things for Website
+RUN gem install bundler \
+                jekyll \
+                jekyll-include-cache \
+                jekyll-feed \
+                jekyll-gist \
+                jekyll-sitemap \
+                jekyll-paginate \
+                jekyll-mentions
 
 # Set Euplotid as working directory
 USER root
@@ -70,12 +82,14 @@ RUN jupyter notebook --generate-config && \
         && sed -i "/c.NotebookApp.iopub_data_rate_limit/c c.NotebookApp.iopub_data_rate_limit = 10000000" "$JUPYTER_PREFIX".jupyter/jupyter_notebook_config.py
 
 #Define default startup behavior
-ENV EUPLO_IMAGE=eupublish
+ENV EUPLO_IMAGE=euplotid
 ENV EUPLO_DEPLOY=false
 ENV EUPLO_ARCH=x86
 ENV EUPLO_OS=debian
 ENV JUPYTER_PORT=8895
+ENV WEBSITE_PORT=4000
 
 EXPOSE $JUPYTER_PORT
+EXPOSE $WEBSITE_PORT
 EXPOSE 80
 CMD ["bash", "/app/start.sh"]
