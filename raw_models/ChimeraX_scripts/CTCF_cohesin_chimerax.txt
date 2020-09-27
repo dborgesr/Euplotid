@@ -1,0 +1,29 @@
+#ChimeraX commands to pull in Chromatin PDB and spit out pretty obj files
+open 6QNX
+~hbonds
+hide cartoons
+hide atoms
+#############################################
+#Chain A: Cohesin subunit SA-2
+surface enclose /A
+color /A darkgrey 
+save D:/Euplotid_old/raw_models/Cohesin_6QNX.obj format obj
+hide /A surfaces
+#############################################
+#Chain B: Double-strand-break repair protein rad21 homolog
+surface enclose /B
+color /B blueviolet 
+save D:/Euplotid_old/raw_models/Rad21_6QNX.obj format obj
+hide /B surfaces
+#############################################
+#Chain C: Transcriptional repressor CTCF
+surface enclose /C
+color /C springgreen
+save D:/Euplotid_old/raw_models/CTCF_6QNX.obj format obj
+hide /C surfaces
+#############################################
+#Show surfaces and nucleotides for pictures
+show all surfaces
+#hide /A,B,C surfaces
+#Take picture
+save image D:\Euplotid_old\Figures_v2\6QNX_CTCF_cohesin.png supersample 5 width 3840 heigh 2160 transparentBackground  true	

@@ -1,0 +1,48 @@
+#ChimeraX commands to pull in Cohesin + Nipbl and spit out Objs + pics
+open 6WG3
+~hbonds
+hide cartoons
+hide atoms
+#############################################
+#Chain A: SMC1
+surface enclose /A
+color /A grey 
+save D:/Euplotid_old/raw_models/SMC1_6WG3.obj format obj
+hide /A surfaces
+#############################################
+#Chain B: SMC3
+surface enclose /B
+color /B #bfd7d9 
+save D:/Euplotid_old/raw_models/SMC3_6WG3.obj format obj
+hide /B surfaces
+#############################################
+#Chain C: Rad21
+surface enclose /C
+color /C blueviolet
+save D:/Euplotid_old/raw_models/Rad21_6WG3.obj format obj
+hide /C surfaces
+#############################################
+#Chain D: Cohesin SA-1
+surface enclose /D
+color /D darkgrey
+save D:/Euplotid_old/raw_models/SA1_6WG3.obj format obj
+hide /D surfaces
+#############################################
+#Chain E: Nipbl
+surface enclose /E
+color /E #ffb845
+save D:/Euplotid_old/raw_models/Nipbl_6WG3.obj format obj
+hide /E surfaces
+#############################################
+#Chain F and G: DNA 51mer + and - strand
+surface enclose /F
+surface enclose /G
+color /F,G #0f13ff
+save D:/Euplotid_old/raw_models/Cohesin_DNA_6QNX.obj format obj
+hide /F,G surfaces
+#############################################
+#Show surfaces and nucleotides for pictures
+show all surfaces
+#hide /A,B,C surfaces
+#Take picture
+save image D:\Euplotid_old\Figures_v2\6WG3_cohesin_loading.png supersample 5 width 3840 heigh 2160 transparentBackground  true

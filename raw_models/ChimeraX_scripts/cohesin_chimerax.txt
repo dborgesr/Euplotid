@@ -1,0 +1,35 @@
+#ChimeraX commands to pull in Chromatin PDB and spit out pretty obj files
+open 6QPW
+~hbonds
+hide cartoons
+hide atoms
+#############################################
+#Chain A: Structural maintenance of chromosomes protein
+surface enclose /A
+color /A deepskyblue 
+save D:/Euplotid_old/raw_models/Cohesin_SMC1_6QPW.obj format obj
+hide /A surfaces
+#############################################
+#Chain B: Sister chromatid cohesion protein 1
+surface enclose /B
+color /B blueviolet 
+save D:/Euplotid_old/raw_models/Cohesin_Scc1_6QPW.obj format obj
+hide /B surfaces
+#############################################
+#Chain C: Structural maintenance of chromosomes protein 3
+surface enclose /C
+color /C springgreen
+save D:/Euplotid_old/raw_models/Cohesin_SMC3_6QPW.obj format obj
+hide /C surfaces
+#############################################
+#Chain E: Sister chromatid cohesion protein 1,Structural maintenance of chromosomes protein
+surface enclose /E
+color /E firebrick 
+save D:/Euplotid_old/raw_models/Cohesin_SMC1_E_6QPW.obj format obj
+hide /E surfaces
+#############################################
+#Show surfaces and nucleotides for pictures
+show all surfaces
+#hide /A,B,C,E surfaces
+#Take picture
+save image D:\Euplotid_old\Figures_v2\6QPW_cohesin.png supersample 5 width 3840 heigh 2160 transparentBackground  true
