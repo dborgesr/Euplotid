@@ -1,0 +1,63 @@
+#ChimeraX commands to pull PrimPol and output objects and image
+open 5L2X
+~hbonds
+hide cartoons
+hide atoms
+hide /B,G,H surfaces,atoms 
+#Show only one of dimer
+#############################################
+#Chain A	DNA-directed primase/polymerase protein
+show /A cartoon
+#save D:/Euplotid_old/raw_models/PrimPol_5L2X.x3d format x3d
+#hide /A a,c,s
+#############################################
+#Chain C: template strand
+nucleotides /C atoms
+hide /C:HOH
+style /C ball
+hide /C surface
+show /C atoms
+#save D:/Euplotid_old/raw_models/Template_strand_5L2X.x3d format x3d
+#hide /C a,c,s
+#############################################
+#Chain D: synthesized strand
+nucleotides /D atoms
+hide /C:HOH
+style /D ball
+hide /D surface
+show /D atoms
+#save D:/Euplotid_old/raw_models/Synthesized_strand_5L2X.x3d format x3d
+#hide /D a,c,s
+#############################################
+#Chain DTP: 2'deoxyadenosine 5'triphosphate
+nucleotides /A:DTP atoms
+style /A:DTP ball
+hide /A:DTP surface
+show /A:DTP atoms
+#save D:/Euplotid_old/raw_models/DTP_5L2X.x3d format x3d
+#hide /A:DTP a,c,s
+#############################################
+#Chain CA: Calcium
+show /A:402@CA
+#save D:/Euplotid_old/raw_models/Calcium_5L2X.x3d format x3d
+#hide /A:402@CA a,c,s
+#############################################
+#Take picture
+show /A cartoon
+show /A:402@CA atoms
+show /C,D atoms
+hide /C:HOH
+show /A:DTP atoms
+
+color /A #81e3af
+color /A:402@CA #C0C0C0
+color ribose #B75611
+color phosphate #D6CB08
+color /C:5IU #00FFFF
+color thymine yellow
+color cytosine blue
+color guanine green
+color adenine red
+color /A:DTP #e100ff
+
+save image D:\Euplotid_old\Figures_v2\PrimPol_5L2X.png supersample 5 width 3840 heigh 2160 transparentBackground  true

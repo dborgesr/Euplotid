@@ -1,0 +1,46 @@
+#ChimeraX commands to pull in TINA 3-plex and spit out x3ds
+open 6QHI
+~hbonds
+hide cartoons
+hide atoms
+hide all surfaces
+#############################################
+#Take model #1.1 only
+color #1.1 bynucleotide
+nucleotides #1.1 atoms
+style #1.1 ball
+show #1.1 atoms
+#############################################
+#Save out the different nucleotides and backbone
+hide all
+show thymine
+#save D:/Euplotid_old/raw_models/6QHI_TINA_thymine.x3d format x3d
+#hide all
+show cytosine
+#save D:/Euplotid_old/raw_models/6QHI_TINA_cytosine.x3d format x3d
+#hide all
+show guanine
+#save D:/Euplotid_old/raw_models/6QHI_TINA_guanine.x3d format x3d
+#hide all
+show adenine
+#save D:/Euplotid_old/raw_models/6QHI_TINA_adenine.x3d format x3d
+#hide all
+show ribose
+#save D:/Euplotid_old/raw_models/6QHI_TINA_ribose.x3d format x3d
+show phosphate
+#save D:/Euplotid_old/raw_models/6QHI_TINA_phosphate.x3d format x3d
+#hide all
+#############################################
+#Show surfaces and nucleotides for pictures
+#Take picture
+show #1.1 atoms
+color #1.1:J32 #e100ff
+color ribose #B75611
+color phosphate #D6CB08
+color thymine yellow
+color cytosine blue
+color guanine green
+color adenine red
+
+#Take picture
+save image D:\Euplotid_old\Figures_v2\6QHI_TINA.png supersample 5 width 3840 heigh 2160 transparentBackground  true

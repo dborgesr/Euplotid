@@ -10,7 +10,7 @@ nucleotides /S6 fill
 style /S6 ball
 show /S6 atoms
 color /S6 fuchsia
-save D:/Euplotid/raw_models/EtRNA.obj format obj
+save D:/Euplotid_old/raw_models/EtRNA.x3d format x3d
 hide /S6
 
 #############################################
@@ -26,7 +26,7 @@ color /S2 chartreuse
 #40S proteins - small subunit
 surface enclose /SA-Sg
 color /SA-Sg green
-save D:/Euplotid/raw_models/40S.obj format obj
+save D:/Euplotid_old/raw_models/40S.x3d format x3d
 
 #############################################
 
@@ -55,4 +55,4 @@ surface enclose /L7
 #60S proteins - large subunit
 surface enclose /LA-Lz
 color /LA-Lz red
-save D:/Euplotid/raw_models/60s.obj format obj
+save D:/Euplotid_old/raw_models/60s.x3d format x3d
