@@ -4,6 +4,7 @@ open 6AU4
 hide cartoons
 hide atoms
 hide all surfaces
+hide /A,B:HOH
 #############################################
 #Chain A: +strand
 color /A bynucleotide
@@ -20,20 +21,20 @@ show /B atoms
 #Save out the different nucleotides and backbone
 hide all
 show thymine
-#save D:/Euplotid_old/raw_models/6AU4_gquad_myc_thymine.x3d format x3d
-#hide all
+save D:/Euplotid_old/raw_models/6AU4_gquad_myc_thymine.x3d format x3d
+hide all
 show cytosine
-#save D:/Euplotid_old/raw_models/6AU4_gquad_myc_cytosine.x3d format x3d
-#hide all
+save D:/Euplotid_old/raw_models/6AU4_gquad_myc_cytosine.x3d format x3d
+hide all
 show guanine
-#save D:/Euplotid_old/raw_models/6AU4_gquad_myc_guanine.x3d format x3d
-#hide all
+save D:/Euplotid_old/raw_models/6AU4_gquad_myc_guanine.x3d format x3d
+hide all
 show adenine
-#save D:/Euplotid_old/raw_models/6AU4_gquad_myc_adenine.x3d format x3d
-#hide all
+save D:/Euplotid_old/raw_models/6AU4_gquad_myc_adenine.x3d format x3d
+hide all
 show backbone
-#save D:/Euplotid_old/raw_models/6AU4_gquad_myc_backbone.x3d format x3d
-#hide all
+save D:/Euplotid_old/raw_models/6AU4_gquad_myc_backbone.x3d format x3d
+hide all
 #############################################
 #Show surfaces and nucleotides for pictures
 show /A,B
@@ -45,4 +46,4 @@ color guanine green
 color adenine red
 #hide /A,B surfaces
 #Take picture
-save image D:\Euplotid_old\Figures_v2\6AU4_gquad_myc.png supersample 5 width 3840 heigh 2160 transparentBackground  true
+save D:\Euplotid_old\Figures_v2\6AU4_gquad_myc.png supersample 5 width 3840 heigh 2160 transparentBackground  true
