@@ -1,0 +1,43 @@
+#ChimeraX commands to pull in Z-DNA 
+open 1VTV
+~hbonds
+hide cartoons
+hide atoms
+hide all surfaces
+hide /A,B:HOH
+#############################################
+#Chain A: +strand
+color /A bynucleotide
+nucleotides /A atoms
+style /A ball
+show /A atoms
+#############################################
+#Chain B: -strand
+color /B bynucleotide
+nucleotides /B atoms
+style /B ball
+show /B atoms
+hide /A,B:HOH
+#############################################
+#Save out the different nucleotides and backbone
+hide all
+show /A,B:5CM
+hide backbone
+save D:/Euplotid_old/raw_models/1VTV_Z_DNA_methylcytosine.x3d format x3d
+hide all
+show guanine
+save D:/Euplotid_old/raw_models/1VTV_Z_DNA_guanine.x3d format x3d
+hide all
+show backbone
+save D:/Euplotid_old/raw_models/1VTV_Z_DNA_backbone.x3d format x3d
+hide all
+#############################################
+#Show surfaces and nucleotides for pictures
+show /A,B
+hide /A,B:HOH
+color /A,B:5CM #00FFFF
+color backbone #64268E
+color guanine green
+hbonds
+#Take picture
+save D:\Euplotid_old\Figures_v2\1VTV_Z_DNA.png supersample 5 width 3840 heigh 2160 transparentBackground true
