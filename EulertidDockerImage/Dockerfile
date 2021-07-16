@@ -50,15 +50,13 @@ RUN cd /root && git clone https://github.com/yamaton/project-euler-jupyter.git
 
 #Configure jupyter
 ENV JUPYTER_PREFIX="/root/"
+ENV WORK_DIR="/root/project-euler-jupyter"
 RUN jupyter lab --generate-config && \
 	sed -i "/c.ServerApp.open_browser/c c.ServerApp.open_browser = False" "$JUPYTER_PREFIX".jupyter/jupyter_lab_config.py \
         && sed -i "/c.ServerApp.ip/c c.ServerApp.ip = '*'" "$JUPYTER_PREFIX".jupyter/jupyter_lab_config.py \
         && sed -i "/c.ServerApp.root_dir/c c.ServerApp.root_dir = '$WORK_DIR'" "$JUPYTER_PREFIX".jupyter/jupyter_lab_config.py \
         && sed -i "/c.ServerApp.token/c c.ServerApp.token = 'eulertid'" "$JUPYTER_PREFIX".jupyter/jupyter_lab_config.py \
         && sed -i "/c.ServerApp.iopub_data_rate_limit/c c.ServerApp.iopub_data_rate_limit = 10000000" "$JUPYTER_PREFIX".jupyter/jupyter_lab_config.py
-
-# Set Euler problems as working directory
-WORKDIR /root/project-euler-jupyter
 
 EXPOSE 8896
 CMD ["jupyter", "lab", "--port=8896", "--no-browser", "--allow-root", "--ip=0.0.0.0"]
