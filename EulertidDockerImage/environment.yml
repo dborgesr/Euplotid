@@ -1,0 +1,13 @@
+name: env
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - python=3.8
+  - setuptools
+  - jupyterlab
+  - pip
+  - setuptools
+  - plotly
+  - ipywidgets
+  - nodejs
