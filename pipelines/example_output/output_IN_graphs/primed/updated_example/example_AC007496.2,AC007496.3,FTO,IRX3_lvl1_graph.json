@@ -266,6 +266,23 @@
 			"id": "chr16:54281271-54288714"
 		},
 		{
+			"mid": 53789550.0,
+			"name": "chr16:53789475-53789625",
+			"dist2anchor": 15531,
+			"deepbind_tf": "",
+			"top_tf_names": "",
+			"filt_tf_open": "",
+			"top_tf_probs": "",
+			"open_size": 1,
+			"style": "filled",
+			"color": "rgb(170,15,226)",
+			"size": 15,
+			"x": -0.10592,
+			"y": 0.04846,
+			"z": 0.31622,
+			"id": "chr16:53789475-53789625"
+		},
+		{
 			"style": "filled",
 			"color": "rgb(242,12,50)",
 			"size": 25,
